@@ -1,0 +1,5 @@
+export { LoginPage } from './components/LoginPage'
+export { RegisterPage } from './components/RegisterPage'
+export { AuthGuard } from './guards/AuthGuard'
+export { useCurrentUser, useLogin, useLogout } from './hooks/useAuth'
+export type { CurrentUser, LoginDto } from './types'
