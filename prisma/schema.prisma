@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id               String   @id
+  userId           String
+  refreshTokenHash String
+  deviceName       String
+  ipAddress        String
+  userAgent        String
+  isActive         Boolean  @default(true)
+  lastActiveAt     DateTime
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Admin {
+  id           String   @id
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("admins")
+}
+
+model User {
+  id           String   @id
+  email        String   @unique
+  passwordHash String
+  role         String   @default("member")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("users")
+}
+
+// ── Authorization ─────────────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id
+  name        String
+  description String?
+  subjectType String   // 'admin' | 'user' | 'merchant' | '*'
+  parentId    String?
+  parent      Role?    @relation("RoleHierarchy", fields: [parentId], references: [id])
+  children    Role[]   @relation("RoleHierarchy")
+
+  assignments RoleAssignment[]
+  permissions Permission[]
+
+  @@unique([name, subjectType])
+  @@map("roles")
+}
+
+model RoleAssignment {
+  id          String   @id
+  subjectId   String
+  subjectType String   // 'admin' | 'user' | 'merchant'
+  roleId      String
+  createdAt   DateTime @default(now())
+  role        Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([subjectId, subjectType, roleId])
+  @@index([subjectId, subjectType])
+  @@map("role_assignments")
+}
+
+model Permission {
+  id       String   @id
+  roleId   String
+  resource String   // '*' = all resources
+  actions  String[] // Action[]
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@index([roleId])
+  @@map("permissions")
+}
