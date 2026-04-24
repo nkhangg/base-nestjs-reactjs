@@ -12,7 +12,9 @@ import {
   SlidersHorizontal,
   X,
   Inbox,
+  CalendarIcon,
 } from 'lucide-react'
+import { format } from 'date-fns'
 import { cn } from '@shared/utils'
 import { useDebounce } from '@shared/hooks'
 import { Input } from './input'
@@ -24,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from './select'
+import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import { Calendar } from './calendar'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +47,7 @@ export interface ColumnDef<T extends Record<string, unknown>> {
   sortable?: boolean
   filterable?: boolean
   /** Defaults to "select" when filterOptions provided, otherwise "text" */
-  filterType?: 'text' | 'select'
+  filterType?: 'text' | 'select' | 'date-range'
   filterOptions?: { label: string; value: string }[]
   width?: string
   className?: string
@@ -112,6 +116,84 @@ function buildPageNumbers(current: number, total: number): (number | '...')[] {
   if (current <= 4) return [1, 2, 3, 4, 5, '...', total]
   if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
   return [1, '...', current - 1, current, current + 1, '...', total]
+}
+
+// ─── Date range filter ────────────────────────────────────────────────────────
+
+function DateRangeFilter({
+  fromValue,
+  toValue,
+  onFrom,
+  onTo,
+}: {
+  fromValue: string
+  toValue: string
+  onFrom: (v: string) => void
+  onTo: (v: string) => void
+}) {
+  const parseDate = (s: string) => (s ? new Date(s + 'T00:00:00') : undefined)
+  const fromDate = parseDate(fromValue)
+  const toDate = parseDate(toValue)
+
+  return (
+    <div className="flex items-center gap-1">
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'flex h-7 items-center gap-1.5 rounded border px-2 text-xs transition-colors hover:bg-gray-50',
+              fromValue ? 'border-gray-900 text-gray-900 bg-gray-50' : 'border-gray-200 text-gray-400',
+            )}
+          >
+            <CalendarIcon className="h-3 w-3 shrink-0" />
+            <span>{fromDate ? format(fromDate, 'dd/MM/yy') : 'Từ'}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={fromDate}
+            onSelect={(d) => onFrom(d ? format(d, 'yyyy-MM-dd') : '')}
+            disabled={(d) => (toDate ? d > toDate : false)}
+          />
+        </PopoverContent>
+      </Popover>
+
+      <span className="text-[10px] text-gray-300">→</span>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'flex h-7 items-center gap-1.5 rounded border px-2 text-xs transition-colors hover:bg-gray-50',
+              toValue ? 'border-gray-900 text-gray-900 bg-gray-50' : 'border-gray-200 text-gray-400',
+            )}
+          >
+            <CalendarIcon className="h-3 w-3 shrink-0" />
+            <span>{toDate ? format(toDate, 'dd/MM/yy') : 'Đến'}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={toDate}
+            onSelect={(d) => onTo(d ? format(d, 'yyyy-MM-dd') : '')}
+            disabled={(d) => (fromDate ? d < fromDate : false)}
+          />
+        </PopoverContent>
+      </Popover>
+
+      {(fromValue || toValue) && (
+        <button
+          onClick={() => { onFrom(''); onTo('') }}
+          className="rounded p-0.5 text-gray-300 hover:text-gray-600 transition-colors"
+          title="Xóa bộ lọc ngày"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </div>
+  )
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -402,7 +484,14 @@ export function DataTable<T extends Record<string, unknown>>({
                   {columns.map(col => (
                     <th key={col.key} className="px-3 py-2 font-normal">
                       {col.filterable && (
-                        col.filterType === 'select' || col.filterOptions ? (
+                        col.filterType === 'date-range' ? (
+                          <DateRangeFilter
+                            fromValue={filters[`${col.key}_from`] ?? ''}
+                            toValue={filters[`${col.key}_to`] ?? ''}
+                            onFrom={(v) => handleFilter(`${col.key}_from`, v)}
+                            onTo={(v) => handleFilter(`${col.key}_to`, v)}
+                          />
+                        ) : col.filterType === 'select' || col.filterOptions ? (
                           <Select
                             value={filters[col.key] || ALL_VALUE}
                             onValueChange={v => handleFilter(col.key, v === ALL_VALUE ? '' : v)}

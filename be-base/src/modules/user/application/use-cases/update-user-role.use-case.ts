@@ -34,6 +34,7 @@ export class UpdateUserRoleUseCase {
       input.userId,
       'user',
       input.role,
+      'member',
     );
 
     return { ok: true, value: undefined };

@@ -15,6 +15,8 @@ const DashboardPage = lazy(() =>
 )
 const AdminPage = lazy(() => import('@modules/admin/index').then((m) => ({ default: m.AdminPage })))
 const RolePage = lazy(() => import('@modules/admin/index').then((m) => ({ default: m.RolePage })))
+const UserPage = lazy(() => import('@modules/user/index').then((m) => ({ default: m.UserPage })))
+const ConfigPage = lazy(() => import('@modules/config/index').then((m) => ({ default: m.ConfigPage })))
 
 // ── Guards (provided by each module) ──────────────────────────────────────
 const AuthGuard = lazy(() => import('@modules/auth/index').then((m) => ({ default: m.AuthGuard })))
@@ -59,6 +61,8 @@ export const router = createBrowserRouter([
         children: [
           { path: ROUTES.ADMIN, element: withSuspense(<AdminPage />) },
           { path: ROUTES.ROLES, element: withSuspense(<RolePage />) },
+          { path: ROUTES.USERS, element: withSuspense(<UserPage />) },
+          { path: ROUTES.CONFIGS, element: withSuspense(<ConfigPage />) },
         ],
       },
     ],

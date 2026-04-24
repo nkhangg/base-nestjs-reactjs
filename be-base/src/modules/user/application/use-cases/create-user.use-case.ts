@@ -44,6 +44,7 @@ export class CreateUserUseCase {
       user.id.value,
       'user',
       roleName,
+      'member',
     );
 
     return { ok: true, value: { userId: user.id.value } };

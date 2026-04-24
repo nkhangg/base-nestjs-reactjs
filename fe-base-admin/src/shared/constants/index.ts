@@ -13,6 +13,7 @@ export const QUERY_KEYS = {
   ADMIN: {
     USERS: ['admin', 'users'] as const,
   },
+  CONFIGS: ['configs'] as const,
 } as const
 
 export const DATE_FORMAT = {

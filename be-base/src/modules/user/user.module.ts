@@ -10,7 +10,9 @@ import { CreateUserUseCase } from './application/use-cases/create-user.use-case'
 import { GetUserUseCase } from './application/use-cases/get-user.use-case';
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
 import { UpdateUserRoleUseCase } from './application/use-cases/update-user-role.use-case';
+import { UpdateUserInfoUseCase } from './application/use-cases/update-user-info.use-case';
 import { DeactivateUserUseCase } from './application/use-cases/deactivate-user.use-case';
+import { ActivateUserUseCase } from './application/use-cases/activate-user.use-case';
 import { UserManagementController } from './presentation/user/user-management.controller';
 import { UserManagementFeature } from './presentation/user/user-management.feature';
 import { ADMIN_FEATURE } from '../../core/admin-shell/admin.interface';
@@ -61,7 +63,9 @@ const USER_ROLES: SeedRoleDefinition[] = [
     GetUserUseCase,
     ListUsersUseCase,
     UpdateUserRoleUseCase,
+    UpdateUserInfoUseCase,
     DeactivateUserUseCase,
+    ActivateUserUseCase,
   ],
   exports: [USER_REPOSITORY, CreateUserUseCase],
 })
@@ -81,6 +85,7 @@ export class UserModule implements OnModuleInit {
           user.id.value,
           'user',
           user.role,
+          'member',
         ),
       ),
     );

@@ -97,16 +97,19 @@ export class AuthorizationService {
     this.cache.invalidate(subjectId, subjectType);
   }
 
-  /** Assigns roleName; falls back to 'viewer' if the role doesn't exist. */
+  /** Assigns roleName; falls back to `fallback` if the role doesn't exist. */
   async assignRoleWithFallback(
     subjectId: string,
     subjectType: SubjectType,
     roleName: string,
+    fallback: string = 'viewer',
   ): Promise<void> {
     try {
       await this.assignRole(subjectId, subjectType, roleName);
     } catch {
-      await this.assignRole(subjectId, subjectType, 'viewer');
+      if (fallback !== roleName) {
+        await this.assignRole(subjectId, subjectType, fallback);
+      }
     }
   }
 

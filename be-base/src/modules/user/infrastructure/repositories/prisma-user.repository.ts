@@ -41,6 +41,12 @@ export class PrismaUserRepository implements IUserRepository {
     if (options.search) {
       where['email'] = { contains: options.search, mode: 'insensitive' };
     }
+    if (options.createdAtFrom || options.createdAtTo) {
+      const dateFilter: Record<string, Date> = {};
+      if (options.createdAtFrom) dateFilter['gte'] = options.createdAtFrom;
+      if (options.createdAtTo) dateFilter['lte'] = options.createdAtTo;
+      where['createdAt'] = dateFilter;
+    }
 
     const sortBy = options.sortBy ?? 'createdAt';
     const sortDir = options.sortDir ?? 'desc';

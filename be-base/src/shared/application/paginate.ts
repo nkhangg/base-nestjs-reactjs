@@ -69,6 +69,27 @@ export function filterBool(
   return v === 'true' ? true : v === 'false' ? false : undefined;
 }
 
+/** Parse nestjs-paginate $gte/$lte date operators → Date range. */
+export function filterDateRange(
+  filter: Record<string, string | string[]>,
+  key: string,
+): { from?: Date; to?: Date } {
+  const raw = filter[key];
+  const arr = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  let from: Date | undefined;
+  let to: Date | undefined;
+  for (const v of arr) {
+    if (v.startsWith('$gte:')) {
+      const d = new Date(v.slice(5));
+      if (!isNaN(d.getTime())) from = d;
+    } else if (v.startsWith('$lte:')) {
+      const d = new Date(v.slice(5));
+      if (!isNaN(d.getTime())) to = d;
+    }
+  }
+  return { from, to };
+}
+
 export function buildPaginated<T>(
   data: T[],
   total: number,

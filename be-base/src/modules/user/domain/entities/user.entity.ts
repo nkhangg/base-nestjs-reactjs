@@ -39,8 +39,16 @@ export class User extends BaseEntity<UserId> {
     this.props.isActive = false;
   }
 
+  activate(): void {
+    this.props.isActive = true;
+  }
+
   updateRole(role: string): void {
     this.props.role = role;
+  }
+
+  updateEmail(email: string): void {
+    this.props.email = email;
   }
 
   get email(): string {

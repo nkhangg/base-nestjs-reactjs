@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, LogOut, ShieldCheck, Users, Key } from 'lucide-react'
+import { LayoutDashboard, LogOut, ShieldCheck, Users, Key, UserCog, Settings } from 'lucide-react'
 import { ErrorBoundary } from '@/shared/components/ui/error-boundary'
 import { ROUTES } from '@config/routes'
 import { useCurrentUser, useLogout } from '@modules/auth'
@@ -8,6 +8,8 @@ const navItems = [
   { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
   { to: ROUTES.ADMIN, label: 'Admin Management', icon: Users, requireRole: true },
   { to: ROUTES.ROLES, label: 'Role Management', icon: Key, requireRole: true },
+  { to: ROUTES.USERS, label: 'User Management', icon: UserCog, requireRole: true },
+  { to: ROUTES.CONFIGS, label: 'Config Management', icon: Settings, requireRole: true },
 ]
 
 export function MainLayout() {

@@ -5,6 +5,7 @@ import { AuthorizationModule } from './core/authorization';
 import { AdminModule } from './modules/admin';
 import { UserModule } from './modules/user/user.module';
 import { MerchantModule } from './modules/merchant/merchant.module';
+import { ConfigModule } from './modules/config/config.module';
 import { PrismaModule } from './shared/infrastructure/prisma/prisma.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { PrismaModule } from './shared/infrastructure/prisma/prisma.module';
     AdminModule,
     UserModule,
     MerchantModule,
+    ConfigModule,
     AuthModule.forRoot({
       jwt: {
         accessTokenSecret:

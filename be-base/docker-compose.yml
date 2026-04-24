@@ -17,22 +17,22 @@ services:
       retries: 5
     restart: unless-stopped
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: be-base-app
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-be_base}
-      NODE_ENV: production
-      PORT: ${PORT:-3000}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production}
-    ports:
-      - '${PORT:-3000}:${PORT:-3000}'
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: be-base-app
+  #   environment:
+  #     DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-be_base}
+  #     NODE_ENV: production
+  #     PORT: ${PORT:-3000}
+  #     JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production}
+  #   ports:
+  #     - '${PORT:-3000}:${PORT:-3000}'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   restart: unless-stopped
 
 volumes:
   postgres_data:

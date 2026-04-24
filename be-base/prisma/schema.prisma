@@ -86,3 +86,22 @@ model Permission {
   @@index([roleId])
   @@map("permissions")
 }
+
+// ── Configable ────────────────────────────────────────────────────────────────
+
+model AppConfig {
+  id          String   @id
+  key         String   @unique
+  value       Json
+  description String?
+  isEnabled   Boolean  @default(true)
+  scope       String   @default("public")
+  tags        String[]
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isEnabled, scope])
+  @@map("app_configs")
+}
