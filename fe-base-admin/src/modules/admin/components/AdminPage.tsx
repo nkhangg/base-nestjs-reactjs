@@ -18,7 +18,7 @@ import {
 import { Badge } from '@shared/components/ui/badge'
 import { Button } from '@shared/components/ui/button'
 import { Input } from '@shared/components/ui/input'
-import { DataTable, type ColumnDef } from '@shared/components/ui/data-table'
+import { DataTable, useDataTable, type ColumnDef } from '@shared/components/ui/data-table'
 import {
   Dialog,
   DialogContent,
@@ -34,7 +34,7 @@ import {
 } from '@shared/components/ui/dropdown-menu'
 import { FieldLabel, FieldError } from '@shared/components/ui/field'
 import { cn } from '@shared/utils'
-import { useAdmins, useAdminTableState, useCreateAdmin, useDeactivateAdmin, useUpdateAdminRole } from '../hooks/useAdmins'
+import { useAdmins, useCreateAdmin, useDeactivateAdmin, useUpdateAdminRole } from '../hooks/useAdmins'
 import { AdminDetailModal } from './AdminDetailModal'
 import type { Admin } from '../types'
 
@@ -347,9 +347,10 @@ function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
       header: 'Trạng thái',
       sortable: true,
       filterable: true,
+      filterType: 'select',
       filterOptions: [
-        { label: 'Active', value: 'true' },
-        { label: 'Inactive', value: 'false' },
+        { label: 'Hoạt động', value: 'true' },
+        { label: 'Không hoạt động', value: 'false' },
       ],
       width: '120px',
       render: (value) => {
@@ -390,6 +391,7 @@ function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
     {
       key: 'actions',
       header: '',
+      hideable: false,
       width: '56px',
       render: (_, row) => (
         <ActionDropdown
@@ -404,8 +406,23 @@ function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function AdminPage() {
-  const { state, setPage, setPageSize, setSort, setSearch, setFilters } = useAdminTableState()
-  const { data, isLoading, isError } = useAdmins(state)
+  const table = useDataTable<AdminRow>({
+    tableId: 'admin-list',
+    showSearch: true,
+    searchPlaceholder: 'Tìm theo email, role...',
+    showFilters: true,
+    showColumnVisibility: true,
+    showRefreshButton: true,
+    persistPageSize: true,
+    persistFilters: true,
+    persistSort: true,
+    syncToUrl: true,
+  })
+
+  const { data, isLoading, isError, refetch } = useAdmins(
+    table.buildQueryParams(['email', 'role']),
+  )
+
   const [showModal, setShowModal] = useState(false)
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
 
@@ -455,15 +472,9 @@ export function AdminPage() {
           loading={isLoading}
           rowKey="id"
           emptyText="Chưa có admin nào"
-          searchable
-          searchPlaceholder="Tìm theo email, role..."
+          table={table}
           total={meta?.totalItems}
-          page={state.page}
-          onPageChange={setPage}
-          onPageSizeChange={setPageSize}
-          onSort={setSort}
-          onSearch={setSearch}
-          onFilter={setFilters}
+          onRefresh={refetch}
         />
       )}
 

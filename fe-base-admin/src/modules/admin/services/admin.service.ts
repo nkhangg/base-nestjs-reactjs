@@ -1,8 +1,8 @@
 import { apiClient } from '@lib/api-client'
+import type { NestjsPaginateParams } from '@shared/components/ui/data-table'
 import type {
   Admin,
   AdminListMeta,
-  AdminListParams,
   AdminListResponse,
   AdminSession,
   AuthLogEntry,
@@ -20,7 +20,7 @@ import type {
 export const adminService = {
   // ── Admin CRUD ──────────────────────────────────────────────────────────────
 
-  async listAdmins(params?: AdminListParams): Promise<AdminListResponse> {
+  async listAdmins(params?: NestjsPaginateParams): Promise<AdminListResponse> {
     const { data } = await apiClient.get<{ success: boolean } & AdminListResponse>(
       '/admin/management',
       { params, withCredentials: true },

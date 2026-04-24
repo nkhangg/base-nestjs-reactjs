@@ -86,3 +86,27 @@ model Permission {
   @@index([roleId])
   @@map("permissions")
 }
+
+// ── Audit ──────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  actorEmail String
+  actorRole  String
+  resource   String
+  permission String
+  method     String
+  path       String
+  statusCode Int
+  durationMs Int
+  ipAddress  String
+  userAgent  String
+  occurredAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([resource])
+  @@index([occurredAt])
+  @@index([resource, occurredAt])
+  @@map("audit_logs")
+}

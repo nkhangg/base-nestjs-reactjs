@@ -47,17 +47,20 @@ export function parsePage(
     limit,
     search: query.search,
     filter: query.filter ?? {},
-    sortBy: query.sortBy?.[0] as [string, string] | undefined,
+    sortBy: query.sortBy?.[0],
   };
 }
 
-/** Lấy giá trị string đầu tiên từ filter field. */
+/** Lấy giá trị string đầu tiên từ filter field, bỏ operator prefix ($eq:, $in:, ...). */
 export function filterStr(
   filter: Record<string, string | string[]>,
   key: string,
 ): string | undefined {
   const v = filter[key];
-  return Array.isArray(v) ? v[0] : v;
+  const raw = Array.isArray(v) ? v[0] : v;
+  if (!raw) return undefined;
+  const colon = raw.indexOf(':');
+  return colon !== -1 ? raw.slice(colon + 1) : raw;
 }
 
 /** Parse "true"/"false" → boolean. */
@@ -90,7 +93,7 @@ export function buildPaginated<T>(
       totalItems: total,
       currentPage: page,
       totalPages,
-      sortBy: (query.sortBy ?? []) as [string, string][],
+      sortBy: query.sortBy ?? [],
       search: query.search ?? '',
       filter: query.filter ?? {},
     },
