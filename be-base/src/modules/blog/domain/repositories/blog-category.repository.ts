@@ -14,7 +14,9 @@ export interface IBlogCategoryRepository {
   findById(id: string): Promise<BlogCategory | null>;
   findBySlug(slug: string): Promise<BlogCategory | null>;
   findByName(name: string): Promise<BlogCategory | null>;
-  findAll(opts: FindAllCategoriesOptions): Promise<{ data: BlogCategory[]; total: number }>;
+  findAll(
+    opts: FindAllCategoriesOptions,
+  ): Promise<{ data: BlogCategory[]; total: number }>;
   save(category: BlogCategory): Promise<void>;
   delete(id: string): Promise<void>;
 }

@@ -16,7 +16,9 @@ export interface FindAllPostsOptions {
 export interface IBlogPostRepository {
   findById(id: string): Promise<BlogPost | null>;
   findBySlug(slug: string): Promise<BlogPost | null>;
-  findAll(opts: FindAllPostsOptions): Promise<{ data: BlogPost[]; total: number }>;
+  findAll(
+    opts: FindAllPostsOptions,
+  ): Promise<{ data: BlogPost[]; total: number }>;
   save(post: BlogPost): Promise<void>;
   delete(id: string): Promise<void>;
 }

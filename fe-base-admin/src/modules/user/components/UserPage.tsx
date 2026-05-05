@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from '@shared/components/ui/select'
 import { FieldLabel, FieldError } from '@shared/components/ui/field'
+import { StatCard } from '@shared/components/ui/stat-card'
 import { cn } from '@shared/utils'
 import {
   useUsers,
@@ -61,30 +62,6 @@ const USER_ROLES_OPTIONS = [
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type UserRow = User & Record<string, unknown>
-
-// ─── Stat card ───────────────────────────────────────────────────────────────
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType
-  label: string
-  value: number | string
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 shadow-sm">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100">
-        <Icon className="h-4 w-4 text-gray-600" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="text-xl font-semibold text-gray-900 leading-none mt-0.5">{value}</p>
-      </div>
-    </div>
-  )
-}
 
 // ─── Form field helper ────────────────────────────────────────────────────────
 
@@ -615,9 +592,9 @@ export function UserPage() {
       {/* ── Stat cards ── */}
       {!isError && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <StatCard icon={Users} label="Tổng user" value={isLoading ? '—' : (meta?.totalItems ?? 0)} />
-          <StatCard icon={UserCheck} label="Đang hoạt động" value={isLoading ? '—' : users.filter((u) => u.isActive).length} />
-          <StatCard icon={UserX} label="Đã vô hiệu hoá" value={isLoading ? '—' : users.filter((u) => !u.isActive).length} />
+          <StatCard icon={Users} label="Tổng user" value={meta?.totalItems ?? 0} isLoading={isLoading} />
+          <StatCard icon={UserCheck} label="Đang hoạt động" value={users.filter((u) => u.isActive).length} isLoading={isLoading} />
+          <StatCard icon={UserX} label="Đã vô hiệu hoá" value={users.filter((u) => !u.isActive).length} isLoading={isLoading} />
         </div>
       )}
 

@@ -10,7 +10,8 @@ export type UnpublishBlogPostResult = Result<void, string>;
 @Injectable()
 export class UnpublishBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async execute(id: string): Promise<UnpublishBlogPostResult> {

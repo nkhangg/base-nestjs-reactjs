@@ -15,7 +15,9 @@ export class ListBlogCategoriesUseCase {
     private readonly categoryRepo: IBlogCategoryRepository,
   ) {}
 
-  async execute(opts: FindAllCategoriesOptions): Promise<ListBlogCategoriesResult> {
+  async execute(
+    opts: FindAllCategoriesOptions,
+  ): Promise<ListBlogCategoriesResult> {
     return this.categoryRepo.findAll(opts);
   }
 }

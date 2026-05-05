@@ -50,7 +50,10 @@ export class BlogPublicController {
   @ApiOperation({ summary: 'Danh sách bài viết đã published (public)' })
   @ApiPaginationQuery(PUBLIC_POST_PAGINATE_CONFIG)
   async listPublished(@Paginate() query: PaginateQuery) {
-    const { page, limit, search, sortBy } = parsePage(query, PUBLIC_POST_PAGINATE_CONFIG);
+    const { page, limit, search, sortBy } = parsePage(
+      query,
+      PUBLIC_POST_PAGINATE_CONFIG,
+    );
     const { data, total } = await this.listPostsUseCase.execute({
       page,
       pageSize: limit,
@@ -59,7 +62,12 @@ export class BlogPublicController {
       sortDir: sortBy?.[1]?.toLowerCase() as 'asc' | 'desc' | undefined,
       publishedOnly: true,
     });
-    return buildPaginated(data.map(mapPublicPost), total, query, PUBLIC_POST_PAGINATE_CONFIG);
+    return buildPaginated(
+      data.map(mapPublicPost),
+      total,
+      query,
+      PUBLIC_POST_PAGINATE_CONFIG,
+    );
   }
 
   @Get(':slug')

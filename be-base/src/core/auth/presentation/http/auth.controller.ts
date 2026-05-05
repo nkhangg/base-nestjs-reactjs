@@ -166,18 +166,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Yêu cầu reset mật khẩu' })
   @ApiBody({ type: ForgotPasswordDto })
-  @ApiResponse({ status: 200, description: 'Trả về token reset (sẽ gửi qua email khi có mailer)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Luôn trả 200 bất kể email có tồn tại hay không (security)',
+  })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    const result = await this.forgotPasswordUseCase.execute({
+    await this.forgotPasswordUseCase.execute({
       email: dto.email,
       type: dto.type,
     });
-    // Always return 200 regardless of whether email exists (security)
-    // token is empty string when email not found
     return {
       message: 'Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset mật khẩu',
-      // TODO: remove token from response once mailer is implemented
-      ...(result.token ? { token: result.token } : {}),
     };
   }
 
@@ -188,7 +187,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Đặt lại mật khẩu bằng token' })
   @ApiBody({ type: ResetPasswordDto })
   @ApiResponse({ status: 204, description: 'Đặt lại mật khẩu thành công' })
-  @ApiResponse({ status: 400, description: 'Token không hợp lệ hoặc đã hết hạn' })
+  @ApiResponse({
+    status: 400,
+    description: 'Token không hợp lệ hoặc đã hết hạn',
+  })
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
     const result = await this.resetPasswordUseCase.execute({
       token: dto.token,
@@ -226,9 +228,13 @@ export class AuthController {
 
     const subject = Subject.of(user.userId, 'admin');
     const results = await Promise.all(
-      ADMIN_NAV_RESOURCES.map((r) => this.authorizationService.can(subject, r, 'read')),
+      ADMIN_NAV_RESOURCES.map((r) =>
+        this.authorizationService.can(subject, r, 'read'),
+      ),
     );
-    const accessibleResources = ADMIN_NAV_RESOURCES.filter((_, i) => results[i]);
+    const accessibleResources = ADMIN_NAV_RESOURCES.filter(
+      (_, i) => results[i],
+    );
 
     return { ...user, accessibleResources };
   }
@@ -270,7 +276,9 @@ export class AuthController {
 
   @Get('sessions')
   @ApiCookieAuth('access_token')
-  @ApiOperation({ summary: 'Danh sách sessions đang hoạt động của account hiện tại' })
+  @ApiOperation({
+    summary: 'Danh sách sessions đang hoạt động của account hiện tại',
+  })
   @ApiResponse({ status: 200, description: 'Sessions list' })
   @ApiResponse({ status: 401, description: 'Chưa đăng nhập' })
   async getSessions(@Req() req: Request) {
@@ -292,9 +300,15 @@ export class AuthController {
   @Delete('sessions/:sessionId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiCookieAuth('access_token')
-  @ApiOperation({ summary: 'Thu hồi một session (không thể thu hồi session hiện tại)' })
+  @ApiOperation({
+    summary: 'Thu hồi một session (không thể thu hồi session hiện tại)',
+  })
   @ApiResponse({ status: 204, description: 'Session đã bị thu hồi' })
-  @ApiResponse({ status: 403, description: 'Không thể thu hồi session hiện tại hoặc session không thuộc về bạn' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Không thể thu hồi session hiện tại hoặc session không thuộc về bạn',
+  })
   @ApiResponse({ status: 404, description: 'Session không tồn tại' })
   async revokeSession(
     @Param('sessionId') sessionId: string,
@@ -303,7 +317,9 @@ export class AuthController {
     if (!req.user) throw new UnauthorizedException();
 
     if (sessionId === req.user.sessionId) {
-      throw new ForbiddenException('Không thể thu hồi session hiện tại. Vui lòng dùng logout.');
+      throw new ForbiddenException(
+        'Không thể thu hồi session hiện tại. Vui lòng dùng logout.',
+      );
     }
 
     const session = await this.sessionRepo.findById(sessionId);

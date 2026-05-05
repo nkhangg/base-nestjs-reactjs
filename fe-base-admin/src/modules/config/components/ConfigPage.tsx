@@ -11,6 +11,7 @@ import {
   Check,
 } from 'lucide-react'
 import { Button } from '@shared/components/ui/button'
+import { StatCard } from '@shared/components/ui/stat-card'
 import { Badge } from '@shared/components/ui/badge'
 import { DataTable, useDataTable, type ColumnDef } from '@shared/components/ui/data-table'
 import {
@@ -328,24 +329,9 @@ export function ConfigPage() {
       {/* ── Stat cards ── */}
       {!isError && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {[
-            { label: 'Tổng config', value: isLoading ? '—' : (meta?.totalItems ?? 0), icon: Settings },
-            { label: 'Đang bật', value: isLoading ? '—' : totalEnabled, icon: ToggleRight },
-            { label: 'Đang tắt', value: isLoading ? '—' : totalDisabled, icon: ToggleLeft },
-          ].map(({ label, value, icon: Icon }) => (
-            <div
-              key={label}
-              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 shadow-sm"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100">
-                <Icon className="h-4 w-4 text-gray-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500">{label}</p>
-                <p className="text-xl font-semibold text-gray-900 leading-none mt-0.5">{value}</p>
-              </div>
-            </div>
-          ))}
+          <StatCard icon={Settings} label="Tổng config" value={meta?.totalItems ?? 0} isLoading={isLoading} />
+          <StatCard icon={ToggleRight} label="Đang bật" value={totalEnabled} isLoading={isLoading} />
+          <StatCard icon={ToggleLeft} label="Đang tắt" value={totalDisabled} isLoading={isLoading} />
         </div>
       )}
 

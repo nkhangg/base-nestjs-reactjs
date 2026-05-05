@@ -26,7 +26,8 @@ export type UpdateBlogPostResult = Result<void, string>;
 @Injectable()
 export class UpdateBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async execute(input: UpdateBlogPostInput): Promise<UpdateBlogPostResult> {

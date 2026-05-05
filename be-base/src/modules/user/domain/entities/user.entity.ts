@@ -61,7 +61,11 @@ export class User extends BaseEntity<UserId> {
     this.props.passwordHash = newHash;
   }
 
-  updateProfile(data: { name?: string | null; phone?: string | null; avatarUrl?: string | null }): void {
+  updateProfile(data: {
+    name?: string | null;
+    phone?: string | null;
+    avatarUrl?: string | null;
+  }): void {
     if (data.name !== undefined) this.props.name = data.name;
     if (data.phone !== undefined) this.props.phone = data.phone;
     if (data.avatarUrl !== undefined) this.props.avatarUrl = data.avatarUrl;

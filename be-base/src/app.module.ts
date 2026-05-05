@@ -16,12 +16,14 @@ import { MediaModule } from './modules/media/media.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { PrismaModule } from './shared/infrastructure/prisma/prisma.module';
+import { QueueModule } from './core/queue/queue.module';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
     HealthModule,
     PrismaModule,
+    QueueModule,
     EventsModule,
     AuthorizationModule,
     AdminShellModule.forRoot(),

@@ -23,7 +23,9 @@ export class CreateBlogCategoryUseCase {
     private readonly categoryRepo: IBlogCategoryRepository,
   ) {}
 
-  async execute(input: CreateBlogCategoryInput): Promise<CreateBlogCategoryResult> {
+  async execute(
+    input: CreateBlogCategoryInput,
+  ): Promise<CreateBlogCategoryResult> {
     const existing = await this.categoryRepo.findByName(input.name);
     if (existing) return { ok: false, error: 'NAME_EXISTS' };
 

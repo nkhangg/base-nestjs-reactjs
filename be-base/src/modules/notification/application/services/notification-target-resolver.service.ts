@@ -13,7 +13,12 @@ import {
 export type NotificationTarget =
   | { kind: 'individual'; recipientId: string; recipientType: 'user' | 'admin' }
   | { kind: 'by-role'; roleName: string; subjectType: 'user' | 'admin' }
-  | { kind: 'by-permission'; resource: string; action: Action; subjectType: 'user' | 'admin' }
+  | {
+      kind: 'by-permission';
+      resource: string;
+      action: Action;
+      subjectType: 'user' | 'admin';
+    }
   | { kind: 'all-users' }
   | { kind: 'all-admins' }
   | { kind: 'broadcast' };

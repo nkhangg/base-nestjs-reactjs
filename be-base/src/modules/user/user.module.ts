@@ -24,10 +24,11 @@ import {
   AuthorizationService,
   type SeedRoleDefinition,
 } from '../../core/authorization';
+import { USER_ROLE_NAMES } from './domain/role-names';
 
 const USER_ROLES: SeedRoleDefinition[] = [
   {
-    name: 'base',
+    name: USER_ROLE_NAMES.BASE,
     subjectType: 'user',
     description: 'Quyền cơ bản — đọc thông báo',
     permissions: {
@@ -35,10 +36,10 @@ const USER_ROLES: SeedRoleDefinition[] = [
     },
   },
   {
-    name: 'member',
+    name: USER_ROLE_NAMES.MEMBER,
     subjectType: 'user',
     description: 'Người dùng đã đăng ký — quyền đầy đủ',
-    parent: 'base',
+    parent: USER_ROLE_NAMES.BASE,
     permissions: {
       profile: ['read', 'update'],
       orders: ['create', 'read'],
@@ -81,7 +82,12 @@ const USER_ROLES: SeedRoleDefinition[] = [
     DeactivateUserUseCase,
     ActivateUserUseCase,
   ],
-  exports: [USER_REPOSITORY, PASSWORD_UPDATERS, PROFILE_PROVIDERS, CreateUserUseCase],
+  exports: [
+    USER_REPOSITORY,
+    PASSWORD_UPDATERS,
+    PROFILE_PROVIDERS,
+    CreateUserUseCase,
+  ],
 })
 export class UserModule implements OnModuleInit {
   constructor(
@@ -99,7 +105,7 @@ export class UserModule implements OnModuleInit {
           user.id.value,
           'user',
           user.role,
-          'member',
+          USER_ROLE_NAMES.MEMBER,
         ),
       ),
     );

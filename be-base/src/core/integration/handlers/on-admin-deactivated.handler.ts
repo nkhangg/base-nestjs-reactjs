@@ -1,20 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import type { AdminDeactivatedEvent } from '../../../modules/admin/domain/events/admin-deactivated.event';
-import { SendNotificationUseCase } from '../../../modules/notification/application/use-cases/send-notification.use-case';
+import { NotificationQueueService } from '../notification-queue.service';
 
 @Injectable()
 export class OnAdminDeactivatedHandler {
   private readonly logger = new Logger(OnAdminDeactivatedHandler.name);
 
-  constructor(private readonly sendNotification: SendNotificationUseCase) {}
+  constructor(private readonly notificationQueue: NotificationQueueService) {}
 
   @OnEvent('admin.deactivated')
   async handle(event: AdminDeactivatedEvent): Promise<void> {
     this.logger.log(`admin.deactivated: ${event.adminId}`);
-    await this.sendNotification.execute({
+    await this.notificationQueue.enqueue({
       targets: [
-        { kind: 'by-permission', resource: 'system-notifications', action: 'read', subjectType: 'admin' },
+        {
+          kind: 'by-permission',
+          resource: 'system-notifications',
+          action: 'read',
+          subjectType: 'admin',
+        },
       ],
       title: 'Admin bị vô hiệu hóa',
       body: `Tài khoản admin ID: ${event.adminId} vừa bị vô hiệu hóa`,

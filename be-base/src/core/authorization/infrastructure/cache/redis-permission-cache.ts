@@ -32,7 +32,10 @@ export class RedisPermissionCache implements IPermissionCache {
     return `${KEY_PREFIX}${subjectType}:${subjectId}`;
   }
 
-  async get(subjectId: string, subjectType: string): Promise<PermissionMap | null> {
+  async get(
+    subjectId: string,
+    subjectType: string,
+  ): Promise<PermissionMap | null> {
     try {
       const raw = await this.redis.get(this.key(subjectId, subjectType));
       if (!raw) return null;
@@ -42,9 +45,17 @@ export class RedisPermissionCache implements IPermissionCache {
     }
   }
 
-  async set(subjectId: string, subjectType: string, map: PermissionMap): Promise<void> {
+  async set(
+    subjectId: string,
+    subjectType: string,
+    map: PermissionMap,
+  ): Promise<void> {
     try {
-      await this.redis.setex(this.key(subjectId, subjectType), TTL_SECONDS, serialize(map));
+      await this.redis.setex(
+        this.key(subjectId, subjectType),
+        TTL_SECONDS,
+        serialize(map),
+      );
     } catch (err) {
       this.logger.warn(`Cache set failed: ${(err as Error).message}`);
     }
@@ -76,7 +87,13 @@ export class RedisPermissionCache implements IPermissionCache {
     const keys: string[] = [];
     let cursor = '0';
     do {
-      const [nextCursor, batch] = await this.redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      const [nextCursor, batch] = await this.redis.scan(
+        cursor,
+        'MATCH',
+        pattern,
+        'COUNT',
+        100,
+      );
       cursor = nextCursor;
       keys.push(...batch);
     } while (cursor !== '0');

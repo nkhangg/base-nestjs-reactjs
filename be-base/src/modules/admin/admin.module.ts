@@ -38,10 +38,11 @@ import {
   ALL_ACTIONS,
   type SeedRoleDefinition,
 } from '../../core/authorization';
+import { ADMIN_ROLE_NAMES } from './domain/role-names';
 
 const ADMIN_ROLES: SeedRoleDefinition[] = [
   {
-    name: 'base',
+    name: ADMIN_ROLE_NAMES.BASE,
     subjectType: 'admin',
     description: 'Quyền cơ bản — đọc thông báo',
     permissions: {
@@ -50,10 +51,10 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
     },
   },
   {
-    name: 'super-admin',
+    name: ADMIN_ROLE_NAMES.SUPER_ADMIN,
     subjectType: 'admin',
     description: 'Toàn quyền hệ thống',
-    parent: 'base',
+    parent: ADMIN_ROLE_NAMES.BASE,
     permissions: { '*': ALL_ACTIONS },
   },
 ];
@@ -116,7 +117,12 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
     DeleteRoleUseCase,
     AdminSeeder,
   ],
-  exports: [CREDENTIAL_VALIDATORS, PASSWORD_UPDATERS, PROFILE_PROVIDERS, CreateAdminUseCase],
+  exports: [
+    CREDENTIAL_VALIDATORS,
+    PASSWORD_UPDATERS,
+    PROFILE_PROVIDERS,
+    CreateAdminUseCase,
+  ],
 })
 export class AdminModule implements OnModuleInit {
   constructor(

@@ -10,14 +10,12 @@ import { AdminCreatedEvent } from '../../../modules/admin/domain/events/admin-cr
 import { AdminDeactivatedEvent } from '../../../modules/admin/domain/events/admin-deactivated.event';
 import { FileUploadedEvent } from '../../../modules/media/domain/events/file-uploaded.event';
 import { ConfigChangedEvent } from '../../../modules/config/domain/events/config-changed.event';
-import type { SendNotificationUseCase } from '../../../modules/notification/application/use-cases/send-notification.use-case';
+import type { NotificationQueueService } from '../notification-queue.service';
 
-const makeSendNotification = (): jest.Mocked<
-  Pick<SendNotificationUseCase, 'execute'>
+const makeNotificationQueue = (): jest.Mocked<
+  Pick<NotificationQueueService, 'enqueue'>
 > => ({
-  execute: jest
-    .fn()
-    .mockResolvedValue({ notificationId: 'n1', recipientCount: 0 }),
+  enqueue: jest.fn().mockResolvedValue(undefined),
 });
 
 // All handlers verify: handle() resolves without error for valid events
@@ -26,7 +24,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnUserCreatedHandler', () => {
     it('handles user.created event without throwing', async () => {
       const handler = new OnUserCreatedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new UserCreatedEvent('u1', 'user@test.com', 'member');
       await expect(handler.handle(event)).resolves.toBeUndefined();
@@ -45,7 +43,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnUserDeactivatedHandler', () => {
     it('handles user.deactivated event without throwing', async () => {
       const handler = new OnUserDeactivatedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new UserDeactivatedEvent('u1');
       await expect(handler.handle(event)).resolves.toBeUndefined();
@@ -64,7 +62,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnAdminCreatedHandler', () => {
     it('handles admin.created event without throwing', async () => {
       const handler = new OnAdminCreatedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new AdminCreatedEvent('a1', 'admin@test.com', 'admin');
       await expect(handler.handle(event)).resolves.toBeUndefined();
@@ -83,7 +81,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnAdminDeactivatedHandler', () => {
     it('handles admin.deactivated event without throwing', async () => {
       const handler = new OnAdminDeactivatedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new AdminDeactivatedEvent('a1');
       await expect(handler.handle(event)).resolves.toBeUndefined();
@@ -102,7 +100,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnFileUploadedHandler', () => {
     it('handles media.file_uploaded event without throwing', async () => {
       const handler = new OnFileUploadedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new FileUploadedEvent('f1', 'photo.jpg', 'admin-1');
       await expect(handler.handle(event)).resolves.toBeUndefined();
@@ -121,7 +119,7 @@ describe('Integration handlers — @OnEvent wiring', () => {
   describe('OnConfigChangedHandler', () => {
     it('handles config.changed event without throwing', async () => {
       const handler = new OnConfigChangedHandler(
-        makeSendNotification() as unknown as SendNotificationUseCase,
+        makeNotificationQueue() as unknown as NotificationQueueService,
       );
       const event = new ConfigChangedEvent(
         'cfg1',

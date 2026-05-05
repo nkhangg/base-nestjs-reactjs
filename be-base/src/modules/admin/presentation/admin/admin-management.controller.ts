@@ -154,7 +154,9 @@ export class AdminManagementController {
 
   @Get()
   @RequirePermission('admin-management', 'read')
-  @ApiOperation({ summary: 'Danh sách admin (search, filter, sort, phân trang)' })
+  @ApiOperation({
+    summary: 'Danh sách admin (search, filter, sort, phân trang)',
+  })
   @ApiPaginationQuery(ADMIN_PAGINATE_CONFIG)
   async listAdmins(@Paginate() query: PaginateQuery) {
     const { page, limit, search, filter, sortBy } = parsePage(
@@ -244,12 +246,20 @@ export class AdminManagementController {
   async syncAdminRoles(
     @Param('id') id: string,
     @Body() dto: SyncAdminRolesDto,
+    @Req() req: Request,
   ) {
     const result = await this.syncAdminRolesUseCase.execute({
       adminId: id,
       roles: dto.roles,
+      requesterId: req.user?.userId ?? '',
     });
-    if (!result.ok) return { success: false, error: result.error };
+    if (!result.ok) {
+      if (result.error === 'CANNOT_UPDATE_SELF_ROLES')
+        throw new BadRequestException('Không thể thay đổi roles của chính mình');
+      if (result.error === 'ADMIN_NOT_FOUND')
+        throw new NotFoundException('Admin không tồn tại');
+      return { success: false, error: result.error };
+    }
     return { success: true };
   }
 
@@ -274,7 +284,10 @@ export class AdminManagementController {
   @ApiOperation({ summary: 'Cập nhật thông tin admin (name, phone)' })
   @ApiParam({ name: 'id', description: 'Admin ID' })
   @ApiBody({ type: UpdateAdminInfoDto })
-  async updateAdminInfo(@Param('id') id: string, @Body() dto: UpdateAdminInfoDto) {
+  async updateAdminInfo(
+    @Param('id') id: string,
+    @Body() dto: UpdateAdminInfoDto,
+  ) {
     const result = await this.updateAdminInfoUseCase.execute({
       adminId: id,
       name: dto.name,
@@ -294,7 +307,10 @@ export class AdminManagementController {
   @ApiOperation({ summary: 'Đặt lại mật khẩu cho admin (admin privilege)' })
   @ApiParam({ name: 'id', description: 'Admin ID' })
   @ApiBody({ type: ResetAdminPasswordDto })
-  async resetAdminPassword(@Param('id') id: string, @Body() dto: ResetAdminPasswordDto) {
+  async resetAdminPassword(
+    @Param('id') id: string,
+    @Body() dto: ResetAdminPasswordDto,
+  ) {
     const result = await this.resetAdminPasswordUseCase.execute({
       adminId: id,
       newPassword: dto.newPassword,
@@ -314,12 +330,18 @@ export class AdminManagementController {
   async updateAdminRole(
     @Param('id') id: string,
     @Body() dto: { role: string },
+    @Req() req: Request,
   ) {
     const result = await this.syncAdminRolesUseCase.execute({
       adminId: id,
       roles: [dto.role],
+      requesterId: req.user?.userId ?? '',
     });
-    if (!result.ok) return { success: false, error: result.error };
+    if (!result.ok) {
+      if (result.error === 'CANNOT_UPDATE_SELF_ROLES')
+        throw new BadRequestException('Không thể thay đổi roles của chính mình');
+      return { success: false, error: result.error };
+    }
     return { success: true };
   }
 

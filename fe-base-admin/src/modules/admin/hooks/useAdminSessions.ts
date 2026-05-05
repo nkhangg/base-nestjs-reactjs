@@ -9,7 +9,7 @@ export function useAdminSessions(adminId: string, onlyActive?: boolean) {
     queryKey: [...sessionKey(adminId), onlyActive],
     queryFn: () =>
       adminService.listSessions(adminId, {
-        'filter.isActive': onlyActive === undefined ? undefined : String(onlyActive),
+        ...(onlyActive !== undefined && { 'filter.isActive': `$eq:${onlyActive}` }),
         limit: 50,
       }),
     enabled: !!adminId,

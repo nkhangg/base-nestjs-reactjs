@@ -10,7 +10,8 @@ export type DeleteBlogPostResult = Result<void, string>;
 @Injectable()
 export class DeleteBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async execute(id: string): Promise<DeleteBlogPostResult> {

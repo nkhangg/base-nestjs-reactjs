@@ -367,7 +367,9 @@ export class AuthorizationService {
     const allRoles = await this.roleRepo.findAll();
     const qualifyingRoleIds = new Set<string>();
     for (const role of allRoles) {
-      if (this.hasGrantingAncestor(role.id, grantingRoleIds, allRoles, new Set())) {
+      if (
+        this.hasGrantingAncestor(role.id, grantingRoleIds, allRoles, new Set())
+      ) {
         qualifyingRoleIds.add(role.id);
       }
     }
@@ -451,6 +453,11 @@ export class AuthorizationService {
     if (grantingIds.has(roleId)) return true;
     const role = allRoles.find((r) => r.id === roleId);
     if (!role?.parentId) return false;
-    return this.hasGrantingAncestor(role.parentId, grantingIds, allRoles, visited);
+    return this.hasGrantingAncestor(
+      role.parentId,
+      grantingIds,
+      allRoles,
+      visited,
+    );
   }
 }

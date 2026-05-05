@@ -11,7 +11,8 @@ export type ListBlogPostsResult = { data: BlogPost[]; total: number };
 @Injectable()
 export class ListBlogPostsUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async execute(opts: FindAllPostsOptions): Promise<ListBlogPostsResult> {

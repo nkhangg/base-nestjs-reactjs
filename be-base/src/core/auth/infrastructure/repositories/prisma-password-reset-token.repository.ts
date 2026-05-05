@@ -4,9 +4,7 @@ import type { IPasswordResetTokenRepository } from '../../domain/repositories/pa
 import { PrismaService } from '../../../../shared/infrastructure/prisma/prisma.service';
 
 @Injectable()
-export class PrismaPasswordResetTokenRepository
-  implements IPasswordResetTokenRepository
-{
+export class PrismaPasswordResetTokenRepository implements IPasswordResetTokenRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByTokenHash(tokenHash: string): Promise<PasswordResetToken | null> {
@@ -18,6 +16,7 @@ export class PrismaPasswordResetTokenRepository
       id: record.id,
       userId: record.userId,
       userType: record.userType,
+      userEmail: record.userEmail,
       tokenHash: record.tokenHash,
       expiresAt: record.expiresAt,
       usedAt: record.usedAt,
@@ -32,6 +31,7 @@ export class PrismaPasswordResetTokenRepository
         id: token.id,
         userId: token.userId,
         userType: token.userType,
+        userEmail: token.userEmail,
         tokenHash: token.tokenHash,
         expiresAt: token.expiresAt,
         usedAt: token.usedAt,

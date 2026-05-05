@@ -47,15 +47,29 @@ export class BlogCategory extends BaseEntity<BlogCategoryId> {
   }): void {
     if (params.name !== undefined) this.props.name = params.name;
     if (params.slug !== undefined) this.props.slug = params.slug;
-    if (params.description !== undefined) this.props.description = params.description;
-    if (params.coverFileId !== undefined) this.props.coverFileId = params.coverFileId;
+    if (params.description !== undefined)
+      this.props.description = params.description;
+    if (params.coverFileId !== undefined)
+      this.props.coverFileId = params.coverFileId;
     this.props.updatedAt = new Date();
   }
 
-  get name(): string { return this.props.name; }
-  get slug(): string { return this.props.slug; }
-  get description(): string | null { return this.props.description; }
-  get coverFileId(): string | null { return this.props.coverFileId; }
-  get createdAt(): Date { return this.props.createdAt; }
-  get updatedAt(): Date { return this.props.updatedAt; }
+  get name(): string {
+    return this.props.name;
+  }
+  get slug(): string {
+    return this.props.slug;
+  }
+  get description(): string | null {
+    return this.props.description;
+  }
+  get coverFileId(): string | null {
+    return this.props.coverFileId;
+  }
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
 }

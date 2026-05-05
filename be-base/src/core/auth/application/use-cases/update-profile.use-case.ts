@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import {
   PROFILE_PROVIDERS,
   type IProfileProvider,
@@ -31,9 +36,15 @@ export class UpdateProfileUseCase {
   private readonly providers: IProfileProvider[];
 
   constructor(
-    @Optional() @Inject(PROFILE_PROVIDERS) providers: IProfileProvider | IProfileProvider[] = [],
+    @Optional()
+    @Inject(PROFILE_PROVIDERS)
+    providers: IProfileProvider | IProfileProvider[] = [],
   ) {
-    this.providers = Array.isArray(providers) ? providers : providers ? [providers] : [];
+    this.providers = Array.isArray(providers)
+      ? providers
+      : providers
+        ? [providers]
+        : [];
   }
 
   async execute(input: UpdateProfileInput): Promise<UpdateProfileOutput> {
@@ -42,7 +53,9 @@ export class UpdateProfileUseCase {
 
     await provider.updateProfile(input.userId, input.data);
 
-    const snapshot: ProfileSnapshot | null = await provider.findProfileById(input.userId);
+    const snapshot: ProfileSnapshot | null = await provider.findProfileById(
+      input.userId,
+    );
 
     return {
       userId: input.userId,

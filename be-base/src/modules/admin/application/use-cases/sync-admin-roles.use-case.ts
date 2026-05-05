@@ -9,6 +9,7 @@ import { AuthorizationService } from '../../../../core/authorization';
 export interface SyncAdminRolesInput {
   adminId: string;
   roles: string[];
+  requesterId?: string;
 }
 
 export type SyncAdminRolesResult = Result<void, string>;
@@ -21,6 +22,10 @@ export class SyncAdminRolesUseCase {
   ) {}
 
   async execute(input: SyncAdminRolesInput): Promise<SyncAdminRolesResult> {
+    if (input.requesterId && input.adminId === input.requesterId) {
+      return { ok: false, error: 'CANNOT_UPDATE_SELF_ROLES' };
+    }
+
     const admin = await this.adminRepo.findById(input.adminId);
     if (!admin) return { ok: false, error: 'ADMIN_NOT_FOUND' };
     if (!admin.isActive) return { ok: false, error: 'ADMIN_INACTIVE' };

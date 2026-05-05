@@ -7,7 +7,11 @@ export const PERMISSION_CACHE = Symbol('PERMISSION_CACHE');
 
 export interface IPermissionCache {
   get(subjectId: string, subjectType: string): Promise<PermissionMap | null>;
-  set(subjectId: string, subjectType: string, map: PermissionMap): Promise<void>;
+  set(
+    subjectId: string,
+    subjectType: string,
+    map: PermissionMap,
+  ): Promise<void>;
   invalidate(subjectId: string, subjectType?: string): Promise<void>;
   clear(): Promise<void>;
 }
@@ -27,7 +31,10 @@ export class InMemoryPermissionCache implements IPermissionCache {
     return `${subjectType}:${subjectId}`;
   }
 
-  async get(subjectId: string, subjectType: string): Promise<PermissionMap | null> {
+  async get(
+    subjectId: string,
+    subjectType: string,
+  ): Promise<PermissionMap | null> {
     const entry = this.store.get(this.key(subjectId, subjectType));
     if (!entry) return null;
     if (Date.now() > entry.expiresAt) {
@@ -37,7 +44,11 @@ export class InMemoryPermissionCache implements IPermissionCache {
     return entry.map;
   }
 
-  async set(subjectId: string, subjectType: string, map: PermissionMap): Promise<void> {
+  async set(
+    subjectId: string,
+    subjectType: string,
+    map: PermissionMap,
+  ): Promise<void> {
     this.store.set(this.key(subjectId, subjectType), {
       map,
       expiresAt: Date.now() + TTL_MS,

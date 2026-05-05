@@ -22,7 +22,9 @@ export class UpdateBlogCategoryUseCase {
     private readonly categoryRepo: IBlogCategoryRepository,
   ) {}
 
-  async execute(input: UpdateBlogCategoryInput): Promise<UpdateBlogCategoryResult> {
+  async execute(
+    input: UpdateBlogCategoryInput,
+  ): Promise<UpdateBlogCategoryResult> {
     const category = await this.categoryRepo.findById(input.id);
     if (!category) return { ok: false, error: 'NOT_FOUND' };
 

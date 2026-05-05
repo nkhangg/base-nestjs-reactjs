@@ -1,11 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  ChevronsUpDown,
-  Inbox,
-} from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown, Inbox } from 'lucide-react'
 import { cn } from '@shared/utils'
 import { Checkbox } from '@shared/components/ui/checkbox'
 import { Skeleton } from '@shared/components/ui/skeleton'
@@ -21,16 +15,11 @@ import {
   DENSITY_CELL_CLASSES,
   DENSITY_HEADER_CLASSES,
 } from './utils'
-import type {
-  DataTableProps,
-  FilterPreset,
-  SortState,
-} from './types'
+import type { DataTableProps, FilterPreset, SortState } from './types'
 
 // ── Extended Props ────────────────────────────────────────────────────────────
 
-interface DataTableFullProps<T extends Record<string, unknown>>
-  extends DataTableProps<T> {
+interface DataTableFullProps<T extends Record<string, unknown>> extends DataTableProps<T> {
   table?: UseDataTableReturn<T>
 }
 
@@ -75,17 +64,19 @@ export function DataTable<T extends Record<string, unknown>>({
     let result = [...data]
 
     if (table.search) {
-      const searchKeys = (config.searchKeys ?? columns.map(c => c.key)) as string[]
+      const searchKeys = (config.searchKeys ?? columns.map((c) => c.key)) as string[]
       const q = table.search.toLowerCase()
-      result = result.filter(row =>
-        searchKeys.some(key =>
-          String(getNestedValue(row, key) ?? '').toLowerCase().includes(q),
+      result = result.filter((row) =>
+        searchKeys.some((key) =>
+          String(getNestedValue(row, key) ?? '')
+            .toLowerCase()
+            .includes(q),
         ),
       )
     }
 
     if (Object.keys(table.filters).length > 0) {
-      result = result.filter(row =>
+      result = result.filter((row) =>
         Object.entries(table.filters).every(([key, filterValue]) =>
           matchesFilter(getNestedValue(row, key), filterValue),
         ),
@@ -128,11 +119,10 @@ export function DataTable<T extends Record<string, unknown>>({
     [pageData],
   )
 
-  const visibleColumns = columns.filter(col => table.isColumnVisible(col.key))
+  const visibleColumns = columns.filter((col) => table.isColumnVisible(col.key))
 
   // colspan = selection col + expand col + data cols
-  const prefixCount =
-    (config.expandable ? 1 : 0) + (config.selectable ? 1 : 0)
+  const prefixCount = (config.expandable ? 1 : 0) + (config.selectable ? 1 : 0)
   const colCount = prefixCount + visibleColumns.length
 
   function handleApplyPreset(preset: FilterPreset) {
@@ -155,7 +145,7 @@ export function DataTable<T extends Record<string, unknown>>({
         search={table.search}
         onSearch={table.setSearch}
         showFilterRow={showFilterRow}
-        onToggleFilterRow={() => setShowFilterRow(v => !v)}
+        onToggleFilterRow={() => setShowFilterRow((v) => !v)}
         activeFilterCount={table.activeFilterCount}
         isFiltered={table.isFiltered}
         onClearAll={() => {
@@ -201,12 +191,12 @@ export function DataTable<T extends Record<string, unknown>>({
                 </th>
               )}
 
-              {visibleColumns.map(col => (
+              {visibleColumns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
                     DENSITY_HEADER_CLASSES[table.density],
-                    'text-left font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap',
+                    'whitespace-nowrap text-left font-semibold uppercase tracking-wide text-muted-foreground',
                     col.sortable && 'cursor-pointer select-none hover:text-foreground',
                     col.headerClassName,
                     col.sticky === 'left' && 'sticky left-0 z-10 bg-muted/50',
@@ -217,9 +207,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 >
                   <span className="inline-flex items-center gap-1">
                     {col.header}
-                    {col.sortable && (
-                      <SortIcon sortKey={col.key} currentSort={table.sort} />
-                    )}
+                    {col.sortable && <SortIcon sortKey={col.key} currentSort={table.sort} />}
                   </span>
                 </th>
               ))}
@@ -241,13 +229,9 @@ export function DataTable<T extends Record<string, unknown>>({
             {loading ? (
               Array.from({ length: Math.min(table.pageSize, 5) }).map((_, i) => (
                 <tr key={i} className="border-b border-border">
-                  {config.expandable && (
-                    <td className={DENSITY_CELL_CLASSES[table.density]} />
-                  )}
-                  {config.selectable && (
-                    <td className={DENSITY_CELL_CLASSES[table.density]} />
-                  )}
-                  {visibleColumns.map(col => (
+                  {config.expandable && <td className={DENSITY_CELL_CLASSES[table.density]} />}
+                  {config.selectable && <td className={DENSITY_CELL_CLASSES[table.density]} />}
+                  {visibleColumns.map((col) => (
                     <td key={col.key} className={DENSITY_CELL_CLASSES[table.density]}>
                       <Skeleton className="h-4 w-full max-w-[200px]" />
                     </td>
@@ -272,7 +256,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   <Fragment key={id}>
                     <tr
                       className={cn(
-                        'border-b border-border transition-colors',
+                        'border-b border-border transition-colors last:border-b-0',
                         selected ? 'bg-primary/5' : 'hover:bg-muted/40',
                         onRowClick && 'cursor-pointer',
                         extraClass,
@@ -283,7 +267,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       {config.expandable && (
                         <td
                           className={cn(DENSITY_CELL_CLASSES[table.density], 'w-8 cursor-pointer')}
-                          onClick={e => {
+                          onClick={(e) => {
                             e.stopPropagation()
                             table.toggleExpanded(id)
                           }}
@@ -300,7 +284,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       {config.selectable && (
                         <td
                           className={cn(DENSITY_CELL_CLASSES[table.density], 'w-10')}
-                          onClick={e => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <Checkbox
                             checked={selected}
@@ -311,7 +295,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       )}
 
                       {/* Data cells */}
-                      {visibleColumns.map(col => {
+                      {visibleColumns.map((col) => {
                         const rawValue = getNestedValue(row, col.key)
                         const content = col.render
                           ? col.render(rawValue, row, rowIndex)
@@ -370,13 +354,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
 // ── Sort icon ─────────────────────────────────────────────────────────────────
 
-function SortIcon({
-  sortKey,
-  currentSort,
-}: {
-  sortKey: string
-  currentSort: SortState | null
-}) {
+function SortIcon({ sortKey, currentSort }: { sortKey: string; currentSort: SortState | null }) {
   if (!currentSort || currentSort.key !== sortKey) {
     return <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
   }

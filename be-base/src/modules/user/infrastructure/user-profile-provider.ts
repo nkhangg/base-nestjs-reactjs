@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { USER_REPOSITORY, type IUserRepository } from '../domain/repositories/user.repository';
+import {
+  USER_REPOSITORY,
+  type IUserRepository,
+} from '../domain/repositories/user.repository';
 import type {
   IProfileProvider,
   ProfileSnapshot,

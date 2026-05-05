@@ -37,8 +37,10 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@shared/components/ui/tabs'
 import { ConfirmDialog } from '@shared/components/ui/confirm-dialog'
 import { FieldLabel, FieldError } from '@shared/components/ui/field'
+import { StatCard } from '@shared/components/ui/stat-card'
 import { cn } from '@shared/utils'
 import { useAdmins, useCreateAdmin, useDeactivateAdmin, useActivateAdmin, useUpdateAdminInfo, useResetAdminPassword } from '../hooks/useAdmins'
+import { useCurrentUser } from '@modules/auth'
 import { mediaService } from '@modules/media'
 import type { FolderNode } from '@modules/media'
 import { toast } from 'sonner'
@@ -49,30 +51,6 @@ import type { Admin } from '../types'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type AdminRow = Admin & Record<string, unknown>
-
-// ─── Stat card ───────────────────────────────────────────────────────────────
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType
-  label: string
-  value: number | string
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 shadow-sm">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100">
-        <Icon className="h-4 w-4 text-gray-600" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="text-xl font-semibold text-gray-900 leading-none mt-0.5">{value}</p>
-      </div>
-    </div>
-  )
-}
 
 // ─── Form field helper ────────────────────────────────────────────────────────
 
@@ -478,9 +456,11 @@ function EditAdminModal({
 function RolesCell({
   admin,
   onManage,
+  isSelf,
 }: {
   admin: Admin
   onManage: (admin: Admin) => void
+  isSelf: boolean
 }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -496,7 +476,7 @@ function RolesCell({
           </span>
         ))
       )}
-      {admin.isActive && (
+      {admin.isActive && !isSelf && (
         <button
           onClick={() => onManage(admin)}
           className="rounded p-0.5 text-gray-300 transition-colors hover:text-gray-600"
@@ -516,11 +496,13 @@ function ActionDropdown({
   onView,
   onEdit,
   onManageRoles,
+  isSelf,
 }: {
   admin: Admin
   onView: () => void
   onEdit: () => void
   onManageRoles: () => void
+  isSelf: boolean
 }) {
   const [confirming, setConfirming] = useState<'deactivate' | 'activate' | null>(null)
   const deactivate = useDeactivateAdmin()
@@ -562,14 +544,14 @@ function ActionDropdown({
               <Pencil className="h-3.5 w-3.5" />
               Chỉnh sửa
             </DropdownMenuItem>
-            {admin.isActive && (
+            {admin.isActive && !isSelf && (
               <DropdownMenuItem onClick={onManageRoles} className="gap-2">
                 <Shield className="h-3.5 w-3.5" />
                 Quản lý roles
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator />
-            {admin.isActive ? (
+            {(!isSelf || !admin.isActive) && <DropdownMenuSeparator />}
+            {admin.isActive && !isSelf ? (
               <DropdownMenuItem
                 onClick={() => setConfirming('deactivate')}
                 className="gap-2 text-red-600 focus:bg-red-50 focus:text-red-600"
@@ -577,7 +559,7 @@ function ActionDropdown({
                 <ShieldOff className="h-3.5 w-3.5" />
                 Vô hiệu hoá
               </DropdownMenuItem>
-            ) : (
+            ) : admin.isActive && isSelf ? null : (
               <DropdownMenuItem
                 onClick={() => setConfirming('activate')}
                 className="gap-2 text-green-600 focus:bg-green-50 focus:text-green-600"
@@ -621,6 +603,7 @@ function buildColumns(
   onView: (admin: Admin) => void,
   onEdit: (admin: Admin) => void,
   onManageRoles: (admin: Admin) => void,
+  currentUserId: string | undefined,
 ): ColumnDef<AdminRow>[] {
   return [
     {
@@ -642,6 +625,7 @@ function buildColumns(
         <RolesCell
           admin={row as unknown as Admin}
           onManage={onManageRoles}
+          isSelf={!!currentUserId && row.id === currentUserId}
         />
       ),
     },
@@ -702,6 +686,7 @@ function buildColumns(
           onView={() => onView(row as unknown as Admin)}
           onEdit={() => onEdit(row as unknown as Admin)}
           onManageRoles={() => onManageRoles(row as unknown as Admin)}
+          isSelf={!!currentUserId && row.id === currentUserId}
         />
       ),
     },
@@ -711,6 +696,8 @@ function buildColumns(
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function AdminPage() {
+  const { user: currentUser } = useCurrentUser()
+
   const table = useDataTable<AdminRow>({
     tableId: 'admin-list',
     showSearch: true,
@@ -735,7 +722,7 @@ export function AdminPage() {
 
   const admins = data?.data ?? []
   const meta = data?.meta
-  const columns = buildColumns(setSelectedAdmin, setEditAdmin, setRolesAdmin)
+  const columns = buildColumns(setSelectedAdmin, setEditAdmin, setRolesAdmin, currentUser?.userId)
 
   return (
     <div className="space-y-6 p-6">
@@ -757,9 +744,9 @@ export function AdminPage() {
       {/* ── Stat cards ── */}
       {!isError && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <StatCard icon={Users} label="Tổng admin" value={isLoading ? '—' : (meta?.totalItems ?? 0)} />
-          <StatCard icon={ShieldCheck} label="Đang hoạt động" value={isLoading ? '—' : admins.filter(a => a.isActive).length} />
-          <StatCard icon={ShieldX} label="Đã vô hiệu hoá" value={isLoading ? '—' : admins.filter(a => !a.isActive).length} />
+          <StatCard icon={Users} label="Tổng admin" value={meta?.totalItems ?? 0} isLoading={isLoading} />
+          <StatCard icon={ShieldCheck} label="Đang hoạt động" value={admins.filter(a => a.isActive).length} isLoading={isLoading} />
+          <StatCard icon={ShieldX} label="Đã vô hiệu hoá" value={admins.filter(a => !a.isActive).length} isLoading={isLoading} />
         </div>
       )}
 

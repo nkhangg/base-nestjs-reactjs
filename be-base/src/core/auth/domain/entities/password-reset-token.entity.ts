@@ -7,6 +7,7 @@ export class PasswordResetToken {
     readonly id: string,
     readonly userId: string,
     readonly userType: string,
+    readonly userEmail: string,
     readonly tokenHash: string,
     readonly expiresAt: Date,
     readonly usedAt: Date | null,
@@ -16,6 +17,7 @@ export class PasswordResetToken {
   static generate(
     userId: string,
     userType: string,
+    userEmail = '',
   ): { entity: PasswordResetToken; plainToken: string } {
     const plainToken = randomBytes(32).toString('hex');
     const tokenHash = PasswordResetToken.hashToken(plainToken);
@@ -25,6 +27,7 @@ export class PasswordResetToken {
         randomUUID(),
         userId,
         userType,
+        userEmail,
         tokenHash,
         new Date(now.getTime() + EXPIRES_IN_MS),
         null,
@@ -38,6 +41,7 @@ export class PasswordResetToken {
     id: string;
     userId: string;
     userType: string;
+    userEmail?: string;
     tokenHash: string;
     expiresAt: Date;
     usedAt: Date | null;
@@ -47,6 +51,7 @@ export class PasswordResetToken {
       params.id,
       params.userId,
       params.userType,
+      params.userEmail ?? '',
       params.tokenHash,
       params.expiresAt,
       params.usedAt,
@@ -75,6 +80,7 @@ export class PasswordResetToken {
       this.id,
       this.userId,
       this.userType,
+      this.userEmail,
       this.tokenHash,
       this.expiresAt,
       new Date(),

@@ -11,7 +11,7 @@ export default function App() {
     <I18nProvider>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <Toaster richColors position="top-right" closeButton={true}/>
+        <Toaster richColors position="bottom-right" closeButton={true} />
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </I18nProvider>

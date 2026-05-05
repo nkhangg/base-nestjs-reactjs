@@ -167,7 +167,9 @@ export class MediaAdminController {
     @Param('filename') filename: string,
     @Res() res: Response,
   ): Promise<void> {
-    if ([year, month, filename].some((s) => s.includes('..') || s.includes('/'))) {
+    if (
+      [year, month, filename].some((s) => s.includes('..') || s.includes('/'))
+    ) {
       throw new NotFoundException();
     }
 

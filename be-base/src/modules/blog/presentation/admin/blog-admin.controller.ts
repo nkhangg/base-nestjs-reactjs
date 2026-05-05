@@ -53,7 +53,10 @@ import { CreateBlogCategoryUseCase } from '../../application/use-cases/create-bl
 import { UpdateBlogCategoryUseCase } from '../../application/use-cases/update-blog-category.use-case';
 import { DeleteBlogCategoryUseCase } from '../../application/use-cases/delete-blog-category.use-case';
 import { ListBlogCategoriesUseCase } from '../../application/use-cases/list-blog-categories.use-case';
-import type { BlogPost, BlogPostStatus } from '../../domain/entities/blog-post.entity';
+import type {
+  BlogPost,
+  BlogPostStatus,
+} from '../../domain/entities/blog-post.entity';
 import type { BlogCategory } from '../../domain/entities/blog-category.entity';
 
 // ── DTOs ─────────────────────────────────────────────────────────────────────
@@ -325,7 +328,10 @@ export class BlogAdminController {
   @ApiOperation({ summary: 'Danh sách bài viết (search, filter, phân trang)' })
   @ApiPaginationQuery(POST_PAGINATE_CONFIG)
   async listPosts(@Paginate() query: PaginateQuery) {
-    const { page, limit, search, filter, sortBy } = parsePage(query, POST_PAGINATE_CONFIG);
+    const { page, limit, search, filter, sortBy } = parsePage(
+      query,
+      POST_PAGINATE_CONFIG,
+    );
     const { data, total } = await this.listPostsUseCase.execute({
       page,
       pageSize: limit,
@@ -339,7 +345,12 @@ export class BlogAdminController {
         | undefined,
       categoryId: filterStr(filter, 'categoryId'),
     });
-    return buildPaginated(data.map(mapPost), total, query, POST_PAGINATE_CONFIG);
+    return buildPaginated(
+      data.map(mapPost),
+      total,
+      query,
+      POST_PAGINATE_CONFIG,
+    );
   }
 
   @Get('posts/:id')
@@ -364,7 +375,8 @@ export class BlogAdminController {
       status: dto.status as BlogPostStatus | undefined,
     });
     if (!result.ok) {
-      if (result.error === 'NOT_FOUND') throw new NotFoundException(result.error);
+      if (result.error === 'NOT_FOUND')
+        throw new NotFoundException(result.error);
       throw new BadRequestException(result.error);
     }
     return { success: true };
@@ -420,7 +432,10 @@ export class BlogAdminController {
   @ApiOperation({ summary: 'Danh sách danh mục (search, phân trang)' })
   @ApiPaginationQuery(CATEGORY_PAGINATE_CONFIG)
   async listCategories(@Paginate() query: PaginateQuery) {
-    const { page, limit, search, sortBy } = parsePage(query, CATEGORY_PAGINATE_CONFIG);
+    const { page, limit, search, sortBy } = parsePage(
+      query,
+      CATEGORY_PAGINATE_CONFIG,
+    );
     const { data, total } = await this.listCategoriesUseCase.execute({
       page,
       pageSize: limit,
@@ -428,7 +443,12 @@ export class BlogAdminController {
       sortBy: sortBy?.[0] as 'name' | 'createdAt' | undefined,
       sortDir: sortBy?.[1]?.toLowerCase() as 'asc' | 'desc' | undefined,
     });
-    return buildPaginated(data.map(mapCategory), total, query, CATEGORY_PAGINATE_CONFIG);
+    return buildPaginated(
+      data.map(mapCategory),
+      total,
+      query,
+      CATEGORY_PAGINATE_CONFIG,
+    );
   }
 
   @Patch('categories/:id')
@@ -436,10 +456,14 @@ export class BlogAdminController {
   @ApiOperation({ summary: 'Cập nhật danh mục' })
   @ApiParam({ name: 'id', description: 'Category ID' })
   @ApiBody({ type: UpdateCategoryDto })
-  async updateCategory(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() dto: UpdateCategoryDto,
+  ) {
     const result = await this.updateCategoryUseCase.execute({ id, ...dto });
     if (!result.ok) {
-      if (result.error === 'NOT_FOUND') throw new NotFoundException(result.error);
+      if (result.error === 'NOT_FOUND')
+        throw new NotFoundException(result.error);
       throw new BadRequestException(result.error);
     }
     return { success: true };
@@ -448,7 +472,9 @@ export class BlogAdminController {
   @Delete('categories/:id')
   @HttpCode(200)
   @RequirePermission('blog-management', 'delete')
-  @ApiOperation({ summary: 'Xóa danh mục (bài viết giữ nguyên, categoryId = null)' })
+  @ApiOperation({
+    summary: 'Xóa danh mục (bài viết giữ nguyên, categoryId = null)',
+  })
   @ApiParam({ name: 'id', description: 'Category ID' })
   async deleteCategory(@Param('id') id: string) {
     const result = await this.deleteCategoryUseCase.execute(id);

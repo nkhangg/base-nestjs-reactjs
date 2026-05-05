@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ADMIN_REPOSITORY, type IAdminRepository } from '../domain/repositories/admin.repository';
+import {
+  ADMIN_REPOSITORY,
+  type IAdminRepository,
+} from '../domain/repositories/admin.repository';
 import type {
   IProfileProvider,
   ProfileSnapshot,

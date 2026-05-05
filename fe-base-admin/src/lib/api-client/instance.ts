@@ -26,7 +26,9 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as typeof error.config & { _retry?: boolean }
 
-    if (error.response?.status === 401 && !originalRequest?._retry) {
+    const isAuthEndpoint = originalRequest?.url?.includes('/auth/login')
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
       originalRequest._retry = true
       // Transparent refresh is handled server-side via middleware — just retry once.
       // If the refresh token is still valid the retried request will succeed.

@@ -21,7 +21,9 @@ export class ResetAdminPasswordUseCase {
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
   ) {}
 
-  async execute(input: ResetAdminPasswordInput): Promise<ResetAdminPasswordResult> {
+  async execute(
+    input: ResetAdminPasswordInput,
+  ): Promise<ResetAdminPasswordResult> {
     const admin = await this.adminRepo.findById(input.adminId);
     if (!admin) return { ok: false, error: 'ADMIN_NOT_FOUND' };
 

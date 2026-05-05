@@ -24,7 +24,11 @@ export class UpdateAdminInfoUseCase {
     const admin = await this.adminRepo.findById(input.adminId);
     if (!admin) return { ok: false, error: 'ADMIN_NOT_FOUND' };
 
-    admin.updateProfile({ name: input.name, phone: input.phone, avatarUrl: input.avatarUrl });
+    admin.updateProfile({
+      name: input.name,
+      phone: input.phone,
+      avatarUrl: input.avatarUrl,
+    });
     await this.adminRepo.save(admin);
 
     return { ok: true, value: undefined };

@@ -13,7 +13,10 @@ const makeRepo = (): jest.Mocked<IAdminRepository> => ({
 });
 
 const makeAuthService = (): jest.Mocked<
-  Pick<AuthorizationService, 'revokeRole' | 'assignRoleWithFallback' | 'getAssignedRoleNames'>
+  Pick<
+    AuthorizationService,
+    'revokeRole' | 'assignRoleWithFallback' | 'getAssignedRoleNames'
+  >
 > => ({
   revokeRole: jest.fn().mockResolvedValue(undefined),
   assignRoleWithFallback: jest.fn().mockResolvedValue(undefined),
@@ -37,7 +40,10 @@ describe('UpdateAdminRoleUseCase', () => {
   let useCase: UpdateAdminRoleUseCase;
   let repo: jest.Mocked<IAdminRepository>;
   let authService: jest.Mocked<
-    Pick<AuthorizationService, 'revokeRole' | 'assignRoleWithFallback' | 'getAssignedRoleNames'>
+    Pick<
+      AuthorizationService,
+      'revokeRole' | 'assignRoleWithFallback' | 'getAssignedRoleNames'
+    >
   >;
   let eventBus: jest.Mocked<IDomainEventBus>;
 

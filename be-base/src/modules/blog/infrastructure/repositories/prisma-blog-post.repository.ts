@@ -21,7 +21,9 @@ export class PrismaBlogPostRepository implements IBlogPostRepository {
     return r ? BlogPostMapper.toDomain(r) : null;
   }
 
-  async findAll(opts: FindAllPostsOptions): Promise<{ data: BlogPost[]; total: number }> {
+  async findAll(
+    opts: FindAllPostsOptions,
+  ): Promise<{ data: BlogPost[]; total: number }> {
     const where: Record<string, unknown> = {};
 
     if (opts.publishedOnly) {

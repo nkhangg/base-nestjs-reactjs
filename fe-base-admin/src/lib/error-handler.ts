@@ -23,7 +23,7 @@ export function handleApiError(error: AxiosError): AppError {
     return { message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.' }
   }
 
-  return { message: error.message ?? 'Đã có lỗi xảy ra' }
+  return { message: error.message || 'Đã có lỗi xảy ra' }
 }
 
 const HTTP_STATUS_MESSAGES: Record<number, string> = {

@@ -25,7 +25,6 @@ export interface ForgotPasswordDto {
 
 export interface ForgotPasswordResponse {
   message: string
-  token?: string
 }
 
 export interface ResetPasswordDto {

@@ -17,7 +17,9 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  @ApiOperation({ summary: 'Kiểm tra trạng thái service và kết nối DB + Redis' })
+  @ApiOperation({
+    summary: 'Kiểm tra trạng thái service và kết nối DB + Redis',
+  })
   @ApiResponse({ status: 200, description: 'Service healthy' })
   @ApiResponse({ status: 503, description: 'Service unhealthy' })
   check() {

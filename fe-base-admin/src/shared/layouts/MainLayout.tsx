@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
 import { LayoutDashboard, LogOut, ShieldCheck, Users, Key, UserCog, Settings, ScrollText, Image, Bell, FileText } from 'lucide-react'
 import { ErrorBoundary } from '@/shared/components/ui/error-boundary'
+import { ConfirmDialog } from '@shared/components/ui/confirm-dialog'
 import { ROUTES } from '@config/routes'
 import { useCurrentUser, useLogout } from '@modules/auth'
 import { useProfile } from '@modules/profile'
@@ -51,6 +53,7 @@ export function MainLayout() {
   const { user } = useCurrentUser()
   const { logout } = useLogout()
   const { data: profile } = useProfile()
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const displayName = profile?.name || user?.email || 'A'
   const initial = displayName[0].toUpperCase()
@@ -133,7 +136,7 @@ export function MainLayout() {
               </div>
             </Link>
             <button
-              onClick={() => void logout()}
+              onClick={() => setShowLogoutConfirm(true)}
               title="Đăng xuất"
               className="shrink-0 text-zinc-500 transition-colors hover:text-white"
             >
@@ -155,6 +158,17 @@ export function MainLayout() {
           </ErrorBoundary>
         </main>
       </div>
+
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={() => { void logout() }}
+        title="Đăng xuất?"
+        description="Bạn có chắc muốn đăng xuất khỏi hệ thống không?"
+        confirmLabel="Đăng xuất"
+        cancelLabel="Huỷ"
+        variant="warning"
+      />
     </div>
   )
 }

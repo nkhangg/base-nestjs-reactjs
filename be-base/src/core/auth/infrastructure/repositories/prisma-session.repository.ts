@@ -28,9 +28,9 @@ export class PrismaSessionRepository implements SessionRepository {
     return r ? this.toDomain(r) : null;
   }
 
-  async findByUserId(userId: string, onlyActive = false): Promise<Session[]> {
+  async findByUserId(userId: string, onlyActive?: boolean): Promise<Session[]> {
     const rows = await this.prisma.session.findMany({
-      where: { userId, ...(onlyActive ? { isActive: true } : {}) },
+      where: { userId, ...(onlyActive !== undefined ? { isActive: onlyActive } : {}) },
     });
     return rows.map((r) => this.toDomain(r));
   }

@@ -5,9 +5,14 @@ import type { ITokenService } from '../../../../core/auth/domain/services/token.
 import { TOKEN_SERVICE } from '../../../../core/auth/domain/services/token.service';
 import { Admin } from '../../domain/entities/admin.entity';
 import { AuthorizationService } from '../../../../core/authorization';
+import { ADMIN_ROLE_NAMES } from '../../domain/role-names';
 
 const SEED_ADMINS = [
-  { email: 'alice@example.com', role: 'super-admin', active: true },
+  {
+    email: 'alice@example.com',
+    role: ADMIN_ROLE_NAMES.SUPER_ADMIN,
+    active: true,
+  },
   // { email: 'bob@example.com', role: 'admin', active: true },
   // { email: 'charlie@example.com', role: 'editor', active: true },
   // { email: 'diana@example.com', role: 'moderator', active: true },
@@ -77,7 +82,7 @@ export class AdminSeeder {
   private async seedSuperAdmin(): Promise<void> {
     const email = process.env.ADMIN_SEED_EMAIL;
     const password = process.env.ADMIN_SEED_PASSWORD;
-    const role = process.env.ADMIN_SEED_ROLE ?? 'super-admin';
+    const role = process.env.ADMIN_SEED_ROLE ?? ADMIN_ROLE_NAMES.SUPER_ADMIN;
 
     if (!email || !password) return;
 

@@ -5,4 +5,6 @@ export interface IPasswordResetTokenRepository {
   save(token: PasswordResetToken): Promise<void>;
 }
 
-export const PASSWORD_RESET_TOKEN_REPOSITORY = Symbol('PASSWORD_RESET_TOKEN_REPOSITORY');
+export const PASSWORD_RESET_TOKEN_REPOSITORY = Symbol(
+  'PASSWORD_RESET_TOKEN_REPOSITORY',
+);

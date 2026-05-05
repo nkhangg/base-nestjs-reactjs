@@ -11,7 +11,8 @@ export type GetBlogPostResult = Result<BlogPost, string>;
 @Injectable()
 export class GetBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async executeById(id: string): Promise<GetBlogPostResult> {

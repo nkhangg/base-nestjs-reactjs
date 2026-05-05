@@ -22,6 +22,7 @@ import MarkdownPreview from '@uiw/react-markdown-preview'
 import '@uiw/react-md-editor/markdown-editor.css'
 
 import { Button } from '@shared/components/ui/button'
+import { ConfirmDialog } from '@shared/components/ui/confirm-dialog'
 import { Input } from '@shared/components/ui/input'
 import { Textarea } from '@shared/components/ui/textarea'
 import {
@@ -688,8 +689,25 @@ export function BlogPostEditorPage() {
     },
   })
 
-  const { register, handleSubmit, reset, formState: { errors } } = methods
+  const { register, handleSubmit, reset, getValues, formState: { errors, isDirty } } = methods
 
+  const DRAFT_KEY = `blog_draft_${id ?? 'new'}`
+
+  // Track state in refs (safe for cleanup closures)
+  const isDirtyRef = useRef(isDirty)
+  const skipDraftSave = useRef(false)
+  // After restoring a draft, reset() sets isDirty=false — use this ref so
+  // the cleanup effect still saves on the next navigate-away
+  const draftWasRestored = useRef(false)
+  useEffect(() => { isDirtyRef.current = isDirty }, [isDirty])
+
+  const [localDraft, setLocalDraft] = useState<(FormValues & { _savedAt?: number }) | null>(null)
+  const draftChecked = useRef(false)
+
+  const hasMeaningfulContent = (values: FormValues) =>
+    !!values.title?.trim() || !!values.content?.trim()
+
+  // Restore post data into form when loaded
   useEffect(() => {
     if (post) {
       reset({
@@ -708,28 +726,86 @@ export function BlogPostEditorPage() {
     }
   }, [post, reset])
 
-  const onSave = handleSubmit((values) => {
-    const payload = {
-      ...values,
-      slug: values.slug || undefined,
-      excerpt: values.excerpt || undefined,
-      categoryId: values.categoryId === '__none__' ? undefined : values.categoryId,
-      coverFileId: values.coverFileId || undefined,
-      metaTitle: values.metaTitle || undefined,
-      metaDesc: values.metaDesc || undefined,
+  // Check localStorage for a saved draft after post data is available
+  useEffect(() => {
+    if (draftChecked.current) return
+    if (isEdit && postLoading) return
+    draftChecked.current = true
+
+    const raw = localStorage.getItem(DRAFT_KEY)
+    if (!raw) return
+    try {
+      const draft = JSON.parse(raw) as FormValues & { _savedAt?: number }
+      // Discard drafts that have no meaningful content
+      if (!hasMeaningfulContent(draft)) {
+        localStorage.removeItem(DRAFT_KEY)
+        return
+      }
+      setLocalDraft(draft)
+    } catch {
+      localStorage.removeItem(DRAFT_KEY)
     }
+  }, [DRAFT_KEY, isEdit, postLoading])
+
+  // Auto-save to localStorage on unmount if there are unsaved changes
+  useEffect(() => {
+    return () => {
+      const shouldSave = (isDirtyRef.current || draftWasRestored.current) && !skipDraftSave.current
+      if (shouldSave) {
+        const values = getValues()
+        if (hasMeaningfulContent(values)) {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...values, _savedAt: Date.now() }))
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [DRAFT_KEY])
+
+  const restoreDraft = () => {
+    if (!localDraft) return
+    const { _savedAt: _, ...values } = localDraft
+    reset(values as FormValues)
+    draftWasRestored.current = true  // ensure next unmount re-saves
+    localStorage.removeItem(DRAFT_KEY)
+    setLocalDraft(null)
+    toast.success('Đã khôi phục bản nháp')
+  }
+
+  const discardDraft = () => {
+    localStorage.removeItem(DRAFT_KEY)
+    setLocalDraft(null)
+  }
+
+  const buildPayload = (values: FormValues) => ({
+    ...values,
+    slug: values.slug || undefined,
+    excerpt: values.excerpt || undefined,
+    categoryId: values.categoryId === '__none__' ? undefined : values.categoryId,
+    coverFileId: values.coverFileId || undefined,
+    metaTitle: values.metaTitle || undefined,
+    metaDesc: values.metaDesc || undefined,
+  })
+
+  const onSave = handleSubmit((values) => {
+    const payload = buildPayload(values)
 
     if (isEdit && id) {
       updatePost.mutate(
         { id, dto: payload },
         {
-          onSuccess: () => toast.success('Đã lưu thay đổi'),
+          onSuccess: () => {
+            skipDraftSave.current = true
+            localStorage.removeItem(DRAFT_KEY)
+            toast.success('Đã lưu thay đổi')
+          },
           onError: () => toast.error('Lưu thất bại'),
         },
       )
     } else {
       createPost.mutate(payload, {
         onSuccess: (res) => {
+          skipDraftSave.current = true
+          localStorage.removeItem(DRAFT_KEY)
           toast.success('Đã tạo bài viết')
           navigate(blogEditPath(res.postId))
         },
@@ -807,6 +883,16 @@ export function BlogPostEditorPage() {
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={!!localDraft}
+        onClose={discardDraft}
+        onConfirm={restoreDraft}
+        title="Khôi phục bản nháp?"
+        description={`Bạn có nội dung chưa lưu từ ${localDraft?._savedAt ? new Date(localDraft._savedAt).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : 'trước đó'}. Bạn có muốn khôi phục không?`}
+        confirmLabel="Khôi phục"
+        cancelLabel="Bỏ qua"
+        variant="info"
+      />
     </FormProvider>
   )
 }

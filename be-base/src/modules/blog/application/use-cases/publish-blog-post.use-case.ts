@@ -15,7 +15,8 @@ export type PublishBlogPostResult = Result<void, string>;
 @Injectable()
 export class PublishBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
     @Inject(DOMAIN_EVENT_BUS) private readonly eventBus: IDomainEventBus,
   ) {}
 
@@ -27,7 +28,12 @@ export class PublishBlogPostUseCase {
     await this.postRepo.save(post);
 
     this.eventBus.publish(
-      new BlogPostPublishedEvent(post.id.value, post.title, post.slug, post.authorId),
+      new BlogPostPublishedEvent(
+        post.id.value,
+        post.title,
+        post.slug,
+        post.authorId,
+      ),
     );
 
     return { ok: true, value: undefined };

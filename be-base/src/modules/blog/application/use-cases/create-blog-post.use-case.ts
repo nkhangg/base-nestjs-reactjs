@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result } from '../../../../shared/application';
-import { BlogPost, type BlogPostStatus } from '../../domain/entities/blog-post.entity';
+import {
+  BlogPost,
+  type BlogPostStatus,
+} from '../../domain/entities/blog-post.entity';
 import {
   BLOG_POST_REPOSITORY,
   type IBlogPostRepository,
@@ -27,7 +30,8 @@ export type CreateBlogPostResult = Result<{ postId: string }, string>;
 @Injectable()
 export class CreateBlogPostUseCase {
   constructor(
-    @Inject(BLOG_POST_REPOSITORY) private readonly postRepo: IBlogPostRepository,
+    @Inject(BLOG_POST_REPOSITORY)
+    private readonly postRepo: IBlogPostRepository,
   ) {}
 
   async execute(input: CreateBlogPostInput): Promise<CreateBlogPostResult> {

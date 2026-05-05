@@ -13,7 +13,10 @@ export interface ResetPasswordInput {
   newPassword: string;
 }
 
-export type ResetPasswordError = 'token_invalid' | 'token_expired' | 'user_not_found';
+export type ResetPasswordError =
+  | 'token_invalid'
+  | 'token_expired'
+  | 'user_not_found';
 
 @Injectable()
 export class ResetPasswordUseCase {
@@ -23,9 +26,15 @@ export class ResetPasswordUseCase {
     @Inject(PASSWORD_RESET_TOKEN_REPOSITORY)
     private readonly tokenRepo: IPasswordResetTokenRepository,
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
-    @Optional() @Inject(PASSWORD_UPDATERS) updaters: IPasswordUpdater | IPasswordUpdater[] = [],
+    @Optional()
+    @Inject(PASSWORD_UPDATERS)
+    updaters: IPasswordUpdater | IPasswordUpdater[] = [],
   ) {
-    this.updaters = Array.isArray(updaters) ? updaters : updaters ? [updaters] : [];
+    this.updaters = Array.isArray(updaters)
+      ? updaters
+      : updaters
+        ? [updaters]
+        : [];
   }
 
   async execute(

@@ -194,7 +194,8 @@ export class NotificationAdminController {
           return admin ? ([id, admin.email] as [string, string]) : null;
         }),
       ).then(
-        (results) => new Map(results.filter((r): r is [string, string] => r !== null)),
+        (results) =>
+          new Map(results.filter((r): r is [string, string] => r !== null)),
       ),
       this.recipientRepo.summarizeByNotificationIds(notificationIds),
     ]);

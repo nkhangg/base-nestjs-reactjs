@@ -8,6 +8,7 @@ import {
 import type { ITokenService } from '../../../../core/auth/domain/services/token.service';
 import { TOKEN_SERVICE } from '../../../../core/auth/domain/services/token.service';
 import { AuthorizationService } from '../../../../core/authorization';
+import { ADMIN_ROLE_NAMES } from '../../domain/role-names';
 import {
   DOMAIN_EVENT_BUS,
   type IDomainEventBus,
@@ -45,7 +46,7 @@ export class CreateAdminUseCase {
 
     await this.adminRepo.save(admin);
 
-    const roles = input.roles?.length ? input.roles : ['admin'];
+    const roles = input.roles?.length ? input.roles : [ADMIN_ROLE_NAMES.ADMIN];
     await Promise.all(
       roles.map((r) =>
         this.authorizationService.assignRoleWithFallback(

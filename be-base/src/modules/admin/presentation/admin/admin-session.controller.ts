@@ -8,6 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  parsePage,
+  filterBool,
+  buildPaginated,
+} from '../../../../shared/application/paginate';
+import {
   ApiTags,
   ApiOperation,
   ApiResponse,
@@ -59,32 +64,21 @@ export class AdminSessionController {
     @Param('id') id: string,
     @Paginate() query: PaginateQuery,
   ) {
-    const isActiveRaw = query.filter?.['isActive'];
-    const isActiveStr = Array.isArray(isActiveRaw)
-      ? isActiveRaw[0]
-      : isActiveRaw;
+    const { page, limit, filter } = parsePage(query, SESSION_PAGINATE_CONFIG);
 
     const result = await this.listSessionsUseCase.execute({
       adminId: id,
-      onlyActive:
-        isActiveStr === 'true'
-          ? true
-          : isActiveStr === 'false'
-            ? false
-            : undefined,
-      page: query.page ?? 1,
-      pageSize: query.limit ?? SESSION_PAGINATE_CONFIG.defaultLimit,
+      onlyActive: filterBool(filter, 'isActive'),
+      page,
+      pageSize: limit,
     });
 
     if (!result.ok) throw new NotFoundException(result.error);
 
     const { data, total } = result.value;
-    const page = query.page ?? 1;
-    const pageSize = query.limit ?? SESSION_PAGINATE_CONFIG.defaultLimit;
 
-    return {
-      success: true,
-      data: data.map((s) => ({
+    return buildPaginated(
+      data.map((s) => ({
         id: s.id,
         isActive: s.isActive,
         isExpired: s.isExpired(),
@@ -95,13 +89,10 @@ export class AdminSessionController {
         expiresAt: s.expiresAt,
         createdAt: s.createdAt,
       })),
-      meta: {
-        totalItems: total,
-        currentPage: page,
-        itemsPerPage: pageSize,
-        totalPages: Math.ceil(total / pageSize),
-      },
-    };
+      total,
+      query,
+      SESSION_PAGINATE_CONFIG,
+    );
   }
 
   @Get('auth-logs')

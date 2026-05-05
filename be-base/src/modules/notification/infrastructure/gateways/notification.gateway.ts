@@ -54,7 +54,9 @@ export class NotificationGateway
         // Nếu chỉ expired (chữ ký vẫn hợp lệ) → vẫn cho join room.
         // HTTP endpoints vẫn block bình thường; WS chỉ nhận push, không có write.
         payload = this.tokenService.verifyAccessTokenIgnoreExpiry(token);
-        this.logger.debug(`WS: expired token accepted for ${payload.type}:${payload.sub}`);
+        this.logger.debug(
+          `WS: expired token accepted for ${payload.type}:${payload.sub}`,
+        );
       } catch {
         client.disconnect();
         return;

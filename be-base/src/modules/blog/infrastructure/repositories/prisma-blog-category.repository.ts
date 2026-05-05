@@ -26,7 +26,9 @@ export class PrismaBlogCategoryRepository implements IBlogCategoryRepository {
     return r ? BlogCategoryMapper.toDomain(r) : null;
   }
 
-  async findAll(opts: FindAllCategoriesOptions): Promise<{ data: BlogCategory[]; total: number }> {
+  async findAll(
+    opts: FindAllCategoriesOptions,
+  ): Promise<{ data: BlogCategory[]; total: number }> {
     const where: Record<string, unknown> = {};
 
     if (opts.search) {

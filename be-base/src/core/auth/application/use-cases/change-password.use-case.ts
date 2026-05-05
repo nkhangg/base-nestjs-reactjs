@@ -20,9 +20,15 @@ export class ChangePasswordUseCase {
 
   constructor(
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
-    @Optional() @Inject(PASSWORD_UPDATERS) updaters: IPasswordUpdater | IPasswordUpdater[] = [],
+    @Optional()
+    @Inject(PASSWORD_UPDATERS)
+    updaters: IPasswordUpdater | IPasswordUpdater[] = [],
   ) {
-    this.updaters = Array.isArray(updaters) ? updaters : updaters ? [updaters] : [];
+    this.updaters = Array.isArray(updaters)
+      ? updaters
+      : updaters
+        ? [updaters]
+        : [];
   }
 
   async execute(

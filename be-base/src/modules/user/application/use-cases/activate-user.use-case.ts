@@ -5,6 +5,7 @@ import {
   type IUserRepository,
 } from '../../domain/repositories/user.repository';
 import { AuthorizationService } from '../../../../core/authorization';
+import { USER_ROLE_NAMES } from '../../domain/role-names';
 import {
   DOMAIN_EVENT_BUS,
   type IDomainEventBus,
@@ -37,7 +38,7 @@ export class ActivateUserUseCase {
       input.userId,
       'user',
       user.role,
-      'member',
+      USER_ROLE_NAMES.MEMBER,
     );
 
     this.eventBus.publish(new UserActivatedEvent(input.userId));

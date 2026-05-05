@@ -6,7 +6,10 @@ export class ForgotPasswordDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'admin', description: "Loại tài khoản: 'admin' | 'user'" })
+  @ApiProperty({
+    example: 'admin',
+    description: "Loại tài khoản: 'admin' | 'user'",
+  })
   @IsString()
   type: string;
 }

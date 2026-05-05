@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Shield, X, Plus, Loader2 } from 'lucide-react'
+import { Shield, X, Plus, Loader2, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@shared/components/ui/button'
 import { Badge } from '@shared/components/ui/badge'
@@ -18,6 +18,7 @@ import {
 } from '@shared/components/ui/select'
 import { useRoles } from '../hooks/useRoles'
 import { useAdminRoles, useSyncAdminRoles } from '../hooks/useAdmins'
+import { useCurrentUser } from '@modules/auth'
 import type { Admin } from '../types'
 
 interface Props {
@@ -28,6 +29,9 @@ interface Props {
 
 export function AdminRolesModal({ admin, open, onClose }: Props) {
   const [adding, setAdding] = useState<string>('')
+
+  const { user: currentUser } = useCurrentUser()
+  const isSelf = !!admin && !!currentUser && admin.id === currentUser.userId
 
   const { data: rolesData, isLoading: loadingRoles } = useRoles('admin')
   const { data: currentRoles = [], isLoading: loadingCurrent } = useAdminRoles(
@@ -79,6 +83,16 @@ export function AdminRolesModal({ admin, open, onClose }: Props) {
         </div>
 
         <div className="px-6 py-5 space-y-5">
+          {/* Self-edit warning */}
+          {isSelf && (
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <p className="text-xs text-amber-700">
+                Không thể thay đổi roles của tài khoản đang đăng nhập.
+              </p>
+            </div>
+          )}
+
           {/* Current roles */}
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
@@ -99,14 +113,16 @@ export function AdminRolesModal({ admin, open, onClose }: Props) {
                     className="inline-flex items-center gap-1 rounded-md bg-gray-900 px-2.5 py-1 text-xs font-medium text-white"
                   >
                     {role}
-                    <button
-                      onClick={() => handleRemove(role)}
-                      disabled={syncRoles.isPending}
-                      className="ml-0.5 rounded-sm opacity-70 hover:opacity-100 disabled:opacity-30 transition-opacity"
-                      title={`Xóa role ${role}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                    {!isSelf && (
+                      <button
+                        onClick={() => handleRemove(role)}
+                        disabled={syncRoles.isPending}
+                        className="ml-0.5 rounded-sm opacity-70 hover:opacity-100 disabled:opacity-30 transition-opacity"
+                        title={`Xóa role ${role}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
                   </span>
                 ))}
               </div>
@@ -114,6 +130,7 @@ export function AdminRolesModal({ admin, open, onClose }: Props) {
           </div>
 
           {/* Add role */}
+          {!isSelf && (
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
               Thêm role
@@ -156,9 +173,10 @@ export function AdminRolesModal({ admin, open, onClose }: Props) {
               </Button>
             </div>
           </div>
+          )}
 
           {/* Available role badges (info) */}
-          {availableRoles.length > 0 && (
+          {!isSelf && availableRoles.length > 0 && (
             <div className="space-y-1.5">
               <p className="text-xs text-gray-400">Có thể thêm:</p>
               <div className="flex flex-wrap gap-1.5">

@@ -10,6 +10,7 @@ import {
   type ITokenService,
 } from '../../../../core/auth/domain/services/token.service';
 import { AuthorizationService } from '../../../../core/authorization';
+import { USER_ROLE_NAMES } from '../../domain/role-names';
 import {
   DOMAIN_EVENT_BUS,
   type IDomainEventBus,
@@ -38,7 +39,7 @@ export class CreateUserUseCase {
     if (existing) return { ok: false, error: 'EMAIL_ALREADY_EXISTS' };
 
     const passwordHash = this.tokenService.hashToken(input.password);
-    const roleName = input.role ?? 'member';
+    const roleName = input.role ?? USER_ROLE_NAMES.MEMBER;
     const user = User.create({
       email: input.email,
       passwordHash,
@@ -50,7 +51,7 @@ export class CreateUserUseCase {
       user.id.value,
       'user',
       roleName,
-      'member',
+      USER_ROLE_NAMES.MEMBER,
     );
 
     this.eventBus.publish(

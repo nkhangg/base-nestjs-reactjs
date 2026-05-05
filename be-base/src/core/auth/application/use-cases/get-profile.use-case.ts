@@ -29,9 +29,15 @@ export class GetProfileUseCase {
   private readonly providers: IProfileProvider[];
 
   constructor(
-    @Optional() @Inject(PROFILE_PROVIDERS) providers: IProfileProvider | IProfileProvider[] = [],
+    @Optional()
+    @Inject(PROFILE_PROVIDERS)
+    providers: IProfileProvider | IProfileProvider[] = [],
   ) {
-    this.providers = Array.isArray(providers) ? providers : providers ? [providers] : [];
+    this.providers = Array.isArray(providers)
+      ? providers
+      : providers
+        ? [providers]
+        : [];
   }
 
   async execute(input: GetProfileInput): Promise<GetProfileOutput> {

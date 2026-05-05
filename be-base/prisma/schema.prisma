@@ -57,6 +57,7 @@ model PasswordResetToken {
   id        String    @id
   userId    String
   userType  String
+  userEmail String    @default("")
   tokenHash String    @unique
   expiresAt DateTime
   usedAt    DateTime?

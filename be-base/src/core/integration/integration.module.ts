@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bullmq';
 import { NotificationModule } from '../../modules/notification/notification.module';
+import { QUEUE_NAMES } from '../queue/queue.constants';
+import { NotificationQueueService } from './notification-queue.service';
+import { NotificationProcessor } from './notification.processor';
 import { OnUserCreatedHandler } from './handlers/on-user-created.handler';
 import { OnUserDeactivatedHandler } from './handlers/on-user-deactivated.handler';
 import { OnAdminCreatedHandler } from './handlers/on-admin-created.handler';
@@ -9,8 +13,13 @@ import { OnConfigChangedHandler } from './handlers/on-config-changed.handler';
 import { OnBlogPostPublishedHandler } from './handlers/on-blog-post-published.handler';
 
 @Module({
-  imports: [NotificationModule],
+  imports: [
+    NotificationModule,
+    BullModule.registerQueue({ name: QUEUE_NAMES.NOTIFICATION }),
+  ],
   providers: [
+    NotificationQueueService,
+    NotificationProcessor,
     OnUserCreatedHandler,
     OnUserDeactivatedHandler,
     OnAdminCreatedHandler,
