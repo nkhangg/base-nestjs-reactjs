@@ -17,7 +17,6 @@ const makeAdmin = (isActive = true) =>
   Admin.reconstitute('admin-id-1', {
     email: 'admin@test.com',
     passwordHash: 'hashed-secret',
-    role: 'super-admin',
     isActive,
     createdAt: new Date(),
   });
@@ -73,7 +72,7 @@ describe('AdminCredentialValidator', () => {
       id: 'admin-id-1',
       email: 'admin@test.com',
       type: 'admin',
-      role: 'super-admin',
+      isAdmin: true,
     });
   });
 

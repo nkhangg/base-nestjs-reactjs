@@ -4,7 +4,9 @@ export interface AdminRecord {
   id: string;
   email: string;
   passwordHash: string;
-  role: string;
+  name?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
   isActive: boolean;
   createdAt: Date;
 }
@@ -14,7 +16,9 @@ export class AdminMapper {
     return Admin.reconstitute(record.id, {
       email: record.email,
       passwordHash: record.passwordHash,
-      role: record.role,
+      name: record.name,
+      phone: record.phone,
+      avatarUrl: record.avatarUrl,
       isActive: record.isActive,
       createdAt: record.createdAt,
     });
@@ -25,7 +29,9 @@ export class AdminMapper {
       id: admin.id.value,
       email: admin.email,
       passwordHash: admin.passwordHash,
-      role: admin.role,
+      name: admin.name,
+      phone: admin.phone,
+      avatarUrl: admin.avatarUrl,
       isActive: admin.isActive,
       createdAt: admin.createdAt,
     };

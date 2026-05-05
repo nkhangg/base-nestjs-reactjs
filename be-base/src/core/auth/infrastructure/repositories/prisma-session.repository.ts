@@ -6,6 +6,9 @@ import { PrismaService } from '../../../../shared/infrastructure/prisma/prisma.s
 interface SessionRecord {
   id: string;
   userId: string;
+  userEmail: string;
+  userType: string;
+  isAdmin: boolean;
   refreshTokenHash: string;
   deviceName: string;
   ipAddress: string;
@@ -35,6 +38,9 @@ export class PrismaSessionRepository implements SessionRepository {
   async save(session: Session): Promise<void> {
     const data = {
       userId: session.userId,
+      userEmail: session.userEmail,
+      userType: session.userType,
+      isAdmin: session.isAdmin,
       refreshTokenHash: session.refreshTokenHash,
       deviceName: session.deviceInfo.deviceName,
       ipAddress: session.deviceInfo.ipAddress,
@@ -54,6 +60,9 @@ export class PrismaSessionRepository implements SessionRepository {
   private toDomain(r: SessionRecord): Session {
     return Session.reconstitute(r.id, {
       userId: r.userId,
+      userEmail: r.userEmail,
+      userType: r.userType,
+      isAdmin: r.isAdmin,
       refreshTokenHash: r.refreshTokenHash,
       deviceInfo: DeviceInfo.create({
         deviceName: r.deviceName,

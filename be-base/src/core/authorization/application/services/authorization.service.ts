@@ -18,7 +18,8 @@ import {
   type RoleAssignmentRepository,
 } from '../../domain/repositories/role-assignment.repository';
 import {
-  PermissionCache,
+  PERMISSION_CACHE,
+  type IPermissionCache,
   type PermissionMap,
 } from '../../infrastructure/cache/permission-cache';
 
@@ -38,7 +39,7 @@ export class AuthorizationService {
     private readonly permissionRepo: PermissionRepository,
     @Inject(ROLE_ASSIGNMENT_REPOSITORY)
     private readonly assignmentRepo: RoleAssignmentRepository,
-    private readonly cache: PermissionCache,
+    @Inject(PERMISSION_CACHE) private readonly cache: IPermissionCache,
   ) {}
 
   // ── Public API ──────────────────────────────────────────────────────────────
@@ -82,7 +83,7 @@ export class AuthorizationService {
       roleId: role.id,
     });
     await this.assignmentRepo.save(assignment);
-    this.cache.invalidate(subjectId, subjectType);
+    await this.cache.invalidate(subjectId, subjectType);
   }
 
   async revokeRole(
@@ -94,24 +95,27 @@ export class AuthorizationService {
     if (!role) return;
 
     await this.assignmentRepo.delete(subjectId, subjectType, role.id);
-    this.cache.invalidate(subjectId, subjectType);
+    await this.cache.invalidate(subjectId, subjectType);
   }
 
-  /** Assigns roleName; falls back to 'viewer' if the role doesn't exist. */
+  /** Assigns roleName; falls back to `fallback` if the role doesn't exist. */
   async assignRoleWithFallback(
     subjectId: string,
     subjectType: SubjectType,
     roleName: string,
+    fallback: string = 'viewer',
   ): Promise<void> {
     try {
       await this.assignRole(subjectId, subjectType, roleName);
     } catch {
-      await this.assignRole(subjectId, subjectType, 'viewer');
+      if (fallback !== roleName) {
+        await this.assignRole(subjectId, subjectType, fallback);
+      }
     }
   }
 
   invalidateCache(subjectId: string, subjectType?: SubjectType): void {
-    this.cache.invalidate(subjectId, subjectType);
+    void this.cache.invalidate(subjectId, subjectType);
   }
 
   // ── Role CRUD ────────────────────────────────────────────────────────────────
@@ -195,7 +199,7 @@ export class AuthorizationService {
     );
     if (permissions.length > 0) await this.permissionRepo.saveMany(permissions);
 
-    this.cache.clear();
+    await this.cache.clear();
     return role;
   }
 
@@ -239,7 +243,7 @@ export class AuthorizationService {
         await this.permissionRepo.saveMany(permissions);
     }
 
-    this.cache.clear();
+    await this.cache.clear();
   }
 
   async deleteRole(roleId: string): Promise<void> {
@@ -249,7 +253,7 @@ export class AuthorizationService {
     await this.assignmentRepo.deleteByRoleId(roleId);
     await this.permissionRepo.deleteByRoleId(roleId);
     await this.roleRepo.delete(roleId);
-    this.cache.clear();
+    await this.cache.clear();
   }
 
   private async wouldCreateCycle(
@@ -312,13 +316,89 @@ export class AuthorizationService {
       }
     }
 
-    this.cache.clear();
+    await this.cache.clear();
+  }
+
+  async getAssignedRoleNames(
+    subjectId: string,
+    subjectType: SubjectType,
+  ): Promise<string[]> {
+    const assignments = await this.assignmentRepo.findBySubject(
+      subjectId,
+      subjectType,
+    );
+    if (assignments.length === 0) return [];
+    const roles = await Promise.all(
+      assignments.map((a) => this.roleRepo.findById(a.roleId)),
+    );
+    return roles.filter(Boolean).map((r) => r!.name);
+  }
+
+  async findSubjectIdsByRole(
+    roleName: string,
+    subjectType: SubjectType,
+  ): Promise<string[]> {
+    const role = await this.roleRepo.findByName(roleName, subjectType);
+    if (!role) return [];
+    const assignments = await this.assignmentRepo.findByRoleId(role.id);
+    return assignments
+      .filter((a) => a.subjectType === subjectType)
+      .map((a) => a.subjectId);
+  }
+
+  async findSubjectIdsByPermission(
+    resource: string,
+    action: Action,
+    subjectType: SubjectType,
+  ): Promise<string[]> {
+    const allPermissions = await this.permissionRepo.findAll();
+    const grantingRoleIds = new Set<string>(
+      allPermissions
+        .filter(
+          (p) =>
+            (p.resource === resource || p.resource === '*') &&
+            p.actions.includes(action),
+        )
+        .map((p) => p.roleId),
+    );
+
+    if (grantingRoleIds.size === 0) return [];
+
+    const allRoles = await this.roleRepo.findAll();
+    const qualifyingRoleIds = new Set<string>();
+    for (const role of allRoles) {
+      if (this.hasGrantingAncestor(role.id, grantingRoleIds, allRoles, new Set())) {
+        qualifyingRoleIds.add(role.id);
+      }
+    }
+
+    if (qualifyingRoleIds.size === 0) return [];
+
+    const subjectIds = new Set<string>();
+    for (const roleId of qualifyingRoleIds) {
+      const assignments = await this.assignmentRepo.findByRoleId(roleId);
+      assignments
+        .filter((a) => a.subjectType === subjectType)
+        .forEach((a) => subjectIds.add(a.subjectId));
+    }
+
+    return [...subjectIds];
+  }
+
+  async deleteObsoleteRoles(
+    names: string[],
+    subjectType: SubjectType,
+  ): Promise<void> {
+    for (const name of names) {
+      const role = await this.roleRepo.findByName(name, subjectType);
+      if (role) await this.deleteRole(role.id);
+    }
   }
 
   // ── Internal ────────────────────────────────────────────────────────────────
 
   private async resolvePermissionMap(subject: Subject): Promise<PermissionMap> {
-    const cached = this.cache.get(subject.id, subject.type);
+    const cached = await this.cache.get(subject.id, subject.type);
     if (cached) return cached;
 
     const assignments = await this.assignmentRepo.findBySubject(
@@ -331,7 +411,7 @@ export class AuthorizationService {
       await this.mergeRolePermissions(assignment.roleId, map, new Set());
     }
 
-    this.cache.set(subject.id, subject.type, map);
+    await this.cache.set(subject.id, subject.type, map);
     return map;
   }
 
@@ -358,5 +438,19 @@ export class AuthorizationService {
       for (const action of perm.actions) existing.add(action);
       map.set(perm.resource, existing);
     }
+  }
+
+  private hasGrantingAncestor(
+    roleId: string,
+    grantingIds: Set<string>,
+    allRoles: Role[],
+    visited: Set<string>,
+  ): boolean {
+    if (visited.has(roleId)) return false;
+    visited.add(roleId);
+    if (grantingIds.has(roleId)) return true;
+    const role = allRoles.find((r) => r.id === roleId);
+    if (!role?.parentId) return false;
+    return this.hasGrantingAncestor(role.parentId, grantingIds, allRoles, visited);
   }
 }

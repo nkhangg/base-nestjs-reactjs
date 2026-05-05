@@ -31,7 +31,7 @@ export class AuditInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
 
-    if (!user?.adminRole) return next.handle();
+    if (!user?.isAdmin) return next.handle();
 
     const start = Date.now();
 
@@ -90,7 +90,7 @@ export class AuditInterceptor implements NestInterceptor {
     const log = AuditLog.create({
       actorId: data.user.userId,
       actorEmail: data.user.email,
-      actorRole: data.user.adminRole ?? 'unknown',
+      actorRole: data.user.type,
       resource: data.resource,
       permission: data.permission,
       method: data.method,

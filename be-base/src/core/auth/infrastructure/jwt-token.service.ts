@@ -18,9 +18,9 @@ export class JwtTokenService implements ITokenService {
   constructor(private readonly config: JwtConfig) {}
 
   signAccessToken(payload: AccessTokenPayload): string {
-    const { sub, sessionId, email, type, adminRole } = payload;
+    const { sub, sessionId, email, type, isAdmin } = payload;
     return sign(
-      { sub, sessionId, email, type, adminRole },
+      { sub, sessionId, email, type, isAdmin },
       this.config.accessTokenSecret,
       { expiresIn: this.config.accessTokenTtlSeconds },
     );
@@ -28,6 +28,12 @@ export class JwtTokenService implements ITokenService {
 
   verifyAccessToken(token: string): AccessTokenPayload {
     return verify(token, this.config.accessTokenSecret) as AccessTokenPayload;
+  }
+
+  verifyAccessTokenIgnoreExpiry(token: string): AccessTokenPayload {
+    return verify(token, this.config.accessTokenSecret, {
+      ignoreExpiration: true,
+    }) as AccessTokenPayload;
   }
 
   decodeAccessToken(token: string): AccessTokenPayload {

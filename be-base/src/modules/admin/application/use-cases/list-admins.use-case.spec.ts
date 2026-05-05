@@ -13,7 +13,6 @@ const makeAdmin = (email: string, isActive = true) =>
   Admin.reconstitute(`id-${email}`, {
     email,
     passwordHash: 'hash',
-    role: 'admin',
     isActive,
     createdAt: new Date(),
   });
@@ -43,7 +42,6 @@ describe('ListAdminsUseCase', () => {
     await useCase.execute({
       search: 'alice',
       isActive: true,
-      role: 'editor',
       sortBy: 'email',
       sortDir: 'asc',
       page: 2,
@@ -53,7 +51,6 @@ describe('ListAdminsUseCase', () => {
     expect(repo.findAll).toHaveBeenCalledWith({
       search: 'alice',
       isActive: true,
-      role: 'editor',
       sortBy: 'email',
       sortDir: 'asc',
       page: 2,

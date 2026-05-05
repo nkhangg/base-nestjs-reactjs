@@ -42,16 +42,12 @@ export class RefreshMiddleware implements NestMiddleware {
 
     const refreshToken = req.cookies?.['refresh_token'] as string | undefined;
     const sessionId = req.cookies?.['session_id'] as string | undefined;
-    const expiredAccessToken = req.cookies?.['access_token'] as
-      | string
-      | undefined;
 
     if (!refreshToken || !sessionId) return next();
 
     const result = await this.refreshTokenUseCase.execute({
       sessionId,
       refreshToken,
-      expiredAccessToken: expiredAccessToken ?? '',
     });
 
     if (!result.ok) {
@@ -76,7 +72,7 @@ export class RefreshMiddleware implements NestMiddleware {
         sessionId: payload.sessionId,
         email: payload.email,
         type: payload.type,
-        adminRole: payload.adminRole,
+        isAdmin: payload.isAdmin,
       };
     } catch (e) {
       this.logger.warn('Failed to verify refreshed access token', e);

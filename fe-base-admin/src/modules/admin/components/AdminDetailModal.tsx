@@ -238,7 +238,7 @@ export function AdminDetailModal({ admin, open, onClose }: Props) {
                     <span className="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-600">
                       {admin.id.slice(0, 12)}…
                     </span>
-                    <span className="ml-2">{admin.role}</span>
+                    <span className="ml-2">{admin.roles?.join(', ')}</span>
                   </p>
                 </DialogDescription>
               </div>

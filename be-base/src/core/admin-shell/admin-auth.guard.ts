@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -21,7 +22,7 @@ export class AdminAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
 
-    if (!user?.adminRole)
+    if (!user?.isAdmin)
       throw new UnauthorizedException('Admin access required');
 
     const required = this.reflector.getAllAndOverride<{
@@ -39,7 +40,7 @@ export class AdminAuthGuard implements CanActivate {
     );
 
     if (!allowed)
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         `Permission denied: "${required.permission}" on "${required.resource}"`,
       );
 

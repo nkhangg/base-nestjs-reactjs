@@ -1,19 +1,21 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   UserPlus,
   ShieldOff,
-  Pencil,
-  X,
-  Check,
-  Users,
   ShieldCheck,
+  Users,
   ShieldX,
   AlertTriangle,
   Eye,
   MoreHorizontal,
+  Shield,
+  Pencil,
+  Camera,
+  KeyRound,
+  EyeOff,
 } from 'lucide-react'
 import { Badge } from '@shared/components/ui/badge'
 import { Button } from '@shared/components/ui/button'
@@ -32,10 +34,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/components/ui/dropdown-menu'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@shared/components/ui/tabs'
+import { ConfirmDialog } from '@shared/components/ui/confirm-dialog'
 import { FieldLabel, FieldError } from '@shared/components/ui/field'
 import { cn } from '@shared/utils'
-import { useAdmins, useCreateAdmin, useDeactivateAdmin, useUpdateAdminRole } from '../hooks/useAdmins'
+import { useAdmins, useCreateAdmin, useDeactivateAdmin, useActivateAdmin, useUpdateAdminInfo, useResetAdminPassword } from '../hooks/useAdmins'
+import { mediaService } from '@modules/media'
+import type { FolderNode } from '@modules/media'
+import { toast } from 'sonner'
 import { AdminDetailModal } from './AdminDetailModal'
+import { AdminRolesModal } from './AdminRolesModal'
 import type { Admin } from '../types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -96,7 +104,6 @@ function FormField({
 const createSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
   password: z.string().min(8, 'Tối thiểu 8 ký tự'),
-  role: z.string().optional(),
 })
 type CreateValues = z.infer<typeof createSchema>
 
@@ -121,7 +128,7 @@ function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <DialogTitle className="text-base font-semibold text-gray-900">Tạo admin mới</DialogTitle>
             <DialogDescription className="text-xs text-gray-500">
-              Tài khoản có hiệu lực ngay sau khi tạo
+              Tài khoản có hiệu lực ngay sau khi tạo. Roles có thể gán sau.
             </DialogDescription>
           </div>
         </div>
@@ -144,10 +151,6 @@ function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => voi
               aria-invalid={!!errors.password}
               {...register('password')}
             />
-          </FormField>
-
-          <FormField label="Role" hint="Để trống mặc định là admin">
-            <Input placeholder="admin" {...register('role')} />
           </FormField>
 
           {createAdmin.isError && (
@@ -177,151 +180,448 @@ function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => voi
   )
 }
 
-// ─── Inline role editor ───────────────────────────────────────────────────────
+// ─── Edit admin modal ─────────────────────────────────────────────────────────
 
-function RoleEditor({ admin }: { admin: Admin }) {
-  const [editing, setEditing] = useState(false)
-  const [value, setValue] = useState(admin.role)
-  const updateRole = useUpdateAdminRole()
+const infoSchema = z.object({
+  name: z.string().max(100, 'Tối đa 100 ký tự').optional().or(z.literal('')),
+  phone: z.string().max(20, 'Tối đa 20 ký tự').optional().or(z.literal('')),
+})
+type InfoValues = z.infer<typeof infoSchema>
 
-  const save = () => {
-    if (value.trim() && value !== admin.role) {
-      updateRole.mutate(
-        { id: admin.id, role: value.trim() },
-        { onSuccess: () => setEditing(false) },
-      )
-    } else {
-      setEditing(false)
+const pwdSchema = z
+  .object({
+    newPassword: z.string().min(8, 'Tối thiểu 8 ký tự'),
+    confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmPassword'],
+  })
+type PwdValues = z.infer<typeof pwdSchema>
+
+async function getOrCreateAdminAvatarFolderId(): Promise<string> {
+  const folders = await mediaService.listFolders()
+  const find = (nodes: FolderNode[], name: string): FolderNode | undefined =>
+    nodes.find((n) => n.name.toLowerCase() === name.toLowerCase())
+
+  let adminFolder = find(folders, 'admin')
+  if (!adminFolder) {
+    const { folderId } = await mediaService.createFolder({ name: 'admin' })
+    const refreshed = await mediaService.listFolders()
+    adminFolder = refreshed.find((n) => n.id === folderId)!
+  }
+  const avatarFolder = find(adminFolder.children ?? [], 'avatar')
+  if (!avatarFolder) {
+    const { folderId } = await mediaService.createFolder({ name: 'avatar', parentId: adminFolder.id })
+    return folderId
+  }
+  return avatarFolder.id
+}
+
+function PasswordToggleInput({
+  placeholder,
+  error,
+  registration,
+}: {
+  placeholder?: string
+  error?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  registration: any
+}) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="space-y-1">
+      <div className="relative">
+        <Input
+          type={show ? 'text' : 'password'}
+          placeholder={placeholder}
+          autoComplete="new-password"
+          aria-invalid={!!error}
+          className="pr-10"
+          {...registration}
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setShow((v) => !v)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  )
+}
+
+function EditAdminModal({
+  admin,
+  open,
+  onClose,
+  onAdminUpdate,
+}: {
+  admin: Admin | null
+  open: boolean
+  onClose: () => void
+  onAdminUpdate: (updated: Admin) => void
+}) {
+  const updateInfo = useUpdateAdminInfo()
+  const resetPassword = useResetAdminPassword()
+  const [uploading, setUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+
+  const infoForm = useForm<InfoValues>({
+    resolver: zodResolver(infoSchema),
+    values: { name: admin?.name ?? '', phone: admin?.phone ?? '' },
+  })
+  const pwdForm = useForm<PwdValues>({ resolver: zodResolver(pwdSchema) })
+
+  const handleClose = () => {
+    infoForm.reset()
+    pwdForm.reset()
+    onClose()
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !admin) return
+    setUploading(true)
+    try {
+      const folderId = await getOrCreateAdminAvatarFolderId()
+      const [uploaded] = await mediaService.uploadFiles([file], { scope: 'public', folderId })
+      await updateInfo.mutateAsync({ id: admin.id, dto: { avatarUrl: uploaded.url } })
+      onAdminUpdate({ ...admin, avatarUrl: uploaded.url })
+      toast.success('Cập nhật ảnh đại diện thành công')
+    } catch {
+      toast.error('Tải ảnh lên thất bại')
+    } finally {
+      setUploading(false)
+      if (avatarInputRef.current) avatarInputRef.current.value = ''
     }
   }
 
-  if (!editing) {
-    return (
-      <div className="flex items-center gap-1.5">
-        <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-          {admin.role}
-        </span>
-        {admin.isActive && (
-          <button
-            onClick={() => setEditing(true)}
-            className="rounded p-0.5 text-gray-300 transition-colors hover:text-gray-600"
-            title="Đổi role"
-          >
-            <Pencil className="h-3 w-3" />
-          </button>
-        )}
-      </div>
-    )
+  const onSubmitInfo = async (values: InfoValues) => {
+    if (!admin) return
+    try {
+      const name = values.name?.trim() || null
+      const phone = values.phone?.trim() || null
+      await updateInfo.mutateAsync({ id: admin.id, dto: { name, phone } })
+      onAdminUpdate({ ...admin, name, phone })
+      toast.success('Cập nhật thông tin thành công')
+    } catch {
+      toast.error('Cập nhật thất bại')
+    }
   }
 
+  const onSubmitPwd = async (values: PwdValues) => {
+    if (!admin) return
+    try {
+      await resetPassword.mutateAsync({ id: admin.id, dto: { newPassword: values.newPassword } })
+      toast.success('Đặt lại mật khẩu thành công')
+      pwdForm.reset()
+    } catch {
+      toast.error('Đặt lại mật khẩu thất bại')
+    }
+  }
+
+  const initials = (admin?.name || admin?.email || '?').charAt(0).toUpperCase()
+
   return (
-    <div className="flex items-center gap-1">
-      <input
-        autoFocus
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter') save()
-          if (e.key === 'Escape') setEditing(false)
-        }}
-        className="h-7 w-28 rounded-md border border-gray-300 px-2 text-xs outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10"
-      />
-      <button
-        onClick={save}
-        disabled={updateRole.isPending}
-        className="rounded p-0.5 text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
-      >
-        <Check className="h-3.5 w-3.5" />
-      </button>
-      <button
-        onClick={() => setEditing(false)}
-        className="rounded p-0.5 text-gray-400 transition-colors hover:text-gray-600"
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
+    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
+      <DialogContent className="max-w-lg gap-0 p-0 rounded-2xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 border-b border-gray-100 px-6 py-4 pr-12">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-900">
+            <Pencil className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <DialogTitle className="text-base font-semibold text-gray-900">Chỉnh sửa admin</DialogTitle>
+            <DialogDescription className="text-xs text-gray-500">{admin?.email}</DialogDescription>
+          </div>
+        </div>
+
+        <Tabs defaultValue="info" className="w-full">
+          <div className="border-b border-gray-100 px-6 pt-3">
+            <TabsList className="h-auto gap-0 bg-transparent p-0">
+              <TabsTrigger
+                value="info"
+                className="rounded-none border-b-2 border-transparent px-3 pb-2 pt-0 text-sm font-medium text-gray-500 data-[state=active]:border-gray-900 data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
+              >
+                Thông tin
+              </TabsTrigger>
+              <TabsTrigger
+                value="avatar"
+                className="rounded-none border-b-2 border-transparent px-3 pb-2 pt-0 text-sm font-medium text-gray-500 data-[state=active]:border-gray-900 data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
+              >
+                Ảnh đại diện
+              </TabsTrigger>
+              <TabsTrigger
+                value="password"
+                className="rounded-none border-b-2 border-transparent px-3 pb-2 pt-0 text-sm font-medium text-gray-500 data-[state=active]:border-gray-900 data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
+              >
+                Mật khẩu
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Tab: Thông tin */}
+          <TabsContent value="info" className="mt-0">
+            <form onSubmit={infoForm.handleSubmit(onSubmitInfo)} className="space-y-4 px-6 py-5">
+              <FormField label="Tên hiển thị" error={infoForm.formState.errors.name?.message}>
+                <Input placeholder="Nhập tên..." {...infoForm.register('name')} />
+              </FormField>
+              <FormField label="Số điện thoại" error={infoForm.formState.errors.phone?.message}>
+                <Input placeholder="Nhập SĐT..." {...infoForm.register('phone')} />
+              </FormField>
+              <div className="flex gap-2 pt-1">
+                <Button type="button" variant="secondary" className="flex-1" onClick={handleClose} disabled={updateInfo.isPending}>
+                  Huỷ
+                </Button>
+                <Button type="submit" className="flex-1" isLoading={updateInfo.isPending}>
+                  {updateInfo.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+
+          {/* Tab: Ảnh đại diện */}
+          <TabsContent value="avatar" className="mt-0">
+            <div className="flex flex-col items-center gap-5 px-6 py-8">
+              <div className="relative">
+                {admin?.avatarUrl ? (
+                  <img
+                    src={admin.avatarUrl}
+                    alt={admin.name ?? admin.email}
+                    className="h-24 w-24 rounded-full object-cover ring-2 ring-gray-200"
+                  />
+                ) : (
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-900 text-3xl font-semibold text-white ring-2 ring-gray-200">
+                    {initials}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-900 text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+                >
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-900">{admin?.name ?? '—'}</p>
+                <p className="text-xs text-gray-400">{admin?.email}</p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                className="gap-2"
+                onClick={() => avatarInputRef.current?.click()}
+                isLoading={uploading}
+                disabled={uploading}
+              >
+                <Camera className="h-4 w-4" />
+                {uploading ? 'Đang tải lên...' : 'Đổi ảnh đại diện'}
+              </Button>
+              <p className="text-xs text-gray-400">JPG, PNG — tối đa 10MB</p>
+            </div>
+          </TabsContent>
+
+          {/* Tab: Mật khẩu */}
+          <TabsContent value="password" className="mt-0">
+            <form onSubmit={pwdForm.handleSubmit(onSubmitPwd)} className="space-y-4 px-6 py-5">
+              <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+                <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <p className="text-xs text-amber-700">
+                  Đặt lại mật khẩu mới cho tài khoản này. Không cần nhập mật khẩu cũ.
+                </p>
+              </div>
+              <FormField label="Mật khẩu mới">
+                <PasswordToggleInput
+                  placeholder="Tối thiểu 8 ký tự"
+                  error={pwdForm.formState.errors.newPassword?.message}
+                  registration={pwdForm.register('newPassword')}
+                />
+              </FormField>
+              <FormField label="Xác nhận mật khẩu">
+                <PasswordToggleInput
+                  placeholder="Nhập lại mật khẩu mới"
+                  error={pwdForm.formState.errors.confirmPassword?.message}
+                  registration={pwdForm.register('confirmPassword')}
+                />
+              </FormField>
+              <div className="flex gap-2 pt-1">
+                <Button type="button" variant="secondary" className="flex-1" onClick={() => pwdForm.reset()} disabled={resetPassword.isPending}>
+                  Huỷ
+                </Button>
+                <Button type="submit" className="flex-1" isLoading={resetPassword.isPending}>
+                  {resetPassword.isPending ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ─── Roles cell ───────────────────────────────────────────────────────────────
+
+function RolesCell({
+  admin,
+  onManage,
+}: {
+  admin: Admin
+  onManage: (admin: Admin) => void
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {admin.roles.length === 0 ? (
+        <span className="text-xs text-gray-400 italic">Chưa có role</span>
+      ) : (
+        admin.roles.map((role) => (
+          <span
+            key={role}
+            className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700"
+          >
+            {role}
+          </span>
+        ))
+      )}
+      {admin.isActive && (
+        <button
+          onClick={() => onManage(admin)}
+          className="rounded p-0.5 text-gray-300 transition-colors hover:text-gray-600"
+          title="Quản lý roles"
+        >
+          <Shield className="h-3 w-3" />
+        </button>
+      )}
     </div>
   )
 }
 
 // ─── Action dropdown ──────────────────────────────────────────────────────────
 
-function ActionDropdown({ admin, onView }: { admin: Admin; onView: () => void }) {
-  const [confirming, setConfirming] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+function ActionDropdown({
+  admin,
+  onView,
+  onEdit,
+  onManageRoles,
+}: {
+  admin: Admin
+  onView: () => void
+  onEdit: () => void
+  onManageRoles: () => void
+}) {
+  const [confirming, setConfirming] = useState<'deactivate' | 'activate' | null>(null)
   const deactivate = useDeactivateAdmin()
+  const activate = useActivateAdmin()
 
-  if (confirming) {
-    return (
-      <div className="flex flex-col items-end gap-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-gray-500">Xác nhận?</span>
-          <button
-            onClick={() =>
-              deactivate.mutate(admin.id, {
-                onSuccess: () => setConfirming(false),
-                onError: (err: unknown) => {
-                  const msg =
-                    (err as { response?: { data?: { message?: string } } })?.response?.data
-                      ?.message ?? 'Vô hiệu hóa thất bại'
-                  setError(msg)
-                },
-              })
-            }
-            disabled={deactivate.isPending}
-            className="rounded bg-red-600 px-2 py-0.5 text-xs font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-          >
-            {deactivate.isPending ? '...' : 'Vô hiệu'}
-          </button>
-          <button
-            onClick={() => { setConfirming(false); setError(null) }}
-            className="rounded px-1.5 py-0.5 text-xs text-gray-400 transition-colors hover:text-gray-600"
-          >
-            Huỷ
-          </button>
-        </div>
-        {error && <p className="text-[10px] text-red-500">{error}</p>}
-      </div>
-    )
+  const handleConfirm = () => {
+    if (confirming === 'deactivate') {
+      deactivate.mutate(admin.id, {
+        onSuccess: () => { setConfirming(null); toast.success('Đã vô hiệu hóa tài khoản') },
+        onError: () => { setConfirming(null); toast.error('Vô hiệu hóa thất bại') },
+      })
+    } else if (confirming === 'activate') {
+      activate.mutate(admin.id, {
+        onSuccess: () => { setConfirming(null); toast.success('Đã kích hoạt tài khoản') },
+        onError: () => { setConfirming(null); toast.error('Kích hoạt thất bại') },
+      })
+    }
   }
 
   return (
-    <div className="flex justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-gray-400 data-[state=open]:bg-gray-100"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={onView} className="gap-2">
-            <Eye className="h-3.5 w-3.5" />
-            Chi tiết
-          </DropdownMenuItem>
-          {admin.isActive && (
-            <>
-              <DropdownMenuSeparator />
+    <>
+      <div className="flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-gray-400 data-[state=open]:bg-gray-100"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem onClick={onView} className="gap-2">
+              <Eye className="h-3.5 w-3.5" />
+              Chi tiết
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onEdit} className="gap-2">
+              <Pencil className="h-3.5 w-3.5" />
+              Chỉnh sửa
+            </DropdownMenuItem>
+            {admin.isActive && (
+              <DropdownMenuItem onClick={onManageRoles} className="gap-2">
+                <Shield className="h-3.5 w-3.5" />
+                Quản lý roles
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            {admin.isActive ? (
               <DropdownMenuItem
-                onClick={() => setConfirming(true)}
+                onClick={() => setConfirming('deactivate')}
                 className="gap-2 text-red-600 focus:bg-red-50 focus:text-red-600"
               >
                 <ShieldOff className="h-3.5 w-3.5" />
                 Vô hiệu hoá
               </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+            ) : (
+              <DropdownMenuItem
+                onClick={() => setConfirming('activate')}
+                className="gap-2 text-green-600 focus:bg-green-50 focus:text-green-600"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Kích hoạt lại
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <ConfirmDialog
+        open={confirming === 'deactivate'}
+        onClose={() => setConfirming(null)}
+        onConfirm={handleConfirm}
+        variant="danger"
+        title="Vô hiệu hoá tài khoản?"
+        description={<>Tài khoản <strong>{admin.email}</strong> sẽ bị khoá và không thể đăng nhập. Có thể kích hoạt lại sau.</>}
+        confirmLabel="Vô hiệu hoá"
+        loading={deactivate.isPending}
+      />
+
+      <ConfirmDialog
+        open={confirming === 'activate'}
+        onClose={() => setConfirming(null)}
+        onConfirm={handleConfirm}
+        variant="success"
+        title="Kích hoạt tài khoản?"
+        description={<>Tài khoản <strong>{admin.email}</strong> sẽ được mở lại và có thể đăng nhập bình thường.</>}
+        confirmLabel="Kích hoạt"
+        loading={activate.isPending}
+      />
+    </>
   )
 }
 
 // ─── Column definitions ───────────────────────────────────────────────────────
 
-function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
+function buildColumns(
+  onView: (admin: Admin) => void,
+  onEdit: (admin: Admin) => void,
+  onManageRoles: (admin: Admin) => void,
+): ColumnDef<AdminRow>[] {
   return [
     {
       key: 'email',
@@ -335,12 +635,15 @@ function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
       ),
     },
     {
-      key: 'role',
-      header: 'Role',
-      filterable: true,
-      filterType: 'text',
-      width: '160px',
-      render: (_, row) => <RoleEditor admin={row as unknown as Admin} />,
+      key: 'roles',
+      header: 'Roles',
+      width: '200px',
+      render: (_, row) => (
+        <RolesCell
+          admin={row as unknown as Admin}
+          onManage={onManageRoles}
+        />
+      ),
     },
     {
       key: 'isActive',
@@ -397,6 +700,8 @@ function buildColumns(onView: (admin: Admin) => void): ColumnDef<AdminRow>[] {
         <ActionDropdown
           admin={row as unknown as Admin}
           onView={() => onView(row as unknown as Admin)}
+          onEdit={() => onEdit(row as unknown as Admin)}
+          onManageRoles={() => onManageRoles(row as unknown as Admin)}
         />
       ),
     },
@@ -409,7 +714,7 @@ export function AdminPage() {
   const table = useDataTable<AdminRow>({
     tableId: 'admin-list',
     showSearch: true,
-    searchPlaceholder: 'Tìm theo email, role...',
+    searchPlaceholder: 'Tìm theo email...',
     showFilters: true,
     showColumnVisibility: true,
     showRefreshButton: true,
@@ -420,15 +725,17 @@ export function AdminPage() {
   })
 
   const { data, isLoading, isError, refetch } = useAdmins(
-    table.buildQueryParams(['email', 'role']),
+    table.buildQueryParams(['email']),
   )
 
   const [showModal, setShowModal] = useState(false)
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
+  const [editAdmin, setEditAdmin] = useState<Admin | null>(null)
+  const [rolesAdmin, setRolesAdmin] = useState<Admin | null>(null)
 
   const admins = data?.data ?? []
   const meta = data?.meta
-  const columns = buildColumns(setSelectedAdmin)
+  const columns = buildColumns(setSelectedAdmin, setEditAdmin, setRolesAdmin)
 
   return (
     <div className="space-y-6 p-6">
@@ -464,7 +771,7 @@ export function AdminPage() {
         </div>
       )}
 
-      {/* ── DataTable (server-side) ── */}
+      {/* ── DataTable ── */}
       {!isError && (
         <DataTable<AdminRow>
           columns={columns}
@@ -478,14 +785,25 @@ export function AdminPage() {
         />
       )}
 
-      {/* ── Create modal ── */}
       <CreateAdminModal open={showModal} onClose={() => setShowModal(false)} />
 
-      {/* ── Detail modal ── */}
+      <EditAdminModal
+        admin={editAdmin}
+        open={!!editAdmin}
+        onClose={() => setEditAdmin(null)}
+        onAdminUpdate={(updated) => setEditAdmin(updated)}
+      />
+
       <AdminDetailModal
         admin={selectedAdmin}
         open={!!selectedAdmin}
         onClose={() => setSelectedAdmin(null)}
+      />
+
+      <AdminRolesModal
+        admin={rolesAdmin}
+        open={!!rolesAdmin}
+        onClose={() => setRolesAdmin(null)}
       />
     </div>
   )

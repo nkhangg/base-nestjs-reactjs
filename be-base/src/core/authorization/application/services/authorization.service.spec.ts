@@ -5,14 +5,14 @@ import {
 import { InMemoryRoleRepository } from '../../infrastructure/repositories/in-memory-role.repository';
 import { InMemoryPermissionRepository } from '../../infrastructure/repositories/in-memory-permission.repository';
 import { InMemoryRoleAssignmentRepository } from '../../infrastructure/repositories/in-memory-role-assignment.repository';
-import { PermissionCache } from '../../infrastructure/cache/permission-cache';
+import { InMemoryPermissionCache } from '../../infrastructure/cache/permission-cache';
 import { Subject } from '../../domain/value-objects/subject.vo';
 
 function makeService() {
   const roleRepo = new InMemoryRoleRepository();
   const permissionRepo = new InMemoryPermissionRepository();
   const assignmentRepo = new InMemoryRoleAssignmentRepository();
-  const cache = new PermissionCache();
+  const cache = new InMemoryPermissionCache();
   const service = new AuthorizationService(
     roleRepo,
     permissionRepo,

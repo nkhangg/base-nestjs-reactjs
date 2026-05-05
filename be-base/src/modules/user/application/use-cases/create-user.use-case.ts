@@ -10,6 +10,11 @@ import {
   type ITokenService,
 } from '../../../../core/auth/domain/services/token.service';
 import { AuthorizationService } from '../../../../core/authorization';
+import {
+  DOMAIN_EVENT_BUS,
+  type IDomainEventBus,
+} from '../../../../core/events/domain/domain-event-bus.interface';
+import { UserCreatedEvent } from '../../domain/events/user-created.event';
 
 export interface CreateUserInput {
   email: string;
@@ -25,6 +30,7 @@ export class CreateUserUseCase {
     @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository,
     @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenService,
     private readonly authorizationService: AuthorizationService,
+    @Inject(DOMAIN_EVENT_BUS) private readonly eventBus: IDomainEventBus,
   ) {}
 
   async execute(input: CreateUserInput): Promise<CreateUserResult> {
@@ -44,6 +50,11 @@ export class CreateUserUseCase {
       user.id.value,
       'user',
       roleName,
+      'member',
+    );
+
+    this.eventBus.publish(
+      new UserCreatedEvent(user.id.value, user.email, roleName),
     );
 
     return { ok: true, value: { userId: user.id.value } };

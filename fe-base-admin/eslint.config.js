@@ -40,7 +40,7 @@ export default tseslint.config(
             '@store/**',
             '@config/**',
             "@hookform/resolvers/zod",
-            'react-day-picker'
+            'react-day-picker',
           ],
         },
       ],

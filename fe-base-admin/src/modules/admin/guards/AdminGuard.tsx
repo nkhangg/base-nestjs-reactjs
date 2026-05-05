@@ -8,7 +8,7 @@ export function AdminGuard() {
 
   if (isLoading) return <PageLoader />
   if (!user) return <Navigate to={ROUTES.LOGIN} replace />
-  if (!user.adminRole) return <Navigate to={ROUTES.DASHBOARD} replace />
+  if (!user.isAdmin) return <Navigate to={ROUTES.DASHBOARD} replace />
 
   return <Outlet />
 }

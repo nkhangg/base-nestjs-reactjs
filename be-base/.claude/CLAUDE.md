@@ -236,11 +236,8 @@ Request → jwt.middleware (giải mã JWT → req.user)
 ### Seeded roles (onModuleInit — idempotent)
 | Role | Parent | Permissions |
 |---|---|---|
-| super-admin | — | `*` → all actions |
-| viewer | — | `*` → read |
-| moderator | viewer | `*` → update, approve |
-| editor | viewer | `*` → create, update |
-| admin | editor | `*` → delete |
+| base | — | `notifications` → read |
+| super-admin | base | `*` → all actions |
 
 ---
 
@@ -310,15 +307,14 @@ import { PermissionGuard, UserPermissionGuard, MerchantPermissionGuard, Permissi
 ### Seeded roles — User (`subjectType: 'user'`)
 | Role | Parent | Resources |
 |---|---|---|
-| member | — | profile (r/u), orders (c/r), reviews (c/r/u/d), wishlist (c/r/d), notifications (r/u) |
-| premium | member | premium-content (r), subscriptions (r) |
+| base | — | notifications (r) |
+| member | base | profile (r/u), orders (c/r), reviews (c/r/u/d), wishlist (c/r/d), notifications (r/u) |
 
 ### Seeded roles — Merchant (`subjectType: 'merchant'`)
 | Role | Parent | Resources |
 |---|---|---|
-| staff | — | products (r/u), orders (r/u), customers (r) |
-| manager | staff | products (c/d), analytics (r/export), promotions (c/r/u/d) |
-| owner | manager | `*` → all actions |
+| base | — | notifications (r) |
+| owner | base | `*` → all actions |
 
 ---
 

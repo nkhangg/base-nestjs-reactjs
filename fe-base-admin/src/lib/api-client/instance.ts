@@ -6,6 +6,7 @@ import { handleApiError } from '@lib/error-handler'
 export const apiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
   timeout: ENV.API_TIMEOUT,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -27,21 +28,12 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest?._retry) {
       originalRequest._retry = true
-
+      // Transparent refresh is handled server-side via middleware — just retry once.
+      // If the refresh token is still valid the retried request will succeed.
+      // If not, the retry also returns 401 and we redirect to login.
       try {
-        const refreshToken = storage.get<string>(ENV.REFRESH_TOKEN_KEY)
-        if (!refreshToken) throw new Error('No refresh token')
-
-        const { data } = await axios.post(`${ENV.API_BASE_URL}/auth/refresh`, { refreshToken })
-        storage.set(ENV.TOKEN_KEY, data.accessToken)
-
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
-        }
-        return apiClient(originalRequest)
+        return await apiClient(originalRequest)
       } catch {
-        storage.remove(ENV.TOKEN_KEY)
-        storage.remove(ENV.REFRESH_TOKEN_KEY)
         window.location.href = '/login'
       }
     }

@@ -36,7 +36,7 @@ export class JwtMiddleware implements NestMiddleware {
         sessionId: payload.sessionId,
         email: payload.email,
         type: payload.type,
-        adminRole: payload.adminRole,
+        isAdmin: payload.isAdmin,
       };
     } catch {
       // Token hết hạn → RefreshMiddleware sẽ xử lý tiếp

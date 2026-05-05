@@ -5,7 +5,7 @@ export interface AccessTokenPayload {
   sessionId: string;
   email: string;
   type: string;
-  adminRole?: string;
+  isAdmin?: boolean;
   iat?: number;
   exp?: number;
 }
@@ -13,6 +13,8 @@ export interface AccessTokenPayload {
 export interface ITokenService {
   signAccessToken(payload: AccessTokenPayload): string;
   verifyAccessToken(token: string): AccessTokenPayload;
+  /** Verify chữ ký nhưng bỏ qua expiry — dùng cho WebSocket handshake */
+  verifyAccessTokenIgnoreExpiry(token: string): AccessTokenPayload;
   decodeAccessToken(token: string): AccessTokenPayload; // không verify exp
   generateRefreshToken(): string;
   hashToken(token: string): string;

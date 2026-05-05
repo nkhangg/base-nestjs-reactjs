@@ -736,12 +736,14 @@ export function RolePage() {
 
       {/* Modals */}
       <RoleFormModal
+        key="create"
         open={showCreate}
         roles={roles}
         suggestedResources={suggestedResources}
         onClose={() => setShowCreate(false)}
       />
       <RoleFormModal
+        key={editTarget?.id ?? '__none__'}
         open={!!editTarget}
         initial={editTarget ?? undefined}
         roles={roles}

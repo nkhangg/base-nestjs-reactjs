@@ -13,7 +13,6 @@ const makeAdmin = (id = 'admin-1') =>
   Admin.reconstitute(id, {
     email: 'admin@test.com',
     passwordHash: 'hash',
-    role: 'admin',
     isActive: true,
     createdAt: new Date(),
   });

@@ -9,5 +9,13 @@ export type { AccessTokenPayload } from './domain/services/token.service';
 export type { IAuthIdentity } from './domain/services/auth-identity.interface';
 export type { ICredentialValidator } from './domain/services/credential-validator.interface';
 export { CREDENTIAL_VALIDATORS } from './domain/services/credential-validator.interface';
+export type { IPasswordUpdater } from './domain/services/password-updater.interface';
+export { PASSWORD_UPDATERS } from './domain/services/password-updater.interface';
+export type {
+  IProfileProvider,
+  ProfileSnapshot,
+  ProfileUpdateData,
+} from './domain/services/profile-provider.interface';
+export { PROFILE_PROVIDERS } from './domain/services/profile-provider.interface';
 export { TOKEN_SERVICE } from './domain/services/token.service';
 export { SESSION_REPOSITORY } from './domain/repositories/session.repository';

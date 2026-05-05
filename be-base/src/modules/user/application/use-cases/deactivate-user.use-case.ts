@@ -9,6 +9,11 @@ import {
   type SessionRepository,
 } from '../../../../core/auth/domain/repositories/session.repository';
 import { AuthorizationService } from '../../../../core/authorization';
+import {
+  DOMAIN_EVENT_BUS,
+  type IDomainEventBus,
+} from '../../../../core/events/domain/domain-event-bus.interface';
+import { UserDeactivatedEvent } from '../../domain/events/user-deactivated.event';
 
 export interface DeactivateUserInput {
   userId: string;
@@ -22,6 +27,7 @@ export class DeactivateUserUseCase {
     @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository,
     @Inject(SESSION_REPOSITORY) private readonly sessionRepo: SessionRepository,
     private readonly authorizationService: AuthorizationService,
+    @Inject(DOMAIN_EVENT_BUS) private readonly eventBus: IDomainEventBus,
   ) {}
 
   async execute(input: DeactivateUserInput): Promise<DeactivateUserResult> {
@@ -41,6 +47,8 @@ export class DeactivateUserUseCase {
     );
 
     this.authorizationService.invalidateCache(input.userId, 'user');
+
+    this.eventBus.publish(new UserDeactivatedEvent(input.userId));
 
     return { ok: true, value: undefined };
   }

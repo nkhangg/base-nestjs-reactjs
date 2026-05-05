@@ -11,7 +11,9 @@ interface AdminRecord {
   id: string;
   email: string;
   passwordHash: string;
-  role: string;
+  name: string | null;
+  phone: string | null;
+  avatarUrl: string | null;
   isActive: boolean;
   createdAt: Date;
 }
@@ -37,14 +39,9 @@ export class PrismaAdminRepository implements IAdminRepository {
       where['isActive'] = options.isActive;
     }
 
-    if (options?.role) {
-      where['role'] = options.role;
-    }
-
     if (options?.search) {
       where['OR'] = [
         { email: { contains: options.search, mode: 'insensitive' } },
-        { role: { contains: options.search, mode: 'insensitive' } },
       ];
     }
 
@@ -70,7 +67,9 @@ export class PrismaAdminRepository implements IAdminRepository {
     const data = {
       email: admin.email,
       passwordHash: admin.passwordHash,
-      role: admin.role,
+      name: admin.name ?? null,
+      phone: admin.phone ?? null,
+      avatarUrl: admin.avatarUrl ?? null,
       isActive: admin.isActive,
       createdAt: admin.createdAt,
     };
@@ -85,7 +84,9 @@ export class PrismaAdminRepository implements IAdminRepository {
     return Admin.reconstitute(r.id, {
       email: r.email,
       passwordHash: r.passwordHash,
-      role: r.role,
+      name: r.name,
+      phone: r.phone,
+      avatarUrl: r.avatarUrl,
       isActive: r.isActive,
       createdAt: r.createdAt,
     });

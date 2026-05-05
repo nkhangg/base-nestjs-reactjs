@@ -1,11 +1,10 @@
 import { InMemoryAdminRepository } from './in-memory-admin.repository';
 import { Admin } from '../../domain/entities/admin.entity';
 
-const makeAdmin = (overrides: Partial<{ email: string; role: string }> = {}) =>
+const makeAdmin = (overrides: Partial<{ email: string }> = {}) =>
   Admin.create({
     email: overrides.email ?? 'admin@test.com',
     passwordHash: 'hashed',
-    role: overrides.role,
   });
 
 describe('InMemoryAdminRepository', () => {
@@ -55,7 +54,6 @@ describe('InMemoryAdminRepository', () => {
       const updated = Admin.reconstitute(admin.id.value, {
         email: 'after@test.com',
         passwordHash: 'new-hash',
-        role: 'super-admin',
         isActive: true,
         createdAt: admin.createdAt,
       });
@@ -63,7 +61,6 @@ describe('InMemoryAdminRepository', () => {
 
       const found = await repo.findById(admin.id.value);
       expect(found!.email).toBe('after@test.com');
-      expect(found!.role).toBe('super-admin');
     });
   });
 
@@ -99,15 +96,6 @@ describe('InMemoryAdminRepository', () => {
       expect(data).toHaveLength(1);
       expect(total).toBe(1);
       expect(data[0].email).toBe('alice@test.com');
-    });
-
-    it('should filter by role', async () => {
-      await repo.save(makeAdmin({ email: 'a@test.com', role: 'editor' }));
-      await repo.save(makeAdmin({ email: 'b@test.com', role: 'admin' }));
-
-      const { data, total } = await repo.findAll({ role: 'editor' });
-      expect(data).toHaveLength(1);
-      expect(total).toBe(1);
     });
 
     it('should paginate results', async () => {

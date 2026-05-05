@@ -4,7 +4,9 @@ import { AdminId } from '../value-objects/admin-id.vo';
 export interface AdminProps {
   email: string;
   passwordHash: string;
-  role: string;
+  name?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
   isActive: boolean;
   createdAt: Date;
 }
@@ -20,12 +22,13 @@ export class Admin extends BaseEntity<AdminId> {
   static create(params: {
     email: string;
     passwordHash: string;
-    role?: string;
   }): Admin {
     return new Admin(AdminId.create(), {
       email: params.email,
       passwordHash: params.passwordHash,
-      role: params.role ?? 'admin',
+      name: null,
+      phone: null,
+      avatarUrl: null,
       isActive: true,
       createdAt: new Date(),
     });
@@ -39,8 +42,18 @@ export class Admin extends BaseEntity<AdminId> {
     this.props.isActive = false;
   }
 
-  updateRole(role: string): void {
-    this.props.role = role;
+  activate(): void {
+    this.props.isActive = true;
+  }
+
+  updatePassword(newHash: string): void {
+    this.props.passwordHash = newHash;
+  }
+
+  updateProfile(data: { name?: string | null; phone?: string | null; avatarUrl?: string | null }): void {
+    if (data.name !== undefined) this.props.name = data.name;
+    if (data.phone !== undefined) this.props.phone = data.phone;
+    if (data.avatarUrl !== undefined) this.props.avatarUrl = data.avatarUrl;
   }
 
   get email(): string {
@@ -49,8 +62,14 @@ export class Admin extends BaseEntity<AdminId> {
   get passwordHash(): string {
     return this.props.passwordHash;
   }
-  get role(): string {
-    return this.props.role;
+  get name(): string | null | undefined {
+    return this.props.name;
+  }
+  get phone(): string | null | undefined {
+    return this.props.phone;
+  }
+  get avatarUrl(): string | null | undefined {
+    return this.props.avatarUrl;
   }
   get isActive(): boolean {
     return this.props.isActive;

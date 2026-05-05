@@ -5,6 +5,11 @@ import {
   type IUserRepository,
 } from '../../domain/repositories/user.repository';
 import { AuthorizationService } from '../../../../core/authorization';
+import {
+  DOMAIN_EVENT_BUS,
+  type IDomainEventBus,
+} from '../../../../core/events/domain/domain-event-bus.interface';
+import { UserRoleChangedEvent } from '../../domain/events/user-role-changed.event';
 
 export interface UpdateUserRoleInput {
   userId: string;
@@ -18,6 +23,7 @@ export class UpdateUserRoleUseCase {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository,
     private readonly authorizationService: AuthorizationService,
+    @Inject(DOMAIN_EVENT_BUS) private readonly eventBus: IDomainEventBus,
   ) {}
 
   async execute(input: UpdateUserRoleInput): Promise<UpdateUserRoleResult> {
@@ -34,6 +40,11 @@ export class UpdateUserRoleUseCase {
       input.userId,
       'user',
       input.role,
+      'member',
+    );
+
+    this.eventBus.publish(
+      new UserRoleChangedEvent(input.userId, oldRole, input.role),
     );
 
     return { ok: true, value: undefined };

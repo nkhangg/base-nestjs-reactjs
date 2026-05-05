@@ -34,11 +34,14 @@ import { CreateUserUseCase } from '../../application/use-cases/create-user.use-c
 import { GetUserUseCase } from '../../application/use-cases/get-user.use-case';
 import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
 import { UpdateUserRoleUseCase } from '../../application/use-cases/update-user-role.use-case';
+import { UpdateUserInfoUseCase } from '../../application/use-cases/update-user-info.use-case';
 import { DeactivateUserUseCase } from '../../application/use-cases/deactivate-user.use-case';
+import { ActivateUserUseCase } from '../../application/use-cases/activate-user.use-case';
 import {
   parsePage,
   filterStr,
   filterBool,
+  filterDateRange,
   buildPaginated,
 } from '../../../../shared/application/paginate';
 
@@ -47,12 +50,12 @@ import {
 class CreateUserDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @ApiProperty({ example: 'Password123', minLength: 8 })
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @ApiPropertyOptional({ example: 'member', default: 'member' })
   @IsOptional()
@@ -63,7 +66,14 @@ class CreateUserDto {
 class UpdateUserRoleDto {
   @ApiProperty({ example: 'premium' })
   @IsString()
-  role: string;
+  role!: string;
+}
+
+class UpdateUserInfoDto {
+  @ApiPropertyOptional({ example: 'newemail@example.com' })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
 }
 
 // ── Pagination config ─────────────────────────────────────────────────────────
@@ -74,6 +84,7 @@ const USER_PAGINATE_CONFIG = {
   filterableColumns: {
     isActive: [FilterOperator.EQ],
     role: [FilterOperator.EQ],
+    createdAt: [FilterOperator.GTE, FilterOperator.LTE],
   },
   defaultLimit: 20,
   maxLimit: 100,
@@ -91,7 +102,9 @@ export class UserManagementController {
     private readonly getUserUseCase: GetUserUseCase,
     private readonly listUsersUseCase: ListUsersUseCase,
     private readonly updateUserRoleUseCase: UpdateUserRoleUseCase,
+    private readonly updateUserInfoUseCase: UpdateUserInfoUseCase,
     private readonly deactivateUserUseCase: DeactivateUserUseCase,
+    private readonly activateUserUseCase: ActivateUserUseCase,
   ) {}
 
   @Post()
@@ -124,6 +137,10 @@ export class UserManagementController {
       query,
       USER_PAGINATE_CONFIG,
     );
+    const { from: createdAtFrom, to: createdAtTo } = filterDateRange(
+      filter,
+      'createdAt',
+    );
     const { data, total } = await this.listUsersUseCase.execute({
       page,
       pageSize: limit,
@@ -137,6 +154,8 @@ export class UserManagementController {
       sortDir: sortBy?.[1]?.toLowerCase() as 'asc' | 'desc' | undefined,
       isActive: filterBool(filter, 'isActive'),
       role: filterStr(filter, 'role'),
+      createdAtFrom,
+      createdAtTo,
     });
 
     return buildPaginated(
@@ -173,6 +192,23 @@ export class UserManagementController {
     };
   }
 
+  @Patch(':id')
+  @RequirePermission('user-management', 'update')
+  @ApiOperation({ summary: 'Cập nhật thông tin user (email)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiBody({ type: UpdateUserInfoDto })
+  async updateUserInfo(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserInfoDto,
+  ) {
+    const result = await this.updateUserInfoUseCase.execute({
+      userId: id,
+      email: dto.email,
+    });
+    if (!result.ok) throw new BadRequestException(result.error);
+    return { success: true };
+  }
+
   @Patch(':id/role')
   @RequirePermission('user-management', 'update')
   @ApiOperation({ summary: 'Cập nhật role của user' })
@@ -186,6 +222,17 @@ export class UserManagementController {
       userId: id,
       role: dto.role,
     });
+    if (!result.ok) throw new BadRequestException(result.error);
+    return { success: true };
+  }
+
+  @Patch(':id/activate')
+  @HttpCode(200)
+  @RequirePermission('user-management', 'update')
+  @ApiOperation({ summary: 'Kích hoạt lại tài khoản user' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  async activateUser(@Param('id') id: string) {
+    const result = await this.activateUserUseCase.execute({ userId: id });
     if (!result.ok) throw new BadRequestException(result.error);
     return { success: true };
   }

@@ -12,7 +12,6 @@ import {
 export interface RefreshTokenInput {
   sessionId: string;
   refreshToken: string;
-  expiredAccessToken: string;
 }
 
 export interface RefreshTokenOutput {
@@ -51,18 +50,12 @@ export class RefreshTokenUseCase implements UseCase<
     );
     await this.sessionRepo.save(session);
 
-    const oldPayload = this.tokenService.decodeAccessToken(
-      input.expiredAccessToken,
-    );
-
-    if (!oldPayload) return Result.fail(new Error('Invalid access token'));
-
     const newAccessToken = this.tokenService.signAccessToken({
       sub: session.userId,
       sessionId: session.id,
-      email: oldPayload.email,
-      type: oldPayload.type,
-      adminRole: oldPayload.adminRole,
+      email: session.userEmail,
+      type: session.userType,
+      isAdmin: session.isAdmin,
     });
 
     return Result.ok({

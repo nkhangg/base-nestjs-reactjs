@@ -7,32 +7,18 @@ import {
 
 const MERCHANT_ROLES: SeedRoleDefinition[] = [
   {
-    name: 'staff',
+    name: 'base',
     subjectType: 'merchant',
-    description: 'Nhân viên — xem và xử lý đơn hàng, cập nhật sản phẩm',
+    description: 'Quyền cơ bản — đọc thông báo',
     permissions: {
-      products: ['read', 'update'],
-      orders: ['read', 'update'],
-      customers: ['read'],
-    },
-  },
-  {
-    name: 'manager',
-    subjectType: 'merchant',
-    description:
-      'Quản lý — kế thừa staff, thêm quyền tạo/xóa sản phẩm và xem phân tích',
-    parent: 'staff',
-    permissions: {
-      products: ['create', 'delete'],
-      analytics: ['read', 'export'],
-      promotions: ['create', 'read', 'update', 'delete'],
+      notifications: ['read'],
     },
   },
   {
     name: 'owner',
     subjectType: 'merchant',
-    description: 'Chủ shop — toàn quyền, kế thừa manager',
-    parent: 'manager',
+    description: 'Chủ shop — toàn quyền',
+    parent: 'base',
     permissions: {
       '*': ALL_ACTIONS,
     },

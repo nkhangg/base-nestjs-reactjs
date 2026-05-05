@@ -2,9 +2,8 @@ import type { Admin } from '../entities/admin.entity';
 
 export interface FindAllOptions {
   search?: string;
-  role?: string;
   isActive?: boolean;
-  sortBy?: 'email' | 'role' | 'createdAt' | 'isActive';
+  sortBy?: 'email' | 'createdAt' | 'isActive';
   sortDir?: 'asc' | 'desc';
   page?: number;
   pageSize?: number;

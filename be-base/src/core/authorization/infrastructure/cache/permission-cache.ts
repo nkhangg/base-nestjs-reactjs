@@ -1,24 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import type { Action } from '../../domain/value-objects/action.vo';
 
-export type PermissionMap = Map<string, Set<Action>>; // resource → actions
+export type PermissionMap = Map<string, Set<Action>>;
+
+export const PERMISSION_CACHE = Symbol('PERMISSION_CACHE');
+
+export interface IPermissionCache {
+  get(subjectId: string, subjectType: string): Promise<PermissionMap | null>;
+  set(subjectId: string, subjectType: string, map: PermissionMap): Promise<void>;
+  invalidate(subjectId: string, subjectType?: string): Promise<void>;
+  clear(): Promise<void>;
+}
+
+const TTL_MS = 5 * 60 * 1000;
 
 interface CacheEntry {
   map: PermissionMap;
   expiresAt: number;
 }
 
-const TTL_MS = 5 * 60 * 1000; // 5 minutes
-
 @Injectable()
-export class PermissionCache {
+export class InMemoryPermissionCache implements IPermissionCache {
   private readonly store = new Map<string, CacheEntry>();
 
   private key(subjectId: string, subjectType: string): string {
     return `${subjectType}:${subjectId}`;
   }
 
-  get(subjectId: string, subjectType: string): PermissionMap | null {
+  async get(subjectId: string, subjectType: string): Promise<PermissionMap | null> {
     const entry = this.store.get(this.key(subjectId, subjectType));
     if (!entry) return null;
     if (Date.now() > entry.expiresAt) {
@@ -28,14 +37,14 @@ export class PermissionCache {
     return entry.map;
   }
 
-  set(subjectId: string, subjectType: string, map: PermissionMap): void {
+  async set(subjectId: string, subjectType: string, map: PermissionMap): Promise<void> {
     this.store.set(this.key(subjectId, subjectType), {
       map,
       expiresAt: Date.now() + TTL_MS,
     });
   }
 
-  invalidate(subjectId: string, subjectType?: string): void {
+  async invalidate(subjectId: string, subjectType?: string): Promise<void> {
     if (subjectType) {
       this.store.delete(this.key(subjectId, subjectType));
     } else {
@@ -45,7 +54,7 @@ export class PermissionCache {
     }
   }
 
-  clear(): void {
+  async clear(): Promise<void> {
     this.store.clear();
   }
 }

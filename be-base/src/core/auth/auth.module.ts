@@ -5,10 +5,16 @@ import {
   NestModule,
 } from '@nestjs/common';
 import { SESSION_REPOSITORY } from './domain/repositories/session.repository';
+import { PASSWORD_RESET_TOKEN_REPOSITORY } from './domain/repositories/password-reset-token.repository';
 import { TOKEN_SERVICE } from './domain/services/token.service';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
+import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
+import { GetProfileUseCase } from './application/use-cases/get-profile.use-case';
+import { UpdateProfileUseCase } from './application/use-cases/update-profile.use-case';
 import {
   JwtTokenService,
   type JwtConfig,
@@ -17,6 +23,7 @@ import { JwtMiddleware } from './infrastructure/jwt.middleware';
 import { RefreshMiddleware } from './infrastructure/refresh.middleware';
 import { AuthGuard } from './infrastructure/auth.guard';
 import { PrismaSessionRepository } from './infrastructure/repositories/prisma-session.repository';
+import { PrismaPasswordResetTokenRepository } from './infrastructure/repositories/prisma-password-reset-token.repository';
 import { AuthController } from './presentation/http/auth.controller';
 
 export interface AuthModuleOptions {
@@ -42,9 +49,18 @@ export class AuthModule implements NestModule {
           provide: SESSION_REPOSITORY,
           useClass: PrismaSessionRepository,
         },
+        {
+          provide: PASSWORD_RESET_TOKEN_REPOSITORY,
+          useClass: PrismaPasswordResetTokenRepository,
+        },
         LoginUseCase,
         LogoutUseCase,
         RefreshTokenUseCase,
+        ChangePasswordUseCase,
+        ForgotPasswordUseCase,
+        ResetPasswordUseCase,
+        GetProfileUseCase,
+        UpdateProfileUseCase,
         AuthGuard,
       ],
       exports: [TOKEN_SERVICE, SESSION_REPOSITORY, AuthGuard, LoginUseCase],

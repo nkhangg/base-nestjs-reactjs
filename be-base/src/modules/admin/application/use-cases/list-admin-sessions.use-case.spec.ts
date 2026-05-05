@@ -22,7 +22,6 @@ const makeAdmin = (id = 'admin-1') =>
   Admin.reconstitute(id, {
     email: `${id}@test.com`,
     passwordHash: 'hash',
-    role: 'admin',
     isActive: true,
     createdAt: new Date(),
   });
@@ -30,6 +29,9 @@ const makeAdmin = (id = 'admin-1') =>
 const makeSession = (id: string, userId: string, isActive = true) =>
   Session.reconstitute(id, {
     userId,
+    userEmail: 'test@example.com',
+    userType: 'admin',
+    isAdmin: true,
     refreshTokenHash: 'hash',
     deviceInfo: DeviceInfo.create({
       deviceName: 'Chrome / Windows',

@@ -9,6 +9,11 @@ import {
   type SessionRepository,
 } from '../../../../core/auth/domain/repositories/session.repository';
 import { AuthorizationService } from '../../../../core/authorization';
+import {
+  DOMAIN_EVENT_BUS,
+  type IDomainEventBus,
+} from '../../../../core/events/domain/domain-event-bus.interface';
+import { AdminDeactivatedEvent } from '../../domain/events/admin-deactivated.event';
 
 export interface DeactivateAdminInput {
   adminId: string;
@@ -23,6 +28,7 @@ export class DeactivateAdminUseCase {
     @Inject(ADMIN_REPOSITORY) private readonly adminRepo: IAdminRepository,
     @Inject(SESSION_REPOSITORY) private readonly sessionRepo: SessionRepository,
     private readonly authorizationService: AuthorizationService,
+    @Inject(DOMAIN_EVENT_BUS) private readonly eventBus: IDomainEventBus,
   ) {}
 
   async execute(input: DeactivateAdminInput): Promise<DeactivateAdminResult> {
@@ -48,6 +54,8 @@ export class DeactivateAdminUseCase {
 
     // Invalidate permission cache so the deactivated admin loses access instantly
     this.authorizationService.invalidateCache(input.adminId, 'admin');
+
+    this.eventBus.publish(new AdminDeactivatedEvent(input.adminId));
 
     return { ok: true, value: undefined };
   }

@@ -6,7 +6,7 @@ declare global {
         sessionId: string;
         email: string;
         type: string; // 'user' | 'merchant' | 'admin'
-        adminRole?: string; // only present when type === 'admin'
+        isAdmin?: boolean; // only present when type === 'admin'
       };
     }
   }

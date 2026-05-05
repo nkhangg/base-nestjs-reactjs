@@ -33,13 +33,9 @@ export class InMemoryAdminRepository implements IAdminRepository {
     }
     if (options?.search) {
       const q = options.search.toLowerCase();
-      results = results.filter(
-        (r) =>
-          r.email.toLowerCase().includes(q) || r.role.toLowerCase().includes(q),
+      results = results.filter((r) =>
+        r.email.toLowerCase().includes(q),
       );
-    }
-    if (options?.role) {
-      results = results.filter((r) => r.role === options.role);
     }
 
     const sortBy = (options?.sortBy ?? 'createdAt') as keyof AdminRecord;

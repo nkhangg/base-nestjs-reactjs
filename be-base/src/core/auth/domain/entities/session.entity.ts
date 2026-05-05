@@ -3,6 +3,9 @@ import { DeviceInfo } from '../value-objects/device-info.vo';
 
 export interface SessionProps {
   userId: string;
+  userEmail: string;
+  userType: string;
+  isAdmin: boolean;
   refreshTokenHash: string;
   deviceInfo: DeviceInfo;
   isActive: boolean;
@@ -22,12 +25,18 @@ export class Session extends BaseAggregate<string> {
   static create(params: {
     id: string;
     userId: string;
+    userEmail: string;
+    userType: string;
+    isAdmin: boolean;
     refreshTokenHash: string;
     deviceInfo: DeviceInfo;
     expiresAt: Date;
   }): Session {
     return new Session(params.id, {
       userId: params.userId,
+      userEmail: params.userEmail,
+      userType: params.userType,
+      isAdmin: params.isAdmin,
       refreshTokenHash: params.refreshTokenHash,
       deviceInfo: params.deviceInfo,
       isActive: true,
@@ -65,6 +74,15 @@ export class Session extends BaseAggregate<string> {
 
   get userId(): string {
     return this.props.userId;
+  }
+  get userEmail(): string {
+    return this.props.userEmail;
+  }
+  get userType(): string {
+    return this.props.userType;
+  }
+  get isAdmin(): boolean {
+    return this.props.isAdmin;
   }
   get refreshTokenHash(): string {
     return this.props.refreshTokenHash;

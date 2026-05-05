@@ -9,11 +9,13 @@ import type {
   CreateAdminDto,
   CreateRoleDto,
   PaginatedResponse,
+  ResetAdminPasswordDto,
   Role,
   RoleDetail,
   SessionListParams,
   SubjectType,
-  UpdateAdminRoleDto,
+  SyncAdminRolesDto,
+  UpdateAdminInfoDto,
   UpdateRoleDto,
 } from '../types'
 
@@ -41,12 +43,32 @@ export const adminService = {
     return data
   },
 
-  async updateAdminRole(id: string, dto: UpdateAdminRoleDto): Promise<void> {
-    await apiClient.patch(`/admin/management/${id}/role`, dto, { withCredentials: true })
+  async getAdminRoles(id: string): Promise<string[]> {
+    const { data } = await apiClient.get<{ success: boolean; data: string[] }>(
+      `/admin/management/${id}/roles`,
+      { withCredentials: true },
+    )
+    return data.data
+  },
+
+  async syncAdminRoles(id: string, dto: SyncAdminRolesDto): Promise<void> {
+    await apiClient.put(`/admin/management/${id}/roles`, dto, { withCredentials: true })
   },
 
   async deactivateAdmin(id: string): Promise<void> {
     await apiClient.delete(`/admin/management/${id}`, { withCredentials: true })
+  },
+
+  async activateAdmin(id: string): Promise<void> {
+    await apiClient.patch(`/admin/management/${id}/activate`, {}, { withCredentials: true })
+  },
+
+  async updateAdminInfo(id: string, dto: UpdateAdminInfoDto): Promise<void> {
+    await apiClient.patch(`/admin/management/${id}`, dto, { withCredentials: true })
+  },
+
+  async resetAdminPassword(id: string, dto: ResetAdminPasswordDto): Promise<void> {
+    await apiClient.patch(`/admin/management/${id}/password`, dto, { withCredentials: true })
   },
 
   // ── Sessions & Auth Logs ────────────────────────────────────────────────────
@@ -88,11 +110,14 @@ export const adminService = {
     page?: number
     limit?: number
   }): Promise<{ data: Role[]; meta: AdminListMeta }> {
+    const { subjectType, ...rest } = params ?? {}
+    const query: Record<string, unknown> = { ...rest }
+    if (subjectType) query['filter.subjectType'] = `$eq:${subjectType}`
     const { data } = await apiClient.get<{
       success: boolean
       data: Role[]
       meta: AdminListMeta
-    }>('/admin/roles', { params, withCredentials: true })
+    }>('/admin/roles', { params: query, withCredentials: true })
     return { data: data.data, meta: data.meta }
   },
 

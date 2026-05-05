@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Activity, ShieldCheck, UserPlus, Users } from 'lucide-react'
+import { Activity, RefreshCw, ShieldCheck, UserPlus, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@shared/components/ui/card'
 import { ROUTES } from '@config/routes'
 import { useCurrentUser } from '@modules/auth'
+import { useHealthCheck } from '../hooks/useHealthCheck'
 
 const stats = [
   { label: 'Tổng admins', value: '—', icon: Users, desc: 'Tài khoản quản trị' },
@@ -17,8 +18,64 @@ function getGreeting() {
   return 'Chào buổi tối'
 }
 
+type ServiceStatus = 'up' | 'down' | 'checking'
+
+function StatusBadge({ status }: { status: ServiceStatus }) {
+  if (status === 'checking') {
+    return (
+      <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-300" />
+        Đang kiểm tra
+      </span>
+    )
+  }
+  if (status === 'up') {
+    return (
+      <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
+        <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+        Hoạt động
+      </span>
+    )
+  }
+  return (
+    <span className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+      <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+      Lỗi
+    </span>
+  )
+}
+
 export function DashboardPage() {
   const { user } = useCurrentUser()
+  const { data: health, isPending, isError, dataUpdatedAt, refetch, isFetching } = useHealthCheck()
+
+  const SERVICE_LABELS: Record<string, string> = {
+    database: 'Database',
+    redis: 'Redis Cache',
+  }
+
+  const infoKeys = health?.info ? Object.keys(health.info) : ['database']
+
+  const services: { label: string; status: ServiceStatus }[] = [
+    {
+      label: 'API Server',
+      status: isPending ? 'checking' : isError ? 'down' : 'up',
+    },
+    ...infoKeys.map((key) => ({
+      label: SERVICE_LABELS[key] ?? key,
+      status: (
+        isPending ? 'checking' : isError || health?.info?.[key]?.status !== 'up' ? 'down' : 'up'
+      ) as ServiceStatus,
+    })),
+  ]
+
+  const lastChecked = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })
+    : null
 
   return (
     <div className="space-y-6 p-6">
@@ -73,24 +130,30 @@ export function DashboardPage() {
         {/* System status */}
         <Card className="border-gray-200 shadow-none">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              Trạng thái hệ thống
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-gray-700">
+                Trạng thái hệ thống
+              </CardTitle>
+              <button
+                onClick={() => void refetch()}
+                disabled={isFetching}
+                className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:opacity-50"
+                title="Làm mới"
+              >
+                <RefreshCw className={`size-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {[
-              { label: 'API Server' },
-              { label: 'Database' },
-              { label: 'Auth Service' },
-            ].map(({ label }) => (
+            {services.map(({ label, status }) => (
               <div key={label} className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">{label}</span>
-                <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  Hoạt động
-                </span>
+                <StatusBadge status={status} />
               </div>
             ))}
+            {lastChecked && (
+              <p className="pt-1 text-right text-[11px] text-gray-400">Cập nhật lúc {lastChecked}</p>
+            )}
           </CardContent>
         </Card>
 

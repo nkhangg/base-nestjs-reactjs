@@ -1,19 +1,32 @@
 export interface CreateAdminDto {
   email: string
   password: string
-  role?: string
+  roles?: string[]
 }
 
-export interface UpdateAdminRoleDto {
-  role: string
+export interface SyncAdminRolesDto {
+  roles: string[]
 }
 
 export interface Admin {
   id: string
   email: string
-  role: string
+  name?: string | null
+  phone?: string | null
+  avatarUrl?: string | null
+  roles: string[]
   isActive: boolean
   createdAt: string
+}
+
+export interface UpdateAdminInfoDto {
+  name?: string | null
+  phone?: string | null
+  avatarUrl?: string | null
+}
+
+export interface ResetAdminPasswordDto {
+  newPassword: string
 }
 
 export interface AdminListParams {
@@ -22,7 +35,6 @@ export interface AdminListParams {
   sortBy?: string
   search?: string
   'filter.isActive'?: string
-  'filter.role'?: string
 }
 
 export interface AdminListMeta {

@@ -1,17 +1,18 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import type { ClassProvider, ValueProvider } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
-import {
-  ADMIN_REPOSITORY,
-  type IAdminRepository,
-} from './domain/repositories/admin.repository';
+import { ADMIN_REPOSITORY } from './domain/repositories/admin.repository';
 import { PrismaAdminRepository } from './infrastructure/repositories/prisma-admin.repository';
 import { AdminCredentialValidator } from './application/validators/admin-credential.validator';
 import { CreateAdminUseCase } from './application/use-cases/create-admin.use-case';
 import { GetAdminUseCase } from './application/use-cases/get-admin.use-case';
 import { ListAdminsUseCase } from './application/use-cases/list-admins.use-case';
 import { UpdateAdminRoleUseCase } from './application/use-cases/update-admin-role.use-case';
+import { SyncAdminRolesUseCase } from './application/use-cases/sync-admin-roles.use-case';
+import { GetAdminRolesUseCase } from './application/use-cases/get-admin-roles.use-case';
 import { DeactivateAdminUseCase } from './application/use-cases/deactivate-admin.use-case';
+import { ActivateAdminUseCase } from './application/use-cases/activate-admin.use-case';
+import { UpdateAdminInfoUseCase } from './application/use-cases/update-admin-info.use-case';
+import { ResetAdminPasswordUseCase } from './application/use-cases/reset-admin-password.use-case';
 import { ListAdminSessionsUseCase } from './application/use-cases/list-admin-sessions.use-case';
 import { GetAdminAuthLogsUseCase } from './application/use-cases/get-admin-auth-logs.use-case';
 import { RevokeAdminSessionUseCase } from './application/use-cases/revoke-admin-session.use-case';
@@ -27,6 +28,10 @@ import { RoleManagementController } from './presentation/roles/role-management.c
 import { AdminManagementFeature } from './presentation/admin/admin-management.feature';
 import { RoleManagementFeature } from './presentation/roles/role-management.feature';
 import { CREDENTIAL_VALIDATORS } from '../../core/auth/domain/services/credential-validator.interface';
+import { PASSWORD_UPDATERS } from '../../core/auth/domain/services/password-updater.interface';
+import { AdminPasswordUpdater } from './infrastructure/admin-password-updater';
+import { PROFILE_PROVIDERS } from '../../core/auth/domain/services/profile-provider.interface';
+import { AdminProfileProvider } from './infrastructure/admin-profile-provider';
 import { ADMIN_FEATURE } from '../../core/admin-shell/admin.interface';
 import {
   AuthorizationService,
@@ -36,37 +41,20 @@ import {
 
 const ADMIN_ROLES: SeedRoleDefinition[] = [
   {
+    name: 'base',
+    subjectType: 'admin',
+    description: 'Quyền cơ bản — đọc thông báo',
+    permissions: {
+      notifications: ['read'],
+      'system-notifications': ['read'],
+    },
+  },
+  {
     name: 'super-admin',
     subjectType: 'admin',
     description: 'Toàn quyền hệ thống',
+    parent: 'base',
     permissions: { '*': ALL_ACTIONS },
-  },
-  {
-    name: 'viewer',
-    subjectType: 'admin',
-    description: 'Chỉ xem',
-    permissions: { '*': ['read'] },
-  },
-  {
-    name: 'moderator',
-    subjectType: 'admin',
-    description: 'Xem, sửa và duyệt nội dung',
-    parent: 'viewer',
-    permissions: { '*': ['update', 'approve'] },
-  },
-  {
-    name: 'editor',
-    subjectType: 'admin',
-    description: 'Tạo và chỉnh sửa nội dung',
-    parent: 'viewer',
-    permissions: { '*': ['create', 'update'] },
-  },
-  {
-    name: 'admin',
-    subjectType: 'admin',
-    description: 'Quản trị viên — kế thừa editor, thêm quyền xóa',
-    parent: 'editor',
-    permissions: { '*': ['delete'] },
   },
 ];
 
@@ -87,6 +75,18 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
       multi: true,
     } as ClassProvider,
     {
+      provide: PASSWORD_UPDATERS,
+      useClass: AdminPasswordUpdater,
+      multi: true,
+    } as ClassProvider,
+    AdminPasswordUpdater,
+    {
+      provide: PROFILE_PROVIDERS,
+      useClass: AdminProfileProvider,
+      multi: true,
+    } as ClassProvider,
+    AdminProfileProvider,
+    {
       provide: ADMIN_FEATURE,
       useValue: AdminManagementFeature,
       multi: true,
@@ -100,7 +100,12 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
     GetAdminUseCase,
     ListAdminsUseCase,
     UpdateAdminRoleUseCase,
+    SyncAdminRolesUseCase,
+    GetAdminRolesUseCase,
     DeactivateAdminUseCase,
+    ActivateAdminUseCase,
+    UpdateAdminInfoUseCase,
+    ResetAdminPasswordUseCase,
     ListAdminSessionsUseCase,
     GetAdminAuthLogsUseCase,
     RevokeAdminSessionUseCase,
@@ -111,30 +116,20 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
     DeleteRoleUseCase,
     AdminSeeder,
   ],
-  exports: [CREDENTIAL_VALIDATORS, CreateAdminUseCase],
+  exports: [CREDENTIAL_VALIDATORS, PASSWORD_UPDATERS, PROFILE_PROVIDERS, CreateAdminUseCase],
 })
 export class AdminModule implements OnModuleInit {
   constructor(
-    @Inject(ADMIN_REPOSITORY) private readonly adminRepo: IAdminRepository,
     private readonly authorizationService: AuthorizationService,
+    private readonly adminSeeder: AdminSeeder,
   ) {}
 
   async onModuleInit(): Promise<void> {
-    // 1. Seed role definitions (idempotent)
     await this.authorizationService.seedRoles(ADMIN_ROLES);
-
-    // 2. Migrate ALL admins: no pagination so every account gets a role assignment
-    const { data: admins } = await this.adminRepo.findAll({
-      pageSize: 100_000,
-    });
-    await Promise.all(
-      admins.map((admin) =>
-        this.authorizationService.assignRoleWithFallback(
-          admin.id.value,
-          'admin',
-          admin.role,
-        ),
-      ),
+    await this.authorizationService.deleteObsoleteRoles(
+      ['system-notification-receiver'],
+      'admin',
     );
+    await this.adminSeeder.seed();
   }
 }

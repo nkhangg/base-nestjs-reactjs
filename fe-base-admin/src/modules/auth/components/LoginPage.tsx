@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Eye, EyeOff } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { cn } from '@shared/utils'
 import { useLogin } from '../hooks/useAuth'
+import { ROUTES } from '@config/routes'
 
 const schema = z.object({
   email: z.string().email('Email không hợp lệ'),
@@ -15,6 +18,7 @@ type FormValues = z.infer<typeof schema>
 export function LoginPage() {
   const { login } = useLogin()
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -69,18 +73,35 @@ export function LoginPage() {
               <label className="text-sm font-medium text-white" htmlFor="password">
                 Password
               </label>
+              <Link
+                to={ROUTES.FORGOT_PASSWORD}
+                className="text-xs text-zinc-400 transition-colors hover:text-zinc-200"
+              >
+                Quên mật khẩu?
+              </Link>
             </div>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              className={cn(
-                'h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-white',
-                'placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500',
-                errors.password && 'border-red-500 focus:border-red-500 focus:ring-red-500',
-              )}
-              {...register('password')}
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                className={cn(
+                  'h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 pr-10 text-sm text-white',
+                  'placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500',
+                  errors.password && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+                )}
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-300"
+              >
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
             {errors.password && <p className="text-xs text-red-400">{errors.password.message}</p>}
           </div>
 

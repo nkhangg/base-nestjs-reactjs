@@ -10,6 +10,9 @@ datasource db {
 model Session {
   id               String   @id
   userId           String
+  userEmail        String   @default("")
+  userType         String   @default("admin")
+  isAdmin          Boolean  @default(false)
   refreshTokenHash String
   deviceName       String
   ipAddress        String
@@ -27,7 +30,9 @@ model Admin {
   id           String   @id
   email        String   @unique
   passwordHash String
-  role         String   @default("admin")
+  name         String?
+  phone        String?
+  avatarUrl    String?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
@@ -38,11 +43,27 @@ model User {
   id           String   @id
   email        String   @unique
   passwordHash String
+  name         String?
+  phone        String?
+  avatarUrl    String?
   role         String   @default("member")
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
   @@map("users")
+}
+
+model PasswordResetToken {
+  id        String    @id
+  userId    String
+  userType  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, userType])
+  @@map("password_reset_tokens")
 }
 
 // ── Authorization ─────────────────────────────────────────────────────────────
@@ -109,4 +130,152 @@ model AuditLog {
   @@index([occurredAt])
   @@index([resource, occurredAt])
   @@map("audit_logs")
+
+}
+// ── Media ─────────────────────────────────────────────────────────────────────
+
+model MediaFolder {
+  id        String        @id
+  name      String
+  parentId  String?
+  parent    MediaFolder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children  MediaFolder[] @relation("FolderTree")
+  files     MediaFile[]
+  createdBy String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("media_folders")
+}
+
+model MediaFile {
+  id           String       @id
+  key          String       @unique
+  filename     String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  url          String
+  thumbnailKey String?
+  thumbnailUrl String?
+  alt          String?
+  scope        String       @default("public")
+  folderId     String?
+  folder       MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  tags         String[]
+  createdBy    String?
+  updatedBy    String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([scope, folderId])
+  @@index([mimeType])
+  @@map("media_files")
+}
+
+// ── Notification ──────────────────────────────────────────────────────────────
+
+model Notification {
+  id         String   @id
+  type       String   // 'system' | 'info' | 'warning' | 'alert' | 'success'
+  title      String
+  body       String
+  data       Json?
+  senderId   String?
+  senderType String?  // 'admin' | 'system'
+  createdAt  DateTime @default(now())
+
+  recipients NotificationRecipient[]
+
+  @@map("notifications")
+}
+
+model NotificationRecipient {
+  id             String    @id
+  notificationId String
+  recipientId    String
+  recipientType  String    // 'user' | 'admin'
+  isRead         Boolean   @default(false)
+  readAt         DateTime?
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, recipientId, recipientType])
+  @@index([recipientId, recipientType])
+  @@map("notification_recipients")
+}
+
+model NotificationPreference {
+  id            String   @id
+  recipientId   String
+  recipientType String   // 'user' | 'admin'
+  type          String
+  isEnabled     Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+
+  @@unique([recipientId, recipientType, type])
+  @@map("notification_preferences")
+}
+
+// ── Blog ──────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String        @id
+  slug        String        @unique
+  title       String
+  content     String        @db.Text
+  contentType String        @default("markdown")
+  excerpt     String?
+  status      String        @default("draft")
+  coverFileId String?
+  categoryId  String?
+  category    BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags        String[]
+  authorId    String?
+  metaTitle   String?
+  metaDesc    String?
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String     @id
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  coverFileId String?
+  posts       BlogPost[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("blog_categories")
+}
+
+// ── Configable ────────────────────────────────────────────────────────────────
+
+model AppConfig {
+  id          String   @id
+  key         String   @unique
+  value         Json
+  valueKeyOrder String[] @default([])
+  description String?
+  isEnabled   Boolean  @default(true)
+  scope       String   @default("public")
+  tags        String[]
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isEnabled, scope])
+  @@map("app_configs")
 }

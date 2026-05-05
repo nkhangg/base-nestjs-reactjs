@@ -80,6 +80,9 @@ export class LoginUseCase implements UseCase<LoginInput, Result<LoginOutput>> {
     const session = Session.create({
       id: sessionId,
       userId: identity.id,
+      userEmail: identity.email,
+      userType: identity.type,
+      isAdmin: identity.isAdmin ?? false,
       refreshTokenHash: this.tokenService.hashToken(refreshToken),
       deviceInfo,
       expiresAt: this.tokenService.getRefreshTokenExpiresAt(),
@@ -92,7 +95,7 @@ export class LoginUseCase implements UseCase<LoginInput, Result<LoginOutput>> {
       sessionId,
       email: identity.email,
       type: identity.type,
-      adminRole: identity.role,
+      isAdmin: identity.isAdmin,
     });
 
     return Result.ok({ accessToken, refreshToken, sessionId });

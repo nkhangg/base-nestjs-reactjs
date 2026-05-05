@@ -8,6 +8,8 @@ export interface FindAllUsersOptions {
   sortDir?: 'asc' | 'desc';
   page?: number;
   pageSize?: number;
+  createdAtFrom?: Date;
+  createdAtTo?: Date;
 }
 
 export interface FindAllUsersResult {

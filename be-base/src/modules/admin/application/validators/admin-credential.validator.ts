@@ -34,7 +34,7 @@ export class AdminCredentialValidator implements ICredentialValidator {
       id: admin.id.value,
       email: admin.email,
       type: 'admin',
-      role: admin.role,
+      isAdmin: true,
     };
   }
 }

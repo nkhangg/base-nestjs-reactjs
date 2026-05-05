@@ -6,7 +6,6 @@ describe('AdminMapper', () => {
     id: 'map-id-1',
     email: 'mapper@test.com',
     passwordHash: 'hashed',
-    role: 'admin',
     isActive: true,
     createdAt: new Date('2024-06-01'),
   };
@@ -18,7 +17,6 @@ describe('AdminMapper', () => {
       expect(admin.id.value).toBe(record.id);
       expect(admin.email).toBe(record.email);
       expect(admin.passwordHash).toBe(record.passwordHash);
-      expect(admin.role).toBe(record.role);
       expect(admin.createdAt).toBe(record.createdAt);
     });
   });
@@ -28,7 +26,6 @@ describe('AdminMapper', () => {
       const admin = Admin.reconstitute(record.id, {
         email: record.email,
         passwordHash: record.passwordHash,
-        role: record.role,
         isActive: record.isActive,
         createdAt: record.createdAt,
       });

@@ -13,6 +13,23 @@ export const QUERY_KEYS = {
   ADMIN: {
     USERS: ['admin', 'users'] as const,
   },
+  CONFIGS: ['configs'] as const,
+  MEDIA: {
+    FILES: ['media', 'files'] as const,
+    FOLDERS: ['media', 'folders'] as const,
+  },
+  AUDIT_LOGS: ['audit-logs'] as const,
+  NOTIFICATIONS: {
+    LIST: ['notifications', 'list'] as const,
+    UNREAD_COUNT: ['notifications', 'unread-count'] as const,
+    SENT: ['notifications', 'sent'] as const,
+  },
+  BLOG: {
+    POSTS: ['blog', 'posts'] as const,
+    POST: ['blog', 'post'] as const,
+    CATEGORIES: ['blog', 'categories'] as const,
+  },
+  HEALTH: ['health'] as const,
 } as const
 
 export const DATE_FORMAT = {

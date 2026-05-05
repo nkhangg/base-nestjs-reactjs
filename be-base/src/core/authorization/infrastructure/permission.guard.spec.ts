@@ -9,7 +9,7 @@ import {
 import { InMemoryRoleRepository } from './repositories/in-memory-role.repository';
 import { InMemoryPermissionRepository } from './repositories/in-memory-permission.repository';
 import { InMemoryRoleAssignmentRepository } from './repositories/in-memory-role-assignment.repository';
-import { PermissionCache } from './cache/permission-cache';
+import { InMemoryPermissionCache } from './cache/permission-cache';
 import { AuthorizationService } from '../application/services/authorization.service';
 import { PERMISSION_KEY } from '../decorators/permission.decorator';
 
@@ -17,7 +17,7 @@ function makeService() {
   const roleRepo = new InMemoryRoleRepository();
   const permissionRepo = new InMemoryPermissionRepository();
   const assignmentRepo = new InMemoryRoleAssignmentRepository();
-  const cache = new PermissionCache();
+  const cache = new InMemoryPermissionCache();
   return new AuthorizationService(
     roleRepo,
     permissionRepo,

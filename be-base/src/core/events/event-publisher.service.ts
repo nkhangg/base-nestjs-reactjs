@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import type { BaseAggregate } from '../../shared/domain/base-aggregate';
+import type { DomainEvent } from '../../shared/domain/domain-event';
+import type { IDomainEventBus } from './domain/domain-event-bus.interface';
 
 @Injectable()
-export class EventPublisher {
+export class EventPublisher implements IDomainEventBus {
   constructor(private readonly emitter: EventEmitter2) {}
 
-  publishAll(aggregate: BaseAggregate<unknown>): void {
-    const events = aggregate.domainEvents;
-    aggregate.clearDomainEvents();
-    for (const event of events) {
-      this.emitter.emit(event.eventName, event);
-    }
+  publish(event: DomainEvent): void {
+    this.emitter.emit(event.eventName, event);
+  }
+
+  publishAll(events: DomainEvent[]): void {
+    events.forEach((e) => this.publish(e));
   }
 }

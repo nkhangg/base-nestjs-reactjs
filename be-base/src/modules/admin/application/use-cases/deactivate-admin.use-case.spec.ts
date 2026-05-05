@@ -2,6 +2,8 @@ import { DeactivateAdminUseCase } from './deactivate-admin.use-case';
 import type { IAdminRepository } from '../../domain/repositories/admin.repository';
 import type { SessionRepository } from '../../../../core/auth/domain/repositories/session.repository';
 import type { AuthorizationService } from '../../../../core/authorization';
+import type { IDomainEventBus } from '../../../../core/events/domain/domain-event-bus.interface';
+import { AdminDeactivatedEvent } from '../../domain/events/admin-deactivated.event';
 import { Admin } from '../../domain/entities/admin.entity';
 import { Session } from '../../../../core/auth/domain/entities/session.entity';
 import { DeviceInfo } from '../../../../core/auth/domain/value-objects/device-info.vo';
@@ -25,11 +27,15 @@ const makeAuthService = (): jest.Mocked<
   invalidateCache: jest.fn(),
 });
 
+const makeEventBus = (): jest.Mocked<IDomainEventBus> => ({
+  publish: jest.fn(),
+  publishAll: jest.fn(),
+});
+
 const makeAdmin = (id = 'admin-1', isActive = true) =>
   Admin.reconstitute(id, {
     email: `${id}@test.com`,
     passwordHash: 'hash',
-    role: 'admin',
     isActive,
     createdAt: new Date(),
   });
@@ -37,6 +43,9 @@ const makeAdmin = (id = 'admin-1', isActive = true) =>
 const makeSession = (id: string, userId: string) =>
   Session.reconstitute(id, {
     userId,
+    userEmail: 'test@example.com',
+    userType: 'admin',
+    isAdmin: true,
     refreshTokenHash: 'hash',
     deviceInfo: DeviceInfo.create({
       deviceName: 'Chrome',
@@ -54,15 +63,18 @@ describe('DeactivateAdminUseCase', () => {
   let adminRepo: jest.Mocked<IAdminRepository>;
   let sessionRepo: jest.Mocked<SessionRepository>;
   let authService: jest.Mocked<Pick<AuthorizationService, 'invalidateCache'>>;
+  let eventBus: jest.Mocked<IDomainEventBus>;
 
   beforeEach(() => {
     adminRepo = makeAdminRepo();
     sessionRepo = makeSessionRepo();
     authService = makeAuthService();
+    eventBus = makeEventBus();
     useCase = new DeactivateAdminUseCase(
       adminRepo,
       sessionRepo,
       authService as unknown as AuthorizationService,
+      eventBus,
     );
   });
 
@@ -118,6 +130,32 @@ describe('DeactivateAdminUseCase', () => {
     if (!result.ok) expect(result.error).toBe('ADMIN_NOT_FOUND');
     expect(adminRepo.save).not.toHaveBeenCalled();
     expect(sessionRepo.findByUserId).not.toHaveBeenCalled();
+  });
+
+  it('should publish AdminDeactivatedEvent after successful deactivation', async () => {
+    adminRepo.findById.mockResolvedValue(makeAdmin('admin-1'));
+    adminRepo.save.mockResolvedValue();
+    sessionRepo.findByUserId.mockResolvedValue([]);
+    sessionRepo.save.mockResolvedValue();
+
+    await useCase.execute({ adminId: 'admin-1', requesterId: 'requester-99' });
+
+    expect(eventBus.publish).toHaveBeenCalledTimes(1);
+    const event = eventBus.publish.mock.calls[0][0] as AdminDeactivatedEvent;
+    expect(event).toBeInstanceOf(AdminDeactivatedEvent);
+    expect(event.eventName).toBe('admin.deactivated');
+    expect(event.adminId).toBe('admin-1');
+  });
+
+  it('should NOT publish event when deactivation fails (self, not found, already inactive)', async () => {
+    // CANNOT_DEACTIVATE_SELF
+    await useCase.execute({ adminId: 'same', requesterId: 'same' });
+    expect(eventBus.publish).not.toHaveBeenCalled();
+
+    // ADMIN_NOT_FOUND
+    adminRepo.findById.mockResolvedValue(null);
+    await useCase.execute({ adminId: 'ghost', requesterId: 'req' });
+    expect(eventBus.publish).not.toHaveBeenCalled();
   });
 
   it('should return ADMIN_ALREADY_INACTIVE when already deactivated', async () => {

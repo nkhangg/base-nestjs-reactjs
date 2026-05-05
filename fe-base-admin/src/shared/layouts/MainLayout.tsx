@@ -1,20 +1,59 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, LogOut, ShieldCheck, Users, Key } from 'lucide-react'
+import { NavLink, Link, Outlet } from 'react-router-dom'
+import { LayoutDashboard, LogOut, ShieldCheck, Users, Key, UserCog, Settings, ScrollText, Image, Bell, FileText } from 'lucide-react'
 import { ErrorBoundary } from '@/shared/components/ui/error-boundary'
 import { ROUTES } from '@config/routes'
 import { useCurrentUser, useLogout } from '@modules/auth'
+import { useProfile } from '@modules/profile'
+import { NotificationBell } from '@modules/notification'
+import type { LucideIcon } from 'lucide-react'
 
-const navItems = [
-  { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
-  { to: ROUTES.ADMIN, label: 'Admin Management', icon: Users, requireRole: true },
-  { to: ROUTES.ROLES, label: 'Role Management', icon: Key, requireRole: true },
+interface NavItem {
+  to: string
+  label: string
+  icon: LucideIcon
+  requireRole?: boolean
+  resource?: string
+}
+
+interface NavGroup {
+  label: string
+  items: NavItem[]
+}
+
+const navGroups: NavGroup[] = [
+  {
+    label: 'Overview',
+    items: [
+      { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: 'Management',
+    items: [
+      { to: ROUTES.ADMIN, label: 'Admins', icon: Users, requireRole: true, resource: 'admin-management' },
+      { to: ROUTES.ROLES, label: 'Roles', icon: Key, requireRole: true, resource: 'role-management' },
+      { to: ROUTES.USERS, label: 'Users', icon: UserCog, requireRole: true, resource: 'user-management' },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { to: ROUTES.CONFIGS, label: 'Configs', icon: Settings, requireRole: true, resource: 'config-management' },
+      { to: ROUTES.MEDIA, label: 'Media', icon: Image, requireRole: true, resource: 'media-management' },
+      { to: ROUTES.NOTIFICATIONS, label: 'Notifications', icon: Bell, requireRole: true, resource: 'notification-management' },
+      { to: ROUTES.AUDIT_LOGS, label: 'Audit Logs', icon: ScrollText, requireRole: true, resource: 'audit-logs' },
+      { to: ROUTES.BLOG, label: 'Blog', icon: FileText, requireRole: true, resource: 'blog-management' },
+    ],
+  },
 ]
 
 export function MainLayout() {
   const { user } = useCurrentUser()
   const { logout } = useLogout()
+  const { data: profile } = useProfile()
 
-  const initial = user?.email?.[0]?.toUpperCase() ?? 'A'
+  const displayName = profile?.name || user?.email || 'A'
+  const initial = displayName[0].toUpperCase()
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
@@ -29,40 +68,70 @@ export function MainLayout() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-0.5 px-3 py-4">
-          <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-zinc-500">
-            Menu
-          </p>
-          {navItems
-            .filter((item) => !item.requireRole || user?.adminRole)
-            .map(({ to, label, icon: Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isActive
-                      ? 'bg-zinc-800 font-medium text-white'
-                      : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100'
-                  }`
-                }
-              >
-                <Icon className="size-4 shrink-0" />
-                {label}
-              </NavLink>
-            ))}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+          {navGroups.map((group) => {
+            const visibleItems = group.items.filter((item) => {
+              if (!item.requireRole) return true
+              if (!user?.isAdmin) return false
+              if (!item.resource || !user.accessibleResources) return true
+              return user.accessibleResources.includes(item.resource)
+            })
+            if (visibleItems.length === 0) return null
+            return (
+              <div key={group.label}>
+                <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+                  {group.label}
+                </p>
+                <div className="space-y-0.5">
+                  {visibleItems.map(({ to, label, icon: Icon }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? 'bg-zinc-800 font-medium text-white'
+                            : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100'
+                        }`
+                      }
+                    >
+                      <Icon className="size-4 shrink-0" />
+                      {label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
         </nav>
 
         {/* User */}
         <div className="border-t border-zinc-800 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-xs font-semibold text-white">
-              {initial}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-white">{user?.email}</p>
-              <p className="truncate text-[11px] text-zinc-500">{user?.adminRole ?? 'admin'}</p>
-            </div>
+            <Link
+              to={ROUTES.PROFILE}
+              className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-800/60"
+            >
+              {profile?.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt="avatar"
+                  className="h-8 w-8 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-xs font-semibold text-white">
+                  {initial}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium text-white">
+                  {profile?.name || user?.email}
+                </p>
+                <p className="truncate text-[11px] text-zinc-500">
+                  {user?.isAdmin ? 'admin' : 'user'}
+                </p>
+              </div>
+            </Link>
             <button
               onClick={() => void logout()}
               title="Đăng xuất"
@@ -76,6 +145,10 @@ export function MainLayout() {
 
       {/* ── Content ── */}
       <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Top bar */}
+        <header className="flex h-14 shrink-0 items-center justify-end border-b bg-white px-4">
+          <NotificationBell />
+        </header>
         <main className="flex-1 overflow-auto">
           <ErrorBoundary>
             <Outlet />

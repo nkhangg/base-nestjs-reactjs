@@ -1,4 +1,18 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: be-base-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: be-base-postgres
@@ -17,22 +31,23 @@ services:
       retries: 5
     restart: unless-stopped
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: be-base-app
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-be_base}
-      NODE_ENV: production
-      PORT: ${PORT:-3000}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production}
-    ports:
-      - '${PORT:-3000}:${PORT:-3000}'
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: be-base-app
+  #   environment:
+  #     DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-be_base}
+  #     NODE_ENV: production
+  #     PORT: ${PORT:-3000}
+  #     JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-in-production}
+  #   ports:
+  #     - '${PORT:-3000}:${PORT:-3000}'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   restart: unless-stopped
 
 volumes:
   postgres_data:
+  redis_data:

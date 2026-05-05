@@ -39,6 +39,12 @@ Admin portal template built with React 19 + Vite + TypeScript. Mục tiêu: cấ
 * **Form State:** Luôn sử dụng React Hook Form kết hợp với Zod để validation.
 * **Logic Tách Biệt:** Giữ logic nghiệp vụ (API calls, data transformation) trong `services` và `hooks` của module, không viết trực tiếp trong component giao diện.
 
+### 4. Thông báo & Xác nhận (BẮT BUỘC)
+* **Tuyệt đối không dùng** `window.alert()`, `window.confirm()`, `window.prompt()` ở bất kỳ đâu trong codebase.
+* **Thông báo (toast):** Dùng `toast` từ thư viện `sonner` — `toast.success()`, `toast.error()`, `toast.info()`, `toast.warning()`.
+* **Xác nhận (confirm dialog):** Dùng `ConfirmDialog` từ `@shared/components/ui/confirm-dialog` — component này wrap `Dialog` của shadcn/Radix UI.
+* **Form/Input dialog:** Dùng `Dialog` + `DialogContent` từ `@shared/components/ui/dialog`, không dùng `window.prompt()`.
+
 ## Cấu trúc thư mục
 
 ```

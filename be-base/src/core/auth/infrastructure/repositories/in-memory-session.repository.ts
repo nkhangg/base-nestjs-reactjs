@@ -11,6 +11,9 @@ export class InMemorySessionRepository implements SessionRepository {
     return {
       id: session.id,
       userId: session.userId,
+      userEmail: session.userEmail,
+      userType: session.userType,
+      isAdmin: session.isAdmin,
       refreshTokenHash: session.refreshTokenHash,
       deviceInfo: {
         deviceName: session.deviceInfo.deviceName,
@@ -27,6 +30,9 @@ export class InMemorySessionRepository implements SessionRepository {
   private toDomain(r: ReturnType<typeof this.toRecord>): Session {
     return Session.reconstitute(r.id, {
       userId: r.userId,
+      userEmail: r.userEmail,
+      userType: r.userType,
+      isAdmin: r.isAdmin,
       refreshTokenHash: r.refreshTokenHash,
       deviceInfo: DeviceInfo.create(r.deviceInfo),
       isActive: r.isActive,
