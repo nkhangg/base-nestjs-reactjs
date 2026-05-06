@@ -52,3 +52,8 @@ export interface ConfigListResponse {
   data: AppConfig[]
   meta: ConfigListMeta
 }
+
+export interface PageSection {
+  section: string
+  items: AppConfig[]
+}

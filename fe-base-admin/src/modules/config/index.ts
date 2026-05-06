@@ -1,4 +1,5 @@
 export { ConfigPage } from './components/ConfigPage'
+export { PageConfigEditor } from './components/PageConfigEditor'
 export {
   useConfigs,
   useConfig,

@@ -45,4 +45,12 @@ export const configService = {
   async deleteConfig(id: string): Promise<void> {
     await apiClient.delete(`/admin/configs/${id}`, { withCredentials: true })
   },
+
+  async listPageConfigs(): Promise<AppConfig[]> {
+    const { data } = await apiClient.get<ConfigListResponse>('/admin/configs', {
+      params: { 'filter.key': '$sw:pages.', limit: 200 },
+      withCredentials: true,
+    })
+    return data.data
+  },
 }

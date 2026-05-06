@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Copy,
   Check,
+  LayoutTemplate,
 } from 'lucide-react'
 import { Button } from '@shared/components/ui/button'
 import { StatCard } from '@shared/components/ui/stat-card'
@@ -28,6 +29,7 @@ import {
   useDeleteConfig,
 } from '../hooks/useConfigs'
 import { ConfigFormModal } from './ConfigFormModal'
+import { PageConfigEditor } from './PageConfigEditor'
 import type { AppConfig } from '../types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -300,6 +302,7 @@ export function ConfigPage() {
   )
   const [showForm, setShowForm] = useState(false)
   const [editingConfig, setEditingConfig] = useState<AppConfig | null>(null)
+  const [pageEditorOpen, setPageEditorOpen] = useState(false)
 
   const configs = data?.data ?? []
   const meta = data?.meta
@@ -317,13 +320,23 @@ export function ConfigPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Config Management</h1>
           <p className="mt-1 text-sm text-gray-500">Quản lý cấu hình hệ thống dạng key-value JSON</p>
         </div>
-        <Button
-          onClick={() => { setEditingConfig(null); setShowForm(true) }}
-          className="gap-2 shrink-0"
-        >
-          <Plus className="h-4 w-4" />
-          Tạo config
-        </Button>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant="outline"
+            onClick={() => setPageEditorOpen(true)}
+            className="gap-2"
+          >
+            <LayoutTemplate className="h-4 w-4" />
+            Page Editor
+          </Button>
+          <Button
+            onClick={() => { setEditingConfig(null); setShowForm(true) }}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Tạo config
+          </Button>
+        </div>
       </div>
 
       {/* ── Stat cards ── */}
@@ -362,6 +375,11 @@ export function ConfigPage() {
         open={showForm}
         onClose={() => { setShowForm(false); setEditingConfig(null) }}
         editingConfig={editingConfig}
+      />
+
+      <PageConfigEditor
+        open={pageEditorOpen}
+        onClose={() => setPageEditorOpen(false)}
       />
     </div>
   )
