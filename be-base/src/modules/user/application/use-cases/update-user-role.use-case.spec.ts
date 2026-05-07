@@ -10,6 +10,8 @@ const makeRepo = (): jest.Mocked<IUserRepository> => ({
   findById: jest.fn(),
   findAll: jest.fn(),
   save: jest.fn().mockResolvedValue(undefined),
+  findByOAuthProvider: jest.fn(),
+  saveOAuthAccount: jest.fn().mockResolvedValue(undefined),
 });
 
 const makeAuthService = (): jest.Mocked<
@@ -30,6 +32,9 @@ const makeUser = (role = 'member', isActive = true) =>
     passwordHash: 'hash',
     role,
     isActive,
+    xpTotal: 0,
+    streakCount: 0,
+    settings: {},
     createdAt: new Date(),
   });
 

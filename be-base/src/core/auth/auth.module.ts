@@ -20,6 +20,10 @@ import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.u
 import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
 import { GetProfileUseCase } from './application/use-cases/get-profile.use-case';
 import { UpdateProfileUseCase } from './application/use-cases/update-profile.use-case';
+import { OAuthLoginUseCase } from './application/use-cases/oauth-login.use-case';
+import { GoogleOAuthProvider } from './infrastructure/google-oauth.provider';
+import { DiscordOAuthProvider } from './infrastructure/discord-oauth.provider';
+import { OAUTH_IDENTITY_PROVIDERS } from './domain/services/oauth-identity-provider.interface';
 import {
   JwtTokenService,
   type JwtConfig,
@@ -54,13 +58,12 @@ export class AuthModule implements NestModule {
           transport: {
             host: process.env.MAIL_HOST ?? 'localhost',
             port: parseInt(process.env.MAIL_PORT ?? '1025', 10),
-            auth:
-              process.env.MAIL_USER
-                ? {
-                    user: process.env.MAIL_USER,
-                    pass: process.env.MAIL_PASS ?? '',
-                  }
-                : undefined,
+            auth: process.env.MAIL_USER
+              ? {
+                  user: process.env.MAIL_USER,
+                  pass: process.env.MAIL_PASS ?? '',
+                }
+              : undefined,
           },
           defaults: {
             from: process.env.MAIL_FROM ?? 'No Reply <noreply@example.com>',
@@ -101,6 +104,19 @@ export class AuthModule implements NestModule {
         ResetPasswordUseCase,
         GetProfileUseCase,
         UpdateProfileUseCase,
+        OAuthLoginUseCase,
+        {
+          provide: OAUTH_IDENTITY_PROVIDERS,
+          useClass: GoogleOAuthProvider,
+          multi: true,
+        } as any,
+        {
+          provide: OAUTH_IDENTITY_PROVIDERS,
+          useClass: DiscordOAuthProvider,
+          multi: true,
+        } as any,
+        GoogleOAuthProvider,
+        DiscordOAuthProvider,
         AuthGuard,
       ],
       exports: [TOKEN_SERVICE, SESSION_REPOSITORY, AuthGuard, LoginUseCase],

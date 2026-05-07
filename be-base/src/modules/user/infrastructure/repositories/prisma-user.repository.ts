@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../shared/infrastructure/prisma/prisma.service';
 import type {
   IUserRepository,
@@ -12,8 +13,13 @@ interface UserRecord {
   id: string;
   email: string;
   passwordHash: string;
+  firstName?: string | null;
+  lastName?: string | null;
   role: string;
   isActive: boolean;
+  xpTotal: number;
+  streakCount: number;
+  settings: unknown;
   createdAt: Date;
 }
 
@@ -70,14 +76,42 @@ export class PrismaUserRepository implements IUserRepository {
     const data = {
       email: user.email,
       passwordHash: user.passwordHash,
+      firstName: user.firstName ?? null,
+      lastName: user.lastName ?? null,
       role: user.role,
       isActive: user.isActive,
+      xpTotal: user.xpTotal,
+      streakCount: user.streakCount,
+      settings: user.settings as Prisma.InputJsonValue,
       createdAt: user.createdAt,
     };
     await this.prisma.user.upsert({
       where: { id: user.id.value },
       create: { id: user.id.value, ...data },
       update: data,
+    });
+  }
+
+  async findByOAuthProvider(
+    provider: string,
+    providerId: string,
+  ): Promise<User | null> {
+    const oauthAccount = await this.prisma.oAuthAccount.findUnique({
+      where: { provider_providerId: { provider, providerId } },
+      include: { user: true },
+    });
+    return oauthAccount ? UserMapper.toDomain(oauthAccount.user) : null;
+  }
+
+  async saveOAuthAccount(
+    userId: string,
+    provider: string,
+    providerId: string,
+  ): Promise<void> {
+    await this.prisma.oAuthAccount.upsert({
+      where: { provider_providerId: { provider, providerId } },
+      create: { userId, provider, providerId },
+      update: { userId },
     });
   }
 }

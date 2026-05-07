@@ -161,7 +161,8 @@ function CreateAdminModal({ open, onClose }: { open: boolean; onClose: () => voi
 // ─── Edit admin modal ─────────────────────────────────────────────────────────
 
 const infoSchema = z.object({
-  name: z.string().max(100, 'Tối đa 100 ký tự').optional().or(z.literal('')),
+  firstName: z.string().max(100, 'Tối đa 100 ký tự').optional().or(z.literal('')),
+  lastName: z.string().max(100, 'Tối đa 100 ký tự').optional().or(z.literal('')),
   phone: z.string().max(20, 'Tối đa 20 ký tự').optional().or(z.literal('')),
 })
 type InfoValues = z.infer<typeof infoSchema>
@@ -250,7 +251,7 @@ function EditAdminModal({
 
   const infoForm = useForm<InfoValues>({
     resolver: zodResolver(infoSchema),
-    values: { name: admin?.name ?? '', phone: admin?.phone ?? '' },
+    values: { firstName: admin?.firstName ?? '', lastName: admin?.lastName ?? '', phone: admin?.phone ?? '' },
   })
   const pwdForm = useForm<PwdValues>({ resolver: zodResolver(pwdSchema) })
 
@@ -281,10 +282,11 @@ function EditAdminModal({
   const onSubmitInfo = async (values: InfoValues) => {
     if (!admin) return
     try {
-      const name = values.name?.trim() || null
+      const firstName = values.firstName?.trim() || null
+      const lastName = values.lastName?.trim() || null
       const phone = values.phone?.trim() || null
-      await updateInfo.mutateAsync({ id: admin.id, dto: { name, phone } })
-      onAdminUpdate({ ...admin, name, phone })
+      await updateInfo.mutateAsync({ id: admin.id, dto: { firstName, lastName, phone } })
+      onAdminUpdate({ ...admin, firstName, lastName, phone })
       toast.success('Cập nhật thông tin thành công')
     } catch {
       toast.error('Cập nhật thất bại')
@@ -302,7 +304,8 @@ function EditAdminModal({
     }
   }
 
-  const initials = (admin?.name || admin?.email || '?').charAt(0).toUpperCase()
+  const fullName = [admin?.firstName, admin?.lastName].filter(Boolean).join(' ')
+  const initials = (fullName || admin?.email || '?').charAt(0).toUpperCase()
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -345,9 +348,14 @@ function EditAdminModal({
           {/* Tab: Thông tin */}
           <TabsContent value="info" className="mt-0">
             <form onSubmit={infoForm.handleSubmit(onSubmitInfo)} className="space-y-4 px-6 py-5">
-              <FormField label="Tên hiển thị" error={infoForm.formState.errors.name?.message}>
-                <Input placeholder="Nhập tên..." {...infoForm.register('name')} />
-              </FormField>
+              <div className="grid grid-cols-2 gap-3">
+                <FormField label="Họ" error={infoForm.formState.errors.firstName?.message}>
+                  <Input placeholder="Nguyễn" {...infoForm.register('firstName')} />
+                </FormField>
+                <FormField label="Tên" error={infoForm.formState.errors.lastName?.message}>
+                  <Input placeholder="Văn A" {...infoForm.register('lastName')} />
+                </FormField>
+              </div>
               <FormField label="Số điện thoại" error={infoForm.formState.errors.phone?.message}>
                 <Input placeholder="Nhập SĐT..." {...infoForm.register('phone')} />
               </FormField>
@@ -369,7 +377,7 @@ function EditAdminModal({
                 {admin?.avatarUrl ? (
                   <img
                     src={admin.avatarUrl}
-                    alt={admin.name ?? admin.email}
+                    alt={[admin.firstName, admin.lastName].filter(Boolean).join(' ') || admin.email}
                     className="h-24 w-24 rounded-full object-cover ring-2 ring-gray-200"
                   />
                 ) : (
@@ -394,7 +402,9 @@ function EditAdminModal({
                 />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-gray-900">{admin?.name ?? '—'}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {[admin?.firstName, admin?.lastName].filter(Boolean).join(' ') || '—'}
+                </p>
                 <p className="text-xs text-gray-400">{admin?.email}</p>
               </div>
               <Button

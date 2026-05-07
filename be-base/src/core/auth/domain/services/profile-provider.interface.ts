@@ -1,13 +1,15 @@
 export interface ProfileSnapshot {
   createdAt: Date;
   isActive: boolean;
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
 }
 
 export interface ProfileUpdateData {
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
 }

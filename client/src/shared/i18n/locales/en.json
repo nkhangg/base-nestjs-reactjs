@@ -1,0 +1,145 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "search": "Search",
+    "noData": "No data",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "skip": "Skip"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "verifyEmail": "Verify email",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "welcomeBack": "Welcome back",
+    "loginSub": "Continue your Japanese learning journey",
+    "continueWithGoogle": "Continue with Google",
+    "registerWithGoogle": "Sign up with Google",
+    "orLoginWithEmail": "or sign in with email",
+    "orRegisterWithEmail": "or sign up with email",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "createAccount": "Create account",
+    "createAccountSub": "Free · No credit card required · Start learning now",
+    "loginBtn": "Log in →",
+    "registerBtn": "Create account →",
+    "freeRegister": "Register for free",
+    "sendResetLink": "Send reset link →",
+    "resetPasswordSub": "Enter your email and we'll send you a password reset link.",
+    "emailSent": "Email sent!",
+    "emailSentSub": "Check your inbox and follow the instructions.",
+    "backToLogin": "← Back to login",
+    "passwordHint": "At least 8 characters including letters and numbers",
+    "agreeToTerms": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "passwordStrength": {
+      "weak": "Too weak — add uppercase or numbers",
+      "medium": "Medium — add a special character",
+      "good": "Almost there — nearly strong enough",
+      "strong": "✓ Strong password"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "flashcards": "Flashcards",
+    "grammar": "Grammar",
+    "mockTest": "Mock Test",
+    "progress": "Progress",
+    "profile": "Profile",
+    "settings": "Settings",
+    "billing": "Billing"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "streak": "Day Streak",
+    "totalCards": "Flashcards",
+    "masteredWords": "Mastered Words",
+    "todayGoal": "Today's Goal",
+    "continueStudying": "Continue Studying"
+  },
+  "flashcard": {
+    "title": "Flashcards",
+    "session": "Study Session",
+    "flip": "Flip",
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy",
+    "results": "Results",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "completed": "Session complete!"
+  },
+  "grammar": {
+    "title": "Grammar",
+    "lesson": "Lesson",
+    "exercise": "Exercise",
+    "submit": "Submit",
+    "explanation": "Explanation"
+  },
+  "mockTest": {
+    "title": "JLPT Mock Test",
+    "selectLevel": "Select level",
+    "startTest": "Start test",
+    "timeRemaining": "Time remaining",
+    "submit": "Submit",
+    "results": "Results",
+    "passed": "Passed",
+    "failed": "Failed"
+  },
+  "progress": {
+    "title": "Learning Progress",
+    "streak": "Day Streak",
+    "xpTotal": "Total XP",
+    "retentionRate": "Retention Rate",
+    "weeklyActivity": "Weekly Activity"
+  },
+  "onboarding": {
+    "title": "Welcome!",
+    "goal": "Your goal",
+    "level": "Current level",
+    "schedule": "Study schedule",
+    "dailyMinutes": "Minutes per day"
+  },
+  "billing": {
+    "title": "Plans",
+    "free": "Free",
+    "pro": "Pro",
+    "team": "Team",
+    "upgrade": "Upgrade",
+    "currentPlan": "Current plan",
+    "renewsOn": "Renews on"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "levels": "Levels",
+      "how": "How it works",
+      "pricing": "Pricing"
+    },
+    "hero": {
+      "eyebrow": "Learn Japanese smarter",
+      "cta": "Start learning free →",
+      "ctaSecondary": "See how it works",
+      "note": "Free · No credit card required"
+    },
+    "cta": {
+      "btn": "Create free account →",
+      "note": "Join 12,400+ learners studying every day"
+    }
+  }
+}

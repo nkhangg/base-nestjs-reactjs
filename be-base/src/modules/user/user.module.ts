@@ -20,6 +20,8 @@ import { PASSWORD_UPDATERS } from '../../core/auth/domain/services/password-upda
 import { UserPasswordUpdater } from './infrastructure/user-password-updater';
 import { PROFILE_PROVIDERS } from '../../core/auth/domain/services/profile-provider.interface';
 import { UserProfileProvider } from './infrastructure/user-profile-provider';
+import { OAUTH_USER_CONNECTORS } from '../../core/auth/domain/services/oauth-user-connector.interface';
+import { UserOAuthConnector } from './application/use-cases/user-oauth-connector.service';
 import {
   AuthorizationService,
   type SeedRoleDefinition,
@@ -74,6 +76,12 @@ const USER_ROLES: SeedRoleDefinition[] = [
       multi: true,
     } as ClassProvider,
     UserProfileProvider,
+    {
+      provide: OAUTH_USER_CONNECTORS,
+      useClass: UserOAuthConnector,
+      multi: true,
+    } as ClassProvider,
+    UserOAuthConnector,
     CreateUserUseCase,
     GetUserUseCase,
     ListUsersUseCase,
@@ -86,6 +94,7 @@ const USER_ROLES: SeedRoleDefinition[] = [
     USER_REPOSITORY,
     PASSWORD_UPDATERS,
     PROFILE_PROVIDERS,
+    OAUTH_USER_CONNECTORS,
     CreateUserUseCase,
   ],
 })

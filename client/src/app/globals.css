@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ─── Nihongo design system — raw tokens ─────────────────────────── */
+    --ink:           240 7% 6%;    /* #0D0D0F — sumi ink */
+    --ink-2:         240 5% 24%;   /* #3A3A40 */
+    --ink-3:         240 4% 50%;   /* #7A7A85 */
+    --ink-4:         240 7% 70%;   /* #ADADB8 */
+    --paper:         60 15% 97%;   /* #FAFAF8 — washi paper */
+    --surface:       60 11% 94%;   /* #F2F2EF */
+    --surface-2:     60 8% 90%;    /* #E8E8E4 */
+    --vermillion:    352 80% 56%;  /* #E8334A — torii red */
+    --vermillion-lt: 352 100% 97%; /* #FFF0F2 */
+    --vermillion-md: 352 80% 79%;  /* #F5A0AB */
+    --pine:          168 80% 30%;  /* #0F8A72 — pine green */
+    --pine-lt:       167 50% 94%;  /* #E8F7F4 */
+    --amber:         37 87% 41%;   /* #C47D0E */
+    --amber-lt:      42 93% 95%;   /* #FEF6E4 */
+
+    --font-sans: 'DM Sans';
+    --font-mono: 'DM Mono';
+
+    /* ─── Border radius scale ─────────────────────────────────────────── */
+    --radius-sm: 0.5rem;   /* 8px  */
+    --radius:    0.875rem; /* 14px — main */
+    --radius-lg: 1.25rem;  /* 20px — flashcard */
+
+    /* ─── shadcn/ui semantic tokens ──────────────────────────────────── */
+    --background:          var(--paper);
+    --foreground:          var(--ink);
+    --card:                0 0% 100%;
+    --card-foreground:     var(--ink);
+    --popover:             0 0% 100%;
+    --popover-foreground:  var(--ink);
+    --primary:             var(--ink);
+    --primary-foreground:  0 0% 100%;
+    --secondary:           var(--surface);
+    --secondary-foreground: var(--ink);
+    --muted:               var(--surface);
+    --muted-foreground:    var(--ink-3);
+    --accent:              var(--surface);
+    --accent-foreground:   var(--ink);
+    --destructive:         var(--vermillion);
+    --destructive-foreground: 0 0% 100%;
+    --border:              240 5% 91%;  /* ≈ rgba(13,13,15,.08) on paper */
+    --input:               240 5% 91%;
+    --ring:                var(--ink);
+  }
+
+  .dark {
+    /* ─── Nihongo dark tokens ─────────────────────────────────────────── */
+    --ink:   60 15% 97%;
+    --ink-2: 240 7% 70%;
+    --ink-3: 240 4% 50%;
+    --ink-4: 240 5% 35%;
+    --paper: 240 7% 6%;
+    --surface:   240 5% 11%;
+    --surface-2: 240 5% 16%;
+
+    /* ─── shadcn/ui dark semantic ─────────────────────────────────────── */
+    --background:          var(--paper);
+    --foreground:          var(--ink);
+    --card:                240 5% 11%;
+    --card-foreground:     var(--ink);
+    --popover:             240 5% 11%;
+    --popover-foreground:  var(--ink);
+    --primary:             60 15% 97%;
+    --primary-foreground:  240 7% 6%;
+    --secondary:           var(--surface);
+    --secondary-foreground: var(--ink);
+    --muted:               var(--surface);
+    --muted-foreground:    var(--ink-3);
+    --accent:              var(--surface);
+    --accent-foreground:   var(--ink);
+    --destructive:         var(--vermillion);
+    --destructive-foreground: 60 15% 97%;
+    --border:              240 5% 18%;
+    --input:               240 5% 18%;
+    --ring:                60 15% 97%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html{
+     scroll-behavior: smooth;
+  }
+}

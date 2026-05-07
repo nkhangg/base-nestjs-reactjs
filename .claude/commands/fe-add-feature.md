@@ -124,6 +124,11 @@ After confirmation, implement all planned changes. Follow these rules strictly:
 - Add to the correct route group in `src/app/router.tsx`
 - Add `ROUTES.<KEY>` constant to `src/shared/constants/`
 
+**accessibleResources rule (nav item với `resource` mới):**
+- Nếu feature thêm một nav item vào `fe-base-admin/src/shared/layouts/MainLayout.tsx` với field `resource: '<key>'` chưa tồn tại trong danh sách, **bắt buộc** thêm `'<key>'` vào mảng `ADMIN_NAV_RESOURCES` trong `be-base/src/core/auth/presentation/http/auth.controller.ts`
+- File BE: `ADMIN_NAV_RESOURCES = [ ..., '<new-resource-key>' ] as const`
+- Nếu không cập nhật thì user sẽ không thấy nav item vì `accessibleResources` trả về từ `/auth/me` sẽ thiếu key mới
+
 ---
 
 ### STEP 6 — Update module doc
@@ -146,4 +151,5 @@ After implementing, update `fe-base-admin/.claude/modules/<module-name>.md` to r
 - [ ] Forms use React Hook Form + Zod validation
 - [ ] Destructive actions have confirmation dialog
 - [ ] New routes use lazy loading and are added to `router.tsx`
+- [ ] If new nav item with `resource` key: `ADMIN_NAV_RESOURCES` in `be-base/src/core/auth/presentation/http/auth.controller.ts` updated
 - [ ] `fe-base-admin/.claude/modules/<module-name>.md` updated

@@ -9,6 +9,10 @@ import type { User } from '../../domain/entities/user.entity';
 @Injectable()
 export class InMemoryUserRepository implements IUserRepository {
   private readonly store = new Map<string, User>();
+  private readonly oauthAccounts = new Map<
+    string,
+    { userId: string; provider: string; providerId: string }
+  >();
 
   async findByEmail(email: string): Promise<User | null> {
     for (const user of this.store.values()) {
@@ -47,5 +51,24 @@ export class InMemoryUserRepository implements IUserRepository {
 
   async save(user: User): Promise<void> {
     this.store.set(user.id.value, user);
+  }
+
+  async findByOAuthProvider(
+    provider: string,
+    providerId: string,
+  ): Promise<User | null> {
+    const key = `${provider}:${providerId}`;
+    const account = this.oauthAccounts.get(key);
+    if (!account) return null;
+    return this.store.get(account.userId) ?? null;
+  }
+
+  async saveOAuthAccount(
+    userId: string,
+    provider: string,
+    providerId: string,
+  ): Promise<void> {
+    const key = `${provider}:${providerId}`;
+    this.oauthAccounts.set(key, { userId, provider, providerId });
   }
 }

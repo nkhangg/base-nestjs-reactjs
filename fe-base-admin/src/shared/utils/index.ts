@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
+import { format } from 'date-fns'
 import { twMerge } from 'tailwind-merge'
 
 /** Merge Tailwind classes safely — use everywhere instead of bare clsx */
@@ -16,13 +17,9 @@ export function formatCurrency(value: number, currency = 'VND', locale = 'vi-VN'
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value)
 }
 
-/** Format ngày giờ */
-export function formatDate(value: string | Date, locale = 'vi-VN'): string {
-  return new Intl.DateTimeFormat(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(value))
+/** Format ngày giờ — tham số thứ hai là format string (date-fns), mặc định dd/MM/yyyy */
+export function formatDate(value: string | Date, formatStr = 'dd/MM/yyyy'): string {
+  return format(new Date(value), formatStr)
 }
 
 /** Capitalize first letter */

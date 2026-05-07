@@ -23,7 +23,8 @@ export class AdminProfileProvider implements IProfileProvider {
     return {
       createdAt: admin.createdAt,
       isActive: admin.isActive,
-      name: admin.name,
+      firstName: admin.firstName ?? null,
+      lastName: admin.lastName ?? null,
       phone: admin.phone,
       avatarUrl: admin.avatarUrl,
     };
@@ -32,7 +33,12 @@ export class AdminProfileProvider implements IProfileProvider {
   async updateProfile(id: string, data: ProfileUpdateData): Promise<void> {
     const admin = await this.adminRepo.findById(id);
     if (!admin) return;
-    admin.updateProfile(data);
+    admin.updateProfile({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      avatarUrl: data.avatarUrl,
+    });
     await this.adminRepo.save(admin);
   }
 }

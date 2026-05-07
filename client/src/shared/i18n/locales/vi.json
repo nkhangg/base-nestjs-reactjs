@@ -1,0 +1,145 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã có lỗi xảy ra",
+    "retry": "Thử lại",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "search": "Tìm kiếm",
+    "noData": "Không có dữ liệu",
+    "next": "Tiếp theo",
+    "back": "Quay lại",
+    "finish": "Hoàn thành",
+    "skip": "Bỏ qua"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "resetPassword": "Đặt lại mật khẩu",
+    "verifyEmail": "Xác minh email",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "welcomeBack": "Chào mừng trở lại",
+    "loginSub": "Tiếp tục hành trình học tiếng Nhật của bạn",
+    "continueWithGoogle": "Tiếp tục với Google",
+    "registerWithGoogle": "Đăng ký bằng Google",
+    "orLoginWithEmail": "hoặc đăng nhập bằng email",
+    "orRegisterWithEmail": "hoặc đăng ký bằng email",
+    "firstName": "Họ",
+    "lastName": "Tên",
+    "createAccount": "Tạo tài khoản",
+    "createAccountSub": "Miễn phí · Không cần thẻ tín dụng · Bắt đầu học ngay",
+    "loginBtn": "Đăng nhập →",
+    "registerBtn": "Tạo tài khoản →",
+    "freeRegister": "Đăng ký miễn phí",
+    "sendResetLink": "Gửi link đặt lại →",
+    "resetPasswordSub": "Nhập email của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu.",
+    "emailSent": "Email đã được gửi!",
+    "emailSentSub": "Kiểm tra hộp thư đến và làm theo hướng dẫn.",
+    "backToLogin": "← Quay lại đăng nhập",
+    "passwordHint": "Tối thiểu 8 ký tự, gồm chữ và số",
+    "agreeToTerms": "Tôi đồng ý với",
+    "termsOfService": "Điều khoản dịch vụ",
+    "privacyPolicy": "Chính sách bảo mật",
+    "passwordStrength": {
+      "weak": "Quá yếu — thêm chữ hoa hoặc số",
+      "medium": "Trung bình — thêm ký tự đặc biệt",
+      "good": "Khá tốt — gần đủ mạnh",
+      "strong": "✓ Mật khẩu mạnh"
+    }
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "flashcards": "Thẻ học",
+    "grammar": "Ngữ pháp",
+    "mockTest": "Thi thử",
+    "progress": "Tiến độ",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "billing": "Thanh toán"
+  },
+  "dashboard": {
+    "title": "Tổng quan",
+    "streak": "Chuỗi ngày",
+    "totalCards": "Thẻ học",
+    "masteredWords": "Từ đã thuộc",
+    "todayGoal": "Mục tiêu hôm nay",
+    "continueStudying": "Tiếp tục học"
+  },
+  "flashcard": {
+    "title": "Thẻ học",
+    "session": "Buổi học",
+    "flip": "Lật thẻ",
+    "again": "Học lại",
+    "hard": "Khó",
+    "good": "Tốt",
+    "easy": "Dễ",
+    "results": "Kết quả",
+    "correct": "Đúng",
+    "incorrect": "Sai",
+    "completed": "Hoàn thành buổi học!"
+  },
+  "grammar": {
+    "title": "Ngữ pháp",
+    "lesson": "Bài học",
+    "exercise": "Bài tập",
+    "submit": "Nộp bài",
+    "explanation": "Giải thích"
+  },
+  "mockTest": {
+    "title": "Thi thử JLPT",
+    "selectLevel": "Chọn cấp độ",
+    "startTest": "Bắt đầu thi",
+    "timeRemaining": "Thời gian còn lại",
+    "submit": "Nộp bài",
+    "results": "Kết quả",
+    "passed": "Đạt",
+    "failed": "Chưa đạt"
+  },
+  "progress": {
+    "title": "Tiến độ học tập",
+    "streak": "Chuỗi ngày",
+    "xpTotal": "Tổng XP",
+    "retentionRate": "Tỉ lệ ghi nhớ",
+    "weeklyActivity": "Hoạt động tuần"
+  },
+  "onboarding": {
+    "title": "Chào mừng!",
+    "goal": "Mục tiêu của bạn",
+    "level": "Trình độ hiện tại",
+    "schedule": "Lịch học",
+    "dailyMinutes": "Phút mỗi ngày"
+  },
+  "billing": {
+    "title": "Gói dịch vụ",
+    "free": "Miễn phí",
+    "pro": "Pro",
+    "team": "Team",
+    "upgrade": "Nâng cấp",
+    "currentPlan": "Gói hiện tại",
+    "renewsOn": "Gia hạn vào"
+  },
+  "landing": {
+    "nav": {
+      "features": "Tính năng",
+      "levels": "Cấp độ",
+      "how": "Cách học",
+      "pricing": "Bảng giá"
+    },
+    "hero": {
+      "eyebrow": "Học tiếng Nhật thông minh hơn",
+      "cta": "Bắt đầu học miễn phí →",
+      "ctaSecondary": "Xem cách hoạt động",
+      "note": "Miễn phí · Không cần thẻ tín dụng"
+    },
+    "cta": {
+      "btn": "Tạo tài khoản miễn phí →",
+      "note": "Tham gia cùng 12,400+ học viên đang học mỗi ngày"
+    }
+  }
+}

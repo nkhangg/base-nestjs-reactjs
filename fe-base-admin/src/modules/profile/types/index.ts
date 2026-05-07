@@ -3,7 +3,8 @@ export interface ProfileData {
   email: string
   isAdmin?: boolean
   role?: string
-  name?: string | null
+  firstName?: string | null
+  lastName?: string | null
   phone?: string | null
   avatarUrl?: string | null
   createdAt?: string | null
@@ -11,7 +12,8 @@ export interface ProfileData {
 }
 
 export interface UpdateProfileDto {
-  name?: string | null
+  firstName?: string | null
+  lastName?: string | null
   phone?: string | null
   avatarUrl?: string | null
 }

@@ -11,7 +11,8 @@ export interface SyncAdminRolesDto {
 export interface Admin {
   id: string
   email: string
-  name?: string | null
+  firstName?: string | null
+  lastName?: string | null
   phone?: string | null
   avatarUrl?: string | null
   roles: string[]
@@ -20,7 +21,8 @@ export interface Admin {
 }
 
 export interface UpdateAdminInfoDto {
-  name?: string | null
+  firstName?: string | null
+  lastName?: string | null
   phone?: string | null
   avatarUrl?: string | null
 }

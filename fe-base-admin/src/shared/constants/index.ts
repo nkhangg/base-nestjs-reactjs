@@ -29,6 +29,33 @@ export const QUERY_KEYS = {
     POST: ['blog', 'post'] as const,
     CATEGORIES: ['blog', 'categories'] as const,
   },
+  DICTIONARY: {
+    LIST: ['dictionary', 'list'] as const,
+    PENDING: ['dictionary', 'pending'] as const,
+    ENTRY: ['dictionary', 'entry'] as const,
+  },
+  ARTICLE: {
+    LIST: ['article', 'list'] as const,
+    PENDING: ['article', 'pending'] as const,
+    DETAIL: ['article', 'detail'] as const,
+    CATEGORIES: ['article', 'categories'] as const,
+    TAGS: ['article', 'tags'] as const,
+  },
+  QUESTION: {
+    LIST: ['question', 'list'] as const,
+    ENTRY: ['question', 'entry'] as const,
+  },
+  PROGRESS: {
+    USER_ACTIVITY: ['progress', 'user-activity'] as const,
+    LEADERBOARD: ['progress', 'leaderboard'] as const,
+  },
+  ORGANIZATION: {
+    LIST: ['organization', 'list'] as const,
+    DETAIL: ['organization', 'detail'] as const,
+    CLASSROOMS: ['organization', 'classrooms'] as const,
+    MEMBERS: ['organization', 'members'] as const,
+    REPORT: ['organization', 'report'] as const,
+  },
   HEALTH: ['health'] as const,
 } as const
 

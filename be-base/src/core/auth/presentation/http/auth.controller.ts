@@ -44,6 +44,8 @@ import { ChangePasswordDto } from './dtos/change-password.dto';
 import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { OAuthLoginDto } from './dtos/oauth-login.dto';
+import { OAuthLoginUseCase } from '../../application/use-cases/oauth-login.use-case';
 import { AuthorizationService, Subject } from '../../../authorization';
 import { GetProfileUseCase } from '../../application/use-cases/get-profile.use-case';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
@@ -61,6 +63,11 @@ const ADMIN_NAV_RESOURCES = [
   'notification-management',
   'audit-logs',
   'blog-management',
+  'dictionary-management',
+  'article-management',
+  'question-management',
+  'progress-management',
+  'organization-management',
 ] as const;
 
 @ApiTags('Auth')
@@ -75,6 +82,7 @@ export class AuthController {
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly getProfileUseCase: GetProfileUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
+    private readonly oauthLoginUseCase: OAuthLoginUseCase,
     @Inject(SESSION_REPOSITORY) private readonly sessionRepo: SessionRepository,
     @Optional() private readonly authorizationService: AuthorizationService,
   ) {}
@@ -95,6 +103,44 @@ export class AuthController {
     const result = await this.loginUseCase.execute({
       email: dto.email,
       password: dto.password,
+      type: dto.type,
+      deviceName:
+        dto.deviceName ?? (req.headers['x-device-name'] as string) ?? 'Unknown',
+      ipAddress: req.ip ?? '',
+      userAgent: req.headers['user-agent'] ?? '',
+    });
+
+    if (!result.ok) throw result.error;
+
+    const { accessToken, refreshToken, sessionId } = result.value;
+
+    res.cookie('access_token', accessToken, COOKIE_ACCESS);
+    res.cookie('refresh_token', refreshToken, COOKIE_REFRESH);
+    res.cookie('session_id', sessionId, COOKIE_SESSION_ID);
+
+    return { message: 'Login successful' };
+  }
+
+  @Public()
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
+  @Post('oauth/login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Đăng nhập bằng OAuth (Google, Discord, ...)' })
+  @ApiBody({ type: OAuthLoginDto })
+  @ApiResponse({ status: 200, description: 'Đăng nhập thành công' })
+  @ApiResponse({
+    status: 400,
+    description: 'Provider hoặc loại tài khoản không hỗ trợ OAuth',
+  })
+  @ApiResponse({ status: 401, description: 'Access token không hợp lệ' })
+  async oauthLogin(
+    @Body() dto: OAuthLoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.oauthLoginUseCase.execute({
+      provider: dto.provider,
+      accessToken: dto.accessToken,
       type: dto.type,
       deviceName:
         dto.deviceName ?? (req.headers['x-device-name'] as string) ?? 'Unknown',
@@ -270,7 +316,12 @@ export class AuthController {
       type: req.user.type,
       email: req.user.email,
       isAdmin: req.user.isAdmin,
-      data: { name: dto.name, phone: dto.phone, avatarUrl: dto.avatarUrl },
+      data: {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+        avatarUrl: dto.avatarUrl,
+      },
     });
   }
 

@@ -4,11 +4,15 @@ import { UserId } from '../value-objects/user-id.vo';
 export interface UserProps {
   email: string;
   passwordHash: string;
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
   role: string;
   isActive: boolean;
+  xpTotal: number;
+  streakCount: number;
+  settings: Record<string, unknown>;
   createdAt: Date;
 }
 
@@ -24,15 +28,45 @@ export class User extends BaseEntity<UserId> {
     email: string;
     passwordHash: string;
     role?: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    avatarUrl?: string | null;
   }): User {
     return new User(UserId.create(), {
       email: params.email,
       passwordHash: params.passwordHash,
-      name: null,
+      firstName: params.firstName ?? null,
+      lastName: params.lastName ?? null,
       phone: null,
-      avatarUrl: null,
+      avatarUrl: params.avatarUrl ?? null,
       role: params.role ?? 'member',
       isActive: true,
+      xpTotal: 0,
+      streakCount: 0,
+      settings: {},
+      createdAt: new Date(),
+    });
+  }
+
+  static createFromOAuth(params: {
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    avatarUrl?: string | null;
+    role?: string;
+  }): User {
+    return new User(UserId.create(), {
+      email: params.email,
+      passwordHash: '',
+      firstName: params.firstName ?? null,
+      lastName: params.lastName ?? null,
+      phone: null,
+      avatarUrl: params.avatarUrl ?? null,
+      role: params.role ?? 'member',
+      isActive: true,
+      xpTotal: 0,
+      streakCount: 0,
+      settings: {},
       createdAt: new Date(),
     });
   }
@@ -62,13 +96,28 @@ export class User extends BaseEntity<UserId> {
   }
 
   updateProfile(data: {
-    name?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     phone?: string | null;
     avatarUrl?: string | null;
   }): void {
-    if (data.name !== undefined) this.props.name = data.name;
+    if (data.firstName !== undefined) this.props.firstName = data.firstName;
+    if (data.lastName !== undefined) this.props.lastName = data.lastName;
     if (data.phone !== undefined) this.props.phone = data.phone;
     if (data.avatarUrl !== undefined) this.props.avatarUrl = data.avatarUrl;
+  }
+
+  addXp(amount: number): void {
+    if (amount <= 0) return;
+    this.props.xpTotal += amount;
+  }
+
+  updateStreak(count: number): void {
+    this.props.streakCount = count;
+  }
+
+  updateSettings(patch: Record<string, unknown>): void {
+    this.props.settings = { ...this.props.settings, ...patch };
   }
 
   get email(): string {
@@ -77,8 +126,14 @@ export class User extends BaseEntity<UserId> {
   get passwordHash(): string {
     return this.props.passwordHash;
   }
-  get name(): string | null | undefined {
-    return this.props.name;
+  get hasPassword(): boolean {
+    return !!this.props.passwordHash;
+  }
+  get firstName(): string | null | undefined {
+    return this.props.firstName;
+  }
+  get lastName(): string | null | undefined {
+    return this.props.lastName;
   }
   get phone(): string | null | undefined {
     return this.props.phone;
@@ -91,6 +146,15 @@ export class User extends BaseEntity<UserId> {
   }
   get isActive(): boolean {
     return this.props.isActive;
+  }
+  get xpTotal(): number {
+    return this.props.xpTotal;
+  }
+  get streakCount(): number {
+    return this.props.streakCount;
+  }
+  get settings(): Record<string, unknown> {
+    return this.props.settings;
   }
   get createdAt(): Date {
     return this.props.createdAt;

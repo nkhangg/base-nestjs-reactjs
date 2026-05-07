@@ -1,0 +1,129 @@
+[
+  {
+    "id": "0bb00000-0000-4000-8000-000000000001",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "「食べる」(たべる) の意味は？",
+      "choices": ["to eat", "to drink", "to write", "to read"],
+      "answer": "to eat",
+      "explanation": "食べる (taberu) means 'to eat'. Example: ご飯を食べます。",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000001"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000002",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "「飲む」(のむ) の意味は？",
+      "choices": ["to eat", "to drink", "to go", "to come"],
+      "answer": "to drink",
+      "explanation": "飲む (nomu) means 'to drink'. Example: 水を飲みます。",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000002"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000003",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "'to go' を日本語で言うと？",
+      "choices": ["来る", "行く", "する", "見る"],
+      "answer": "行く",
+      "explanation": "行く (iku) means 'to go'. Example: 学校に行きます。",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000008"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000004",
+    "questionData": {
+      "type": "fill_in_blank",
+      "prompt": "毎朝ご飯を___ます。(I eat rice every morning.)",
+      "answer": "食べ",
+      "explanation": "食べる → ます形 → 食べます",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000001"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000005",
+    "questionData": {
+      "type": "fill_in_blank",
+      "prompt": "友達と___を飲みました。(I drank water with a friend.)",
+      "answer": "水",
+      "explanation": "水 (mizu) = water",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000011"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000006",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "「学校」の読み方は？",
+      "choices": ["がっこう", "がくこ", "がっこ", "がくこう"],
+      "answer": "がっこう",
+      "explanation": "学校 = がっこう (gakkou) = school",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000013"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000007",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "「大きい」の反対語は？",
+      "choices": ["小さい", "新しい", "古い", "長い"],
+      "answer": "小さい",
+      "explanation": "大きい (big) ↔ 小さい (small) are antonyms.",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000016"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000008",
+    "questionData": {
+      "type": "matching",
+      "prompt": "左の日本語と右の英語を正しく結びましょう。",
+      "choices": ["今日", "明日", "友達", "本"],
+      "answer": ["today", "tomorrow", "friend", "book"],
+      "explanation": "今日=today, 明日=tomorrow, 友達=friend, 本=book",
+      "jlptLevel": 5
+    },
+    "referenceType": "none",
+    "referenceId": null
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000009",
+    "questionData": {
+      "type": "quiz",
+      "prompt": "「電車」(でんしゃ) の意味は？",
+      "choices": ["bus", "train", "taxi", "airplane"],
+      "answer": "train",
+      "explanation": "電車 (densha) means 'train' or 'electric train'.",
+      "jlptLevel": 5
+    },
+    "referenceType": "dictionary",
+    "referenceId": "0dd00000-0000-4000-8000-000000000012"
+  },
+  {
+    "id": "0bb00000-0000-4000-8000-000000000010",
+    "questionData": {
+      "type": "fill_in_blank",
+      "prompt": "___に電車で行きます。(I go to school by train.)",
+      "answer": "学校",
+      "explanation": "学校 (gakkou) = school",
+      "jlptLevel": 5
+    },
+    "referenceType": "article",
+    "referenceId": "0aa00000-0000-4000-8000-000000000002"
+  }
+]

@@ -118,6 +118,11 @@ After confirmation, implement all planned changes. Follow these rules strictly:
 - Static routes before param routes (NestJS ordering requirement)
 - `@HttpCode(200)` on DELETE routes
 
+**accessibleResources rule (AdminFeature với `resource` mới):**
+- Nếu feature tạo một `AdminFeature` với field `resource: '<key>'` chưa có trong danh sách, **bắt buộc** thêm `'<key>'` vào mảng `ADMIN_NAV_RESOURCES` trong `be-base/src/core/auth/presentation/http/auth.controller.ts`
+- File: `ADMIN_NAV_RESOURCES = [ ..., '<new-resource-key>' ] as const`
+- Nếu không cập nhật thì FE sidebar sẽ không hiện nav item vì `accessibleResources` từ `/auth/me` sẽ thiếu key mới
+
 ---
 
 ### STEP 6 — Update module doc
@@ -154,4 +159,5 @@ Sau khi sửa schema, chạy:
 - [ ] `InMemory` repository updated to match any new interface methods
 - [ ] New admin routes have `@RequirePermission` decorator
 - [ ] Static routes declared before param routes in controllers
+- [ ] If new `AdminFeature` with new `resource` key: `ADMIN_NAV_RESOURCES` in `be-base/src/core/auth/presentation/http/auth.controller.ts` updated
 - [ ] `be-base/.claude/modules/<module-name>.md` updated

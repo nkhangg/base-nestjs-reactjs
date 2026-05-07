@@ -9,6 +9,8 @@ const makeRepo = (): jest.Mocked<IUserRepository> => ({
   findById: jest.fn(),
   findAll: jest.fn(),
   save: jest.fn().mockResolvedValue(undefined),
+  findByOAuthProvider: jest.fn(),
+  saveOAuthAccount: jest.fn().mockResolvedValue(undefined),
 });
 
 const makeEventBus = (): jest.Mocked<IDomainEventBus> => ({
@@ -22,6 +24,9 @@ const makeUser = (id = 'user-1', email = 'old@test.com') =>
     passwordHash: 'hash',
     role: 'member',
     isActive: true,
+    xpTotal: 0,
+    streakCount: 0,
+    settings: {},
     createdAt: new Date(),
   });
 

@@ -1,0 +1,84 @@
+{
+  "categories": [
+    {
+      "id": "0cc00000-0000-4000-8000-000000000001",
+      "name": "Beginners Guide",
+      "slug": "beginners-guide",
+      "colorCode": "#4CAF50"
+    },
+    {
+      "id": "0cc00000-0000-4000-8000-000000000002",
+      "name": "Grammar",
+      "slug": "grammar",
+      "colorCode": "#2196F3"
+    },
+    {
+      "id": "0cc00000-0000-4000-8000-000000000003",
+      "name": "Culture",
+      "slug": "culture",
+      "colorCode": "#FF9800"
+    }
+  ],
+  "tags": [
+    { "id": "0ee00000-0000-4000-8000-000000000001", "name": "hiragana" },
+    { "id": "0ee00000-0000-4000-8000-000000000002", "name": "katakana" },
+    { "id": "0ee00000-0000-4000-8000-000000000003", "name": "verbs" },
+    { "id": "0ee00000-0000-4000-8000-000000000004", "name": "adjectives" },
+    { "id": "0ee00000-0000-4000-8000-000000000005", "name": "everyday" }
+  ],
+  "articles": [
+    {
+      "id": "0aa00000-0000-4000-8000-000000000001",
+      "title": "Introduction to Hiragana",
+      "slug": "introduction-to-hiragana",
+      "contentRaw": "# ひらがなの紹介\n\nひらがなは日本語の基礎となる文字です。46の基本文字があり、すべての日本語の音を表すことができます。\n\n## 母音 (Vowels)\n\n| 文字 | ローマ字 |\n|------|----------|\n| あ   | a        |\n| い   | i        |\n| う   | u        |\n| え   | e        |\n| お   | o        |\n\n## か行 (K-row)\n\n| 文字 | ローマ字 |\n|------|----------|\n| か   | ka       |\n| き   | ki       |\n| く   | ku       |\n| け   | ke       |\n| こ   | ko       |\n\n## 練習しましょう！\n\nひらがなを毎日練習することが大切です。まず母音から始めて、少しずつ覚えていきましょう。",
+      "level": 5,
+      "status": "published",
+      "categoryIds": ["0cc00000-0000-4000-8000-000000000001"],
+      "tagIds": ["0ee00000-0000-4000-8000-000000000001"]
+    },
+    {
+      "id": "0aa00000-0000-4000-8000-000000000002",
+      "title": "Common JLPT N5 Verbs",
+      "slug": "common-jlpt-n5-verbs",
+      "contentRaw": "# よく使うN5動詞\n\nJLPT N5で必要な基本動詞を学びましょう。これらの動詞は日常会話でとてもよく使われます。\n\n## 食べる (taberu) — to eat\n\n**例文:**\n- 毎朝ご飯を食べます。(I eat rice every morning.)\n- 何を食べたいですか？(What do you want to eat?)\n\n## 飲む (nomu) — to drink\n\n**例文:**\n- 水を飲みます。(I drink water.)\n- コーヒーを飲みますか？(Do you drink coffee?)\n\n## 行く (iku) — to go\n\n**例文:**\n- 学校に行きます。(I go to school.)\n- どこに行きますか？(Where are you going?)\n\n## 来る (kuru) — to come\n\n**例文:**\n- 明日来てください。(Please come tomorrow.)\n- 友達が来ます。(My friend is coming.)\n\n## 見る (miru) — to see/watch\n\n**例文:**\n- テレビを見ます。(I watch TV.)\n- 映画を見ませんか？(Shall we watch a movie?)",
+      "level": 5,
+      "status": "published",
+      "categoryIds": ["0cc00000-0000-4000-8000-000000000002"],
+      "tagIds": [
+        "0ee00000-0000-4000-8000-000000000003",
+        "0ee00000-0000-4000-8000-000000000005"
+      ]
+    },
+    {
+      "id": "0aa00000-0000-4000-8000-000000000003",
+      "title": "Japanese Verb Conjugation Basics",
+      "slug": "japanese-verb-conjugation-basics",
+      "contentRaw": "# 動詞の活用\n\n日本語の動詞はグループによって活用が異なります。主に3つのグループがあります。\n\n## グループ1: U-verbs (五段動詞)\n\nU-verbsは語尾が「う段」の音で終わる動詞です。\n\n| 辞書形 | ます形 | て形 |\n|--------|--------|------|\n| 書く   | 書きます | 書いて |\n| 飲む   | 飲みます | 飲んで |\n| 話す   | 話します | 話して |\n\n## グループ2: RU-verbs (一段動詞)\n\nRU-verbsは語尾が「る」で終まる動詞が多いです。\n\n| 辞書形 | ます形 | て形 |\n|--------|--------|------|\n| 食べる | 食べます | 食べて |\n| 見る   | 見ます | 見て |\n\n## グループ3: 不規則動詞\n\n- する → します → して\n- 来る → 来ます → 来て\n\n## ポイント\n\nます形は丁寧な表現で、日常会話やビジネスで使います。",
+      "level": 4,
+      "status": "published",
+      "categoryIds": ["0cc00000-0000-4000-8000-000000000002"],
+      "tagIds": ["0ee00000-0000-4000-8000-000000000003"]
+    },
+    {
+      "id": "0aa00000-0000-4000-8000-000000000004",
+      "title": "Japanese Food Culture",
+      "slug": "japanese-food-culture",
+      "contentRaw": "# 日本の食文化\n\n日本の食文化は世界的に有名で、ユネスコの無形文化遺産にも登録されています。\n\n## 主食 (Staple Foods)\n\n### ご飯 (Rice)\n日本人の主食はご飯です。白米を基本に、様々な料理に合わせて食べます。\n\n### 味噌汁 (Miso Soup)\n大豆で作った味噌を使ったスープ。豆腐やわかめが入ることが多いです。\n\n## 代表的な料理\n\n### 寿司 (Sushi)\n新鮮な魚介類を使った料理。シャリ（酢飯）の上にネタを乗せます。\n\n### ラーメン (Ramen)\n各地域ごとに特色があるスープ麺料理。醤油、味噌、塩、豚骨など種類が豊富です。\n\n### 天ぷら (Tempura)\n野菜や海鮮を衣で包んで油で揚げた料理。\n\n## 食事のマナー\n\n- 食べる前に「いただきます」と言います。\n- 食べ終わったら「ごちそうさまでした」と言います。\n- 箸の正しい使い方を覚えましょう。",
+      "level": 4,
+      "status": "published",
+      "categoryIds": ["0cc00000-0000-4000-8000-000000000003"],
+      "tagIds": ["0ee00000-0000-4000-8000-000000000005"]
+    },
+    {
+      "id": "0aa00000-0000-4000-8000-000000000005",
+      "title": "Reading Katakana Words",
+      "slug": "reading-katakana-words",
+      "contentRaw": "# カタカナを読もう\n\nカタカナは主に外来語や外国の名前を書くのに使われます。ひらがなと同じ音を表しますが、形が異なります。\n\n## 基本のカタカナ\n\n| カタカナ | ひらがな | ローマ字 |\n|----------|----------|----------|\n| ア       | あ       | a        |\n| イ       | い       | i        |\n| ウ       | う       | u        |\n| エ       | え       | e        |\n| オ       | お       | o        |\n\n## 日常でよく使う外来語\n\n- コーヒー (ko-hi-) = coffee\n- テレビ (te-re-bi) = television\n- パソコン (pa-so-ko-n) = personal computer\n- スマートフォン (su-ma-to-fo-n) = smartphone\n- レストラン (re-su-to-ra-n) = restaurant\n\n## 練習問題\n\n次の言葉をカタカナで書いてみましょう：\n1. juice → ジュース\n2. ice cream → アイスクリーム\n3. chocolate → チョコレート\n\n## コツ\n\nカタカナは英語の発音を日本語の音に変換することが多いです。元の言葉の発音をヒントにしましょう。",
+      "level": 5,
+      "status": "published",
+      "categoryIds": ["0cc00000-0000-4000-8000-000000000001"],
+      "tagIds": ["0ee00000-0000-4000-8000-000000000002"]
+    }
+  ]
+}

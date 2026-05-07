@@ -49,7 +49,11 @@ export class InMemorySessionRepository implements SessionRepository {
 
   findByUserId(userId: string, onlyActive?: boolean): Promise<Session[]> {
     const result = [...this.store.values()]
-      .filter((r) => r.userId === userId && (onlyActive === undefined || r.isActive === onlyActive))
+      .filter(
+        (r) =>
+          r.userId === userId &&
+          (onlyActive === undefined || r.isActive === onlyActive),
+      )
       .map((r) => this.toDomain(r));
     return Promise.resolve(result);
   }

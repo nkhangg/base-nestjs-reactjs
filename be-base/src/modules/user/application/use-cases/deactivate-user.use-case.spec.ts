@@ -13,6 +13,8 @@ const makeRepo = (): jest.Mocked<IUserRepository> => ({
   findById: jest.fn(),
   findAll: jest.fn(),
   save: jest.fn().mockResolvedValue(undefined),
+  findByOAuthProvider: jest.fn(),
+  saveOAuthAccount: jest.fn().mockResolvedValue(undefined),
 });
 
 const makeSessionRepo = (): jest.Mocked<SessionRepository> => ({
@@ -38,6 +40,9 @@ const makeActiveUser = (id = 'user-1') =>
     passwordHash: 'hash',
     role: 'member',
     isActive: true,
+    xpTotal: 0,
+    streakCount: 0,
+    settings: {},
     createdAt: new Date(),
   });
 
@@ -125,6 +130,9 @@ describe('DeactivateUserUseCase', () => {
         passwordHash: 'h',
         role: 'member',
         isActive: false,
+        xpTotal: 0,
+        streakCount: 0,
+        settings: {},
         createdAt: new Date(),
       }),
     );

@@ -83,10 +83,15 @@ class SyncAdminRolesDto {
 }
 
 class UpdateAdminInfoDto {
-  @ApiPropertyOptional({ example: 'Nguyen Van A' })
+  @ApiPropertyOptional({ example: 'Nguyen' })
   @IsOptional()
   @IsString()
-  name?: string | null;
+  firstName?: string | null;
+
+  @ApiPropertyOptional({ example: 'Van A' })
+  @IsOptional()
+  @IsString()
+  lastName?: string | null;
 
   @ApiPropertyOptional({ example: '0901234567' })
   @IsOptional()
@@ -188,7 +193,8 @@ export class AdminManagementController {
       data.map((a) => ({
         id: a.id.value,
         email: a.email,
-        name: a.name ?? null,
+        firstName: a.firstName ?? null,
+        lastName: a.lastName ?? null,
         phone: a.phone ?? null,
         avatarUrl: a.avatarUrl ?? null,
         roles: rolesMap.get(a.id.value) ?? [],
@@ -218,7 +224,8 @@ export class AdminManagementController {
       data: {
         id: a.id.value,
         email: a.email,
-        name: a.name ?? null,
+        firstName: a.firstName ?? null,
+        lastName: a.lastName ?? null,
         phone: a.phone ?? null,
         avatarUrl: a.avatarUrl ?? null,
         roles,
@@ -255,7 +262,9 @@ export class AdminManagementController {
     });
     if (!result.ok) {
       if (result.error === 'CANNOT_UPDATE_SELF_ROLES')
-        throw new BadRequestException('Không thể thay đổi roles của chính mình');
+        throw new BadRequestException(
+          'Không thể thay đổi roles của chính mình',
+        );
       if (result.error === 'ADMIN_NOT_FOUND')
         throw new NotFoundException('Admin không tồn tại');
       return { success: false, error: result.error };
@@ -290,7 +299,8 @@ export class AdminManagementController {
   ) {
     const result = await this.updateAdminInfoUseCase.execute({
       adminId: id,
-      name: dto.name,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
       phone: dto.phone,
       avatarUrl: dto.avatarUrl,
     });
@@ -339,7 +349,9 @@ export class AdminManagementController {
     });
     if (!result.ok) {
       if (result.error === 'CANNOT_UPDATE_SELF_ROLES')
-        throw new BadRequestException('Không thể thay đổi roles của chính mình');
+        throw new BadRequestException(
+          'Không thể thay đổi roles của chính mình',
+        );
       return { success: false, error: result.error };
     }
     return { success: true };

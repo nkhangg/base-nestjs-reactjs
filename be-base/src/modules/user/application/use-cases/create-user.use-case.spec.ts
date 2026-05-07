@@ -11,6 +11,8 @@ const makeRepo = (): jest.Mocked<IUserRepository> => ({
   findById: jest.fn(),
   findAll: jest.fn(),
   save: jest.fn().mockResolvedValue(undefined),
+  findByOAuthProvider: jest.fn(),
+  saveOAuthAccount: jest.fn().mockResolvedValue(undefined),
 });
 
 const makeTokenService = (): jest.Mocked<Pick<ITokenService, 'hashToken'>> => ({

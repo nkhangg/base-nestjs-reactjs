@@ -4,7 +4,8 @@ import { AdminId } from '../value-objects/admin-id.vo';
 export interface AdminProps {
   email: string;
   passwordHash: string;
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
   isActive: boolean;
@@ -23,7 +24,8 @@ export class Admin extends BaseEntity<AdminId> {
     return new Admin(AdminId.create(), {
       email: params.email,
       passwordHash: params.passwordHash,
-      name: null,
+      firstName: null,
+      lastName: null,
       phone: null,
       avatarUrl: null,
       isActive: true,
@@ -48,11 +50,13 @@ export class Admin extends BaseEntity<AdminId> {
   }
 
   updateProfile(data: {
-    name?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     phone?: string | null;
     avatarUrl?: string | null;
   }): void {
-    if (data.name !== undefined) this.props.name = data.name;
+    if (data.firstName !== undefined) this.props.firstName = data.firstName;
+    if (data.lastName !== undefined) this.props.lastName = data.lastName;
     if (data.phone !== undefined) this.props.phone = data.phone;
     if (data.avatarUrl !== undefined) this.props.avatarUrl = data.avatarUrl;
   }
@@ -63,8 +67,11 @@ export class Admin extends BaseEntity<AdminId> {
   get passwordHash(): string {
     return this.props.passwordHash;
   }
-  get name(): string | null | undefined {
-    return this.props.name;
+  get firstName(): string | null | undefined {
+    return this.props.firstName;
+  }
+  get lastName(): string | null | undefined {
+    return this.props.lastName;
   }
   get phone(): string | null | undefined {
     return this.props.phone;

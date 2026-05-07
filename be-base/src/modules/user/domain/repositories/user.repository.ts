@@ -22,6 +22,15 @@ export interface IUserRepository {
   findById(id: string): Promise<User | null>;
   findAll(options?: FindAllUsersOptions): Promise<FindAllUsersResult>;
   save(user: User): Promise<void>;
+  findByOAuthProvider(
+    provider: string,
+    providerId: string,
+  ): Promise<User | null>;
+  saveOAuthAccount(
+    userId: string,
+    provider: string,
+    providerId: string,
+  ): Promise<void>;
 }
 
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');

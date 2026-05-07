@@ -87,7 +87,10 @@ describe('SyncAdminRolesUseCase', () => {
 
   it('should revoke removed roles and assign added roles', async () => {
     repo.findById.mockResolvedValue(makeAdmin('admin-1'));
-    authService.getAssignedRoleNames.mockResolvedValue(['super-admin', 'editor']);
+    authService.getAssignedRoleNames.mockResolvedValue([
+      'super-admin',
+      'editor',
+    ]);
 
     await useCase.execute({
       adminId: 'admin-1',
@@ -95,16 +98,35 @@ describe('SyncAdminRolesUseCase', () => {
       roles: ['editor', 'moderator'],
     });
 
-    expect(authService.revokeRole).toHaveBeenCalledWith('admin-1', 'admin', 'super-admin');
-    expect(authService.assignRoleWithFallback).toHaveBeenCalledWith('admin-1', 'admin', 'moderator');
-    expect(authService.revokeRole).not.toHaveBeenCalledWith('admin-1', 'admin', 'editor');
-    expect(authService.assignRoleWithFallback).not.toHaveBeenCalledWith('admin-1', 'admin', 'editor');
+    expect(authService.revokeRole).toHaveBeenCalledWith(
+      'admin-1',
+      'admin',
+      'super-admin',
+    );
+    expect(authService.assignRoleWithFallback).toHaveBeenCalledWith(
+      'admin-1',
+      'admin',
+      'moderator',
+    );
+    expect(authService.revokeRole).not.toHaveBeenCalledWith(
+      'admin-1',
+      'admin',
+      'editor',
+    );
+    expect(authService.assignRoleWithFallback).not.toHaveBeenCalledWith(
+      'admin-1',
+      'admin',
+      'editor',
+    );
   });
 
   it('should return ADMIN_NOT_FOUND when admin does not exist', async () => {
     repo.findById.mockResolvedValue(null);
 
-    const result = await useCase.execute({ adminId: 'ghost', roles: ['editor'] });
+    const result = await useCase.execute({
+      adminId: 'ghost',
+      roles: ['editor'],
+    });
 
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBe('ADMIN_NOT_FOUND');
@@ -113,7 +135,10 @@ describe('SyncAdminRolesUseCase', () => {
   it('should return ADMIN_INACTIVE when admin is deactivated', async () => {
     repo.findById.mockResolvedValue(makeAdmin('admin-1', false));
 
-    const result = await useCase.execute({ adminId: 'admin-1', roles: ['editor'] });
+    const result = await useCase.execute({
+      adminId: 'admin-1',
+      roles: ['editor'],
+    });
 
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBe('ADMIN_INACTIVE');

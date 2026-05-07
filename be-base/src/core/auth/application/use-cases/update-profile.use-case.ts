@@ -24,7 +24,8 @@ export interface UpdateProfileOutput {
   email: string;
   isAdmin?: boolean;
   role: string;
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
   createdAt?: Date | null;
@@ -62,7 +63,8 @@ export class UpdateProfileUseCase {
       email: input.email,
       isAdmin: input.isAdmin,
       role: input.type,
-      name: snapshot?.name ?? null,
+      firstName: snapshot?.firstName ?? null,
+      lastName: snapshot?.lastName ?? null,
       phone: snapshot?.phone ?? null,
       avatarUrl: snapshot?.avatarUrl ?? null,
       createdAt: snapshot?.createdAt ?? null,

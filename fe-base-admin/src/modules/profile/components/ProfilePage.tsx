@@ -24,7 +24,8 @@ const passwordSchema = z
   })
 
 const profileSchema = z.object({
-  name: z.string().max(100).optional().or(z.literal('')),
+  firstName: z.string().max(100).optional().or(z.literal('')),
+  lastName: z.string().max(100).optional().or(z.literal('')),
   phone: z.string().max(20).optional().or(z.literal('')),
 })
 
@@ -147,12 +148,14 @@ function ProfileTab() {
   const { data: profile, isLoading: profileLoading } = useProfile()
   const { mutateAsync: updateProfile, isPending: updatingProfile } = useUpdateProfile()
 
-  const initial = (profile?.name || profile?.email || user?.email || 'A')[0].toUpperCase()
+  const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ')
+  const initial = (fullName || profile?.email || user?.email || 'A')[0].toUpperCase()
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     values: {
-      name: profile?.name ?? '',
+      firstName: profile?.firstName ?? '',
+      lastName: profile?.lastName ?? '',
       phone: profile?.phone ?? '',
     },
   })
@@ -160,7 +163,8 @@ function ProfileTab() {
   const handleSubmit = async (values: ProfileFormValues) => {
     try {
       await updateProfile({
-        name: values.name || null,
+        firstName: values.firstName || null,
+        lastName: values.lastName || null,
         phone: values.phone || null,
       })
     } catch {
@@ -211,22 +215,42 @@ function ProfileTab() {
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-700" htmlFor="name">
-                Tên hiển thị
+              <label className="text-sm font-medium text-gray-700" htmlFor="firstName">
+                Họ
               </label>
               <input
-                id="name"
+                id="firstName"
                 type="text"
-                placeholder="Nguyễn Văn A"
+                placeholder="Nguyễn"
                 className={cn(
                   'h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900',
                   'placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400',
-                  form.formState.errors.name && 'border-red-400',
+                  form.formState.errors.firstName && 'border-red-400',
                 )}
-                {...form.register('name')}
+                {...form.register('firstName')}
               />
-              {form.formState.errors.name && (
-                <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>
+              {form.formState.errors.firstName && (
+                <p className="text-xs text-red-500">{form.formState.errors.firstName.message}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-gray-700" htmlFor="lastName">
+                Tên
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                placeholder="Văn A"
+                className={cn(
+                  'h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900',
+                  'placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400',
+                  form.formState.errors.lastName && 'border-red-400',
+                )}
+                {...form.register('lastName')}
+              />
+              {form.formState.errors.lastName && (
+                <p className="text-xs text-red-500">{form.formState.errors.lastName.message}</p>
               )}
             </div>
 

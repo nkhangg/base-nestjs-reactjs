@@ -7,7 +7,8 @@ import {
 
 export interface UpdateAdminInfoInput {
   adminId: string;
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
   avatarUrl?: string | null;
 }
@@ -25,7 +26,8 @@ export class UpdateAdminInfoUseCase {
     if (!admin) return { ok: false, error: 'ADMIN_NOT_FOUND' };
 
     admin.updateProfile({
-      name: input.name,
+      firstName: input.firstName,
+      lastName: input.lastName,
       phone: input.phone,
       avatarUrl: input.avatarUrl,
     });

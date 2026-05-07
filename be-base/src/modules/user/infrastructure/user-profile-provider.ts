@@ -23,7 +23,8 @@ export class UserProfileProvider implements IProfileProvider {
     return {
       createdAt: user.createdAt,
       isActive: user.isActive,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       phone: user.phone,
       avatarUrl: user.avatarUrl,
     };

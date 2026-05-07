@@ -22,9 +22,21 @@ modules/profile/
 |---|---|---|
 | `/profile` | `ProfilePage` | `AuthGuard` |
 
+## Types
+- `ProfileData`: `userId`, `email`, `firstName?`, `lastName?`, `phone?`, `avatarUrl?`, `createdAt?`, `isActive?`, `role?`, `isAdmin?`
+- `UpdateProfileDto`: `firstName?`, `lastName?`, `phone?`, `avatarUrl?`
+
 ## API Endpoints
 | Method | Path | Hook |
 |---|---|---|
 | GET | `/auth/me` | dùng chung `useCurrentUser` từ `@modules/auth` |
-| PATCH | `/profile` | `useUpdateProfile` |
+| GET | `/auth/profile` | `useProfile` |
+| PATCH | `/auth/profile` | `useUpdateProfile` |
+| DELETE | `/auth/sessions/:id` | `useRevokeSession` |
+| GET | `/auth/sessions` | `useSessions` |
 | PATCH | `/auth/change-password` | `useChangePassword` |
+
+## Ghi chú
+- BE đã đổi field `name` → `firstName` + `lastName` (breaking change)
+- Form profile có 3 fields: Họ (firstName), Tên (lastName), Số điện thoại (phone)
+- Avatar initial tính từ `firstName + lastName` ghép lại

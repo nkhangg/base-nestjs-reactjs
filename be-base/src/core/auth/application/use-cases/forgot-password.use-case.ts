@@ -59,10 +59,7 @@ export class ForgotPasswordUseCase {
         `Password reset email sent for ${input.type}:${input.email}`,
       );
     } catch (err) {
-      this.logger.error(
-        `Failed to send reset email for ${input.email}`,
-        err,
-      );
+      this.logger.error(`Failed to send reset email for ${input.email}`, err);
     }
   }
 }

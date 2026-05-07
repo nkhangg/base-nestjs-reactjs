@@ -1,0 +1,42 @@
+[
+  {
+    "id": "0ff00000-0000-4000-8000-000000000001",
+    "email": "yuki.tanaka@example.com",
+    "name": "Yuki Tanaka",
+    "role": "member",
+    "xpTotal": 1250,
+    "streakCount": 14
+  },
+  {
+    "id": "0ff00000-0000-4000-8000-000000000002",
+    "email": "haruki.sato@example.com",
+    "name": "Haruki Sato",
+    "role": "member",
+    "xpTotal": 480,
+    "streakCount": 3
+  },
+  {
+    "id": "0ff00000-0000-4000-8000-000000000003",
+    "email": "sakura.yamada@example.com",
+    "name": "Sakura Yamada",
+    "role": "member",
+    "xpTotal": 920,
+    "streakCount": 7
+  },
+  {
+    "id": "0ff00000-0000-4000-8000-000000000004",
+    "email": "ken.watanabe@example.com",
+    "name": "Ken Watanabe",
+    "role": "member",
+    "xpTotal": 3100,
+    "streakCount": 30
+  },
+  {
+    "id": "0ff00000-0000-4000-8000-000000000005",
+    "email": "aiko.suzuki@example.com",
+    "name": "Aiko Suzuki",
+    "role": "member",
+    "xpTotal": 2050,
+    "streakCount": 21
+  }
+]
