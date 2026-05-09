@@ -68,6 +68,7 @@ const ADMIN_NAV_RESOURCES = [
   'question-management',
   'progress-management',
   'organization-management',
+  'contacts',
 ] as const;
 
 @ApiTags('Auth')

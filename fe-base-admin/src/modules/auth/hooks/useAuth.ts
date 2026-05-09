@@ -4,12 +4,11 @@ import { toast } from 'sonner'
 import { authService } from '../services/auth.service'
 import type { ChangePasswordDto, ForgotPasswordDto, LoginDto, ResetPasswordDto } from '../types'
 import { ROUTES } from '@config/routes'
-
-export const AUTH_QUERY_KEY = ['auth', 'me'] as const
+import { QUERY_KEYS } from '@shared/constants'
 
 export function useCurrentUser() {
   const { data, isLoading } = useQuery({
-    queryKey: AUTH_QUERY_KEY,
+    queryKey: QUERY_KEYS.AUTH.ME,
     queryFn: authService.getMe,
     retry: false,
     staleTime: 5 * 60 * 1000,
@@ -23,7 +22,7 @@ export function useLogin() {
 
   const login = async (dto: LoginDto) => {
     await authService.login(dto)
-    await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY })
+    await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.ME })
     navigate(ROUTES.DASHBOARD)
   }
 

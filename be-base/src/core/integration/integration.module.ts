@@ -11,11 +11,14 @@ import { OnAdminDeactivatedHandler } from './handlers/on-admin-deactivated.handl
 import { OnFileUploadedHandler } from './handlers/on-file-uploaded.handler';
 import { OnConfigChangedHandler } from './handlers/on-config-changed.handler';
 import { OnBlogPostPublishedHandler } from './handlers/on-blog-post-published.handler';
+import { OnContactSubmittedHandler } from './handlers/on-contact-submitted.handler';
+import { OnContactRepliedHandler } from './handlers/on-contact-replied.handler';
 
 @Module({
   imports: [
     NotificationModule,
     BullModule.registerQueue({ name: QUEUE_NAMES.NOTIFICATION }),
+    BullModule.registerQueue({ name: QUEUE_NAMES.MAIL }),
   ],
   providers: [
     NotificationQueueService,
@@ -27,6 +30,8 @@ import { OnBlogPostPublishedHandler } from './handlers/on-blog-post-published.ha
     OnFileUploadedHandler,
     OnConfigChangedHandler,
     OnBlogPostPublishedHandler,
+    OnContactSubmittedHandler,
+    OnContactRepliedHandler,
   ],
 })
 export class IntegrationModule {}

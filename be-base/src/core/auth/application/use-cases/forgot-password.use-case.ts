@@ -4,8 +4,8 @@ import type { IPasswordResetTokenRepository } from '../../domain/repositories/pa
 import { PASSWORD_RESET_TOKEN_REPOSITORY } from '../../domain/repositories/password-reset-token.repository';
 import type { IPasswordUpdater } from '../../domain/services/password-updater.interface';
 import { PASSWORD_UPDATERS } from '../../domain/services/password-updater.interface';
-import type { IMailerService } from '../../domain/services/mailer.interface';
-import { MAILER_SERVICE } from '../../domain/services/mailer.interface';
+import type { IMailerService } from '../../../mail/mail.interface';
+import { MAILER_SERVICE } from '../../../mail/mail.interface';
 
 export interface ForgotPasswordInput {
   email: string;

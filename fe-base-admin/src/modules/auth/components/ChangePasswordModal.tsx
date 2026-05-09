@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@shared/utils'
 import { useChangePassword } from '../hooks/useAuth'
 
@@ -69,6 +70,7 @@ function PasswordField({
 }
 
 export function ChangePasswordModal({ open, onClose }: Props) {
+  const { t } = useTranslation()
   const { mutateAsync, isPending } = useChangePassword()
 
   const {
@@ -105,24 +107,24 @@ export function ChangePasswordModal({ open, onClose }: Props) {
         aria-hidden="true"
       />
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h2 className="mb-5 text-base font-semibold text-gray-900">Đổi mật khẩu</h2>
+        <h2 className="mb-5 text-base font-semibold text-gray-900">{t('auth.changePasswordTitle')}</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <PasswordField
             id="currentPassword"
-            label="Mật khẩu hiện tại"
+            label={t('auth.currentPassword')}
             error={errors.currentPassword?.message}
             registration={register('currentPassword')}
           />
           <PasswordField
             id="newPassword"
-            label="Mật khẩu mới"
+            label={t('auth.newPassword')}
             error={errors.newPassword?.message}
             registration={register('newPassword')}
           />
           <PasswordField
             id="confirmPassword"
-            label="Xác nhận mật khẩu mới"
+            label={t('auth.confirmNewPassword')}
             error={errors.confirmPassword?.message}
             registration={register('confirmPassword')}
           />
@@ -133,14 +135,14 @@ export function ChangePasswordModal({ open, onClose }: Props) {
               onClick={handleClose}
               className="flex-1 h-10 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
-              Hủy
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={isPending}
               className="flex-1 h-10 rounded-lg bg-zinc-900 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPending ? 'Đang lưu...' : 'Lưu'}
+              {isPending ? t('auth.saving') : t('common.save')}
             </button>
           </div>
         </form>

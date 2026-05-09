@@ -53,6 +53,9 @@ const BlogPostEditorPage = lazy(() =>
 const ProfilePage = lazy(() =>
   import('@modules/profile/index').then((m) => ({ default: m.ProfilePage })),
 )
+const ContactsPage = lazy(() =>
+  import('@modules/contacts/index').then((m) => ({ default: m.ContactsPage })),
+)
 
 // ── Guards (provided by each module) ──────────────────────────────────────
 const AuthGuard = lazy(() => import('@modules/auth/index').then((m) => ({ default: m.AuthGuard })))
@@ -111,6 +114,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.QUESTIONS, element: withSuspense(<QuestionPage />) },
           { path: ROUTES.PROGRESS, element: withSuspense(<ProgressPage />) },
           { path: ROUTES.ORGANIZATIONS, element: withSuspense(<OrganizationPage />) },
+          { path: ROUTES.CONTACTS, element: withSuspense(<ContactsPage />) },
         ],
       },
       // Full-screen editor pages (no sidebar)

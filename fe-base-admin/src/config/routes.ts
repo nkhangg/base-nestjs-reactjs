@@ -23,6 +23,7 @@ export const ROUTES = {
   QUESTIONS: '/questions',
   PROGRESS: '/progress',
   ORGANIZATIONS: '/organizations',
+  CONTACTS: '/contacts',
 } as const
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES]

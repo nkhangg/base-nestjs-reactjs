@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@shared/utils'
 import { useResetPassword } from '../hooks/useAuth'
 import { ROUTES } from '@config/routes'
@@ -22,6 +23,7 @@ const schema = z
 type FormValues = z.infer<typeof schema>
 
 export function ResetPasswordPage() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const tokenFromUrl = searchParams.get('token') ?? ''
 
@@ -44,7 +46,7 @@ export function ResetPasswordPage() {
     try {
       await mutateAsync({ token: values.token, newPassword: values.newPassword })
     } catch {
-      setError('Token không hợp lệ hoặc đã hết hạn')
+      setError(t('auth.resetError'))
     }
   }
 
@@ -52,20 +54,20 @@ export function ResetPasswordPage() {
     <div className="flex min-h-svh items-center justify-center bg-black px-4">
       <div className="w-full max-w-sm rounded-2xl bg-zinc-900 p-8 shadow-xl">
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-white">Đặt lại mật khẩu</h1>
-          <p className="mt-1 text-sm text-zinc-400">Nhập token và mật khẩu mới của bạn</p>
+          <h1 className="text-xl font-semibold text-white">{t('auth.resetTitle')}</h1>
+          <p className="mt-1 text-sm text-zinc-400">{t('auth.resetSubtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Token */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white" htmlFor="token">
-              Token
+              {t('auth.token')}
             </label>
             <input
               id="token"
               type="text"
-              placeholder="Dán token vào đây"
+              placeholder={t('auth.pasteToken')}
               className={cn(
                 'h-10 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 font-mono text-xs text-white',
                 'placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500',
@@ -79,7 +81,7 @@ export function ResetPasswordPage() {
           {/* New password */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white" htmlFor="newPassword">
-              Mật khẩu mới
+              {t('auth.newPassword')}
             </label>
             <div className="relative">
               <input
@@ -97,6 +99,7 @@ export function ResetPasswordPage() {
                 type="button"
                 onClick={() => setShowNew((v) => !v)}
                 tabIndex={-1}
+                aria-label={showNew ? t('auth.hidePassword') : t('auth.showPassword')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-300"
               >
                 {showNew ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -110,7 +113,7 @@ export function ResetPasswordPage() {
           {/* Confirm password */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white" htmlFor="confirmPassword">
-              Xác nhận mật khẩu
+              {t('auth.confirmPassword')}
             </label>
             <div className="relative">
               <input
@@ -128,6 +131,7 @@ export function ResetPasswordPage() {
                 type="button"
                 onClick={() => setShowConfirm((v) => !v)}
                 tabIndex={-1}
+                aria-label={showConfirm ? t('auth.hidePassword') : t('auth.showPassword')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-300"
               >
                 {showConfirm ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -149,7 +153,7 @@ export function ResetPasswordPage() {
             disabled={isPending}
             className="mt-1 h-10 w-full rounded-lg bg-white text-sm font-semibold text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isPending ? 'Đang xử lý...' : 'Đặt lại mật khẩu'}
+            {isPending ? t('auth.processing') : t('auth.resetBtn')}
           </button>
         </form>
 
@@ -157,7 +161,7 @@ export function ResetPasswordPage() {
           to={ROUTES.LOGIN}
           className="mt-4 block text-center text-sm text-zinc-500 transition-colors hover:text-zinc-300"
         >
-          Quay lại đăng nhập
+          {t('auth.backToLogin')}
         </Link>
       </div>
     </div>

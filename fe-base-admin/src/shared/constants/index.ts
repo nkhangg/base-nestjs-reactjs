@@ -56,6 +56,10 @@ export const QUERY_KEYS = {
     MEMBERS: ['organization', 'members'] as const,
     REPORT: ['organization', 'report'] as const,
   },
+  CONTACTS: {
+    LIST: ['contacts', 'list'] as const,
+    DETAIL: ['contacts', 'detail'] as const,
+  },
   HEALTH: ['health'] as const,
 } as const
 
