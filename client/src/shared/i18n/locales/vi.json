@@ -116,13 +116,71 @@
     "dailyMinutes": "Phút mỗi ngày"
   },
   "billing": {
-    "title": "Gói dịch vụ",
-    "free": "Miễn phí",
+    "title": "Gói đăng ký",
+    "subtitle": "Quản lý gói và thanh toán",
+    "free": "Free",
     "pro": "Pro",
     "team": "Team",
     "upgrade": "Nâng cấp",
     "currentPlan": "Gói hiện tại",
-    "renewsOn": "Gia hạn vào"
+    "inUse": "Đang dùng",
+    "renewsOn": "Gia hạn vào",
+    "perMonth": "₫/tháng",
+    "billedMonthly": "Thanh toán hàng tháng",
+    "billedAnnually": "Thanh toán hàng năm ({{total}}₫)",
+    "saveBadge": "Tiết kiệm 40%",
+    "mostPopular": "Phổ biến nhất",
+    "choosePlan": "Chọn gói",
+    "monthly": "Hàng tháng",
+    "annual": "Hàng năm",
+    "upgradeCta": "Nâng cấp lên Pro →",
+    "currentCta": "Đang dùng",
+    "teaser": {
+      "label": "Nâng cấp để mở khoá",
+      "orAnnual": "hoặc {{price}}₫/tháng (hàng năm)"
+    },
+    "usage": {
+      "title": "Mức sử dụng",
+      "upgradeLink": "Nâng cấp →"
+    },
+    "payment": {
+      "title": "Phương thức thanh toán",
+      "addMethod": "+ Thêm phương thức",
+      "default": "Mặc định",
+      "comingSoon": "💳 Tính năng thêm thẻ sắp ra mắt"
+    },
+    "history": {
+      "title": "Lịch sử thanh toán",
+      "exportCsv": "Xuất CSV",
+      "exporting": "📥 Đang tải xuống lịch sử...",
+      "colDesc": "Mô tả",
+      "colDate": "Ngày",
+      "colAmount": "Số tiền",
+      "colStatus": "Trạng thái",
+      "paid": "Thành công",
+      "failed": "Thất bại",
+      "pending": "Đang xử lý",
+      "empty": "Chưa có giao dịch nào"
+    },
+    "cancel": {
+      "title": "Huỷ đăng ký",
+      "freeNote": "Hiện bạn đang dùng gói Free. Không có gói nào để huỷ.",
+      "proNote": "Bạn vẫn có thể dùng đến hết kỳ thanh toán hiện tại.",
+      "btn": "Huỷ đăng ký"
+    },
+    "dialog": {
+      "title": "Nâng cấp lên Pro ✨",
+      "subtitle": "Bạn sẽ được lập tức truy cập toàn bộ tính năng Pro. Thanh toán {{price}}₫/tháng, huỷ bất cứ lúc nào.",
+      "orderSummary": "Tóm tắt đơn hàng",
+      "lineItem": "Nihongo Pro — {{period}}",
+      "trial": "Dùng thử 7 ngày miễn phí",
+      "todayPay": "Hôm nay thanh toán",
+      "autoRenew": "Sẽ tự động gia hạn {{price}}₫/tháng từ {{date}}",
+      "paymentVia": "Thanh toán qua:",
+      "changeCard": "Đổi thẻ",
+      "confirm": "Xác nhận nâng cấp →",
+      "cancel": "Huỷ"
+    }
   },
   "landing": {
     "nav": {

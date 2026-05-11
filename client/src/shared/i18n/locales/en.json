@@ -116,13 +116,71 @@
     "dailyMinutes": "Minutes per day"
   },
   "billing": {
-    "title": "Plans",
+    "title": "Subscription",
+    "subtitle": "Manage your plan and billing",
     "free": "Free",
     "pro": "Pro",
     "team": "Team",
     "upgrade": "Upgrade",
     "currentPlan": "Current plan",
-    "renewsOn": "Renews on"
+    "inUse": "Active",
+    "renewsOn": "Renews on",
+    "perMonth": "₫/mo",
+    "billedMonthly": "Billed monthly",
+    "billedAnnually": "Billed annually ({{total}}₫)",
+    "saveBadge": "Save 40%",
+    "mostPopular": "Most popular",
+    "choosePlan": "Choose plan",
+    "monthly": "Monthly",
+    "annual": "Yearly",
+    "upgradeCta": "Upgrade to Pro →",
+    "currentCta": "Current",
+    "teaser": {
+      "label": "Upgrade to unlock",
+      "orAnnual": "or {{price}}₫/mo (yearly)"
+    },
+    "usage": {
+      "title": "Usage",
+      "upgradeLink": "Upgrade →"
+    },
+    "payment": {
+      "title": "Payment methods",
+      "addMethod": "+ Add method",
+      "default": "Default",
+      "comingSoon": "💳 Adding cards is coming soon"
+    },
+    "history": {
+      "title": "Billing history",
+      "exportCsv": "Export CSV",
+      "exporting": "📥 Downloading history...",
+      "colDesc": "Description",
+      "colDate": "Date",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "paid": "Paid",
+      "failed": "Failed",
+      "pending": "Pending",
+      "empty": "No transactions yet"
+    },
+    "cancel": {
+      "title": "Cancel subscription",
+      "freeNote": "You're on the Free plan. There is no subscription to cancel.",
+      "proNote": "You can keep using Pro until the end of the current period.",
+      "btn": "Cancel subscription"
+    },
+    "dialog": {
+      "title": "Upgrade to Pro ✨",
+      "subtitle": "You'll get instant access to all Pro features. {{price}}₫/mo, cancel anytime.",
+      "orderSummary": "Order summary",
+      "lineItem": "Nihongo Pro — {{period}}",
+      "trial": "7-day free trial",
+      "todayPay": "Charged today",
+      "autoRenew": "Renews at {{price}}₫/mo from {{date}}",
+      "paymentVia": "Pay with:",
+      "changeCard": "Change card",
+      "confirm": "Confirm upgrade →",
+      "cancel": "Cancel"
+    }
   },
   "landing": {
     "nav": {

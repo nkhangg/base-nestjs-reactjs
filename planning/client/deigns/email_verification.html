@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Xác nhận Email</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* NAV BAR */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;background:#fff;border-bottom:1px solid var(--b)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+.nav-mark span{color:#fff;font-family:'DM Mono',monospace;font-size:12px}
+.nav-name{font-size:15px;font-weight:600;letter-spacing:-.3px;color:var(--ink)}
+.nav-step{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.nav-step-dot{width:6px;height:6px;border-radius:50%;background:var(--surface2)}
+.nav-step-dot.done{background:var(--teal)}
+.nav-step-dot.cur{background:var(--ink)}
+
+/* STEP PROGRESS */
+.step-bar{height:3px;background:var(--surface2);overflow:hidden}
+.step-bar-fill{height:100%;background:var(--ink);width:66%;transition:width .4s}
+
+/* PAGE */
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden}
+.page::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% -10%, rgba(13,13,15,.04) 0%, transparent 70%);pointer-events:none}
+
+/* CARD */
+.card{background:#fff;border:1px solid var(--b);border-radius:var(--r3);padding:2.5rem 2.25rem;max-width:420px;width:100%;text-align:center;box-shadow:0 4px 32px rgba(13,13,15,.06);position:relative;z-index:1}
+
+/* FORM STATE */
+.state{display:none}
+.state.active{display:block}
+
+/* Email icon */
+.email-icon{width:72px;height:72px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:28px;position:relative}
+.email-icon::after{content:'';position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:var(--amber);border:2px solid #fff;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8}}
+
+.card-title{font-size:22px;font-weight:600;letter-spacing:-.4px;margin-bottom:.4rem}
+.card-email{display:inline-block;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink2);background:var(--surface);padding:3px 10px;border-radius:6px;margin-bottom:1.1rem;border:1px solid var(--b)}
+.card-desc{font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:1.75rem;max-width:320px;margin-left:auto;margin-right:auto}
+
+/* OTP */
+.otp-wrap{display:flex;gap:8px;justify-content:center;margin-bottom:.75rem}
+.otp-inp{width:46px;height:54px;border:1.5px solid var(--b2);border-radius:var(--r2);font-family:'DM Mono',monospace;font-size:22px;font-weight:500;text-align:center;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,background .15s;caret-color:var(--ink)}
+.otp-inp:focus{border-color:var(--ink);background:var(--surface);box-shadow:0 0 0 3px rgba(13,13,15,.06)}
+.otp-inp.filled{border-color:var(--ink2)}
+.otp-inp.error{border-color:var(--red);background:var(--red-l);animation:shake .3s ease}
+.otp-inp.success-inp{border-color:var(--teal);background:var(--teal-l)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.otp-hint{font-size:12px;color:var(--ink4);margin-bottom:1.5rem}
+.otp-hint strong{color:var(--ink3);font-weight:500}
+
+/* Timer + resend */
+.resend-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--ink3);margin-bottom:1.5rem}
+.resend-timer{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--ink2)}
+.resend-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .15s;display:none}
+.resend-btn.show{display:inline}
+.resend-btn:hover{color:var(--ink)}
+
+/* Verify button */
+.verify-btn{width:100%;height:48px;border-radius:var(--r2);background:var(--ink);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1.1rem;letter-spacing:-.2px}
+.verify-btn:hover:not(:disabled){background:#2a2a30;transform:translateY(-1px);box-shadow:0 4px 12px rgba(13,13,15,.12)}
+.verify-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.verify-btn.loading{opacity:.7;cursor:wait}
+.verify-btn.success{background:var(--teal)}
+
+/* Footer links */
+.card-footer{font-size:12px;color:var(--ink4)}
+.card-footer a{color:var(--ink3);text-decoration:underline;text-underline-offset:3px;cursor:pointer;transition:color .15s}
+.card-footer a:hover{color:var(--ink)}
+.divider{display:inline-block;margin:0 .4rem;opacity:.4}
+
+/* ── SUCCESS STATE ── */
+.success-check{width:72px;height:72px;border-radius:50%;background:var(--teal-l);border:2px solid var(--teal-l);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:30px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.success-title{font-size:22px;font-weight:600;letter-spacing:-.4px;margin-bottom:.5rem}
+.success-desc{font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:.75rem;max-width:300px;margin-left:auto;margin-right:auto}
+
+.redirect-bar-wrap{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin:.75rem 0 1.5rem}
+.redirect-bar{height:100%;background:var(--teal);border-radius:2px;animation:countdown 3s linear forwards}
+@keyframes countdown{from{width:100%}to{width:0%}}
+
+.continue-btn{width:100%;height:48px;border-radius:var(--r2);background:var(--teal);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.2px}
+.continue-btn:hover{background:#0d7a64;transform:translateY(-1px)}
+
+/* ── ERROR HINT ── */
+.error-msg{font-size:12px;color:var(--red);text-align:center;margin-bottom:.75rem;min-height:16px;transition:opacity .2s;opacity:0}
+.error-msg.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="dashboard.html">
+    <div class="nav-mark"><span>日</span></div>
+    <span class="nav-name">Nihongo</span>
+  </a>
+  <div class="nav-step">
+    <div class="nav-step-dot done" title="Đăng ký"></div>
+    <div class="nav-step-dot cur" title="Xác nhận email"></div>
+    <div class="nav-step-dot" title="Onboarding"></div>
+    <span style="margin-left:4px">Bước 2 / 3</span>
+  </div>
+</nav>
+<div class="step-bar"><div class="step-bar-fill"></div></div>
+
+<!-- PAGE -->
+<div class="page">
+  <div class="card">
+
+    <!-- ── FORM STATE ── -->
+    <div class="state active" id="s-form">
+      <div class="email-icon">✉️</div>
+      <div class="card-title">Xác nhận email</div>
+      <div class="card-email" id="email-display">an.nguyen@gmail.com</div>
+      <div class="card-desc">
+        Chúng tôi đã gửi mã xác nhận 6 chữ số đến email của bạn. Mã có hiệu lực trong <strong>10 phút</strong>.
+      </div>
+
+      <!-- OTP INPUTS -->
+      <div class="otp-wrap" id="otp-wrap">
+        <input class="otp-inp" maxlength="1" id="o1" autocomplete="one-time-code" inputmode="numeric"
+          oninput="otpInput(this,'o2')" onkeydown="otpKey(event,this,null)">
+        <input class="otp-inp" maxlength="1" id="o2" inputmode="numeric"
+          oninput="otpInput(this,'o3')" onkeydown="otpKey(event,this,'o1')">
+        <input class="otp-inp" maxlength="1" id="o3" inputmode="numeric"
+          oninput="otpInput(this,'o4')" onkeydown="otpKey(event,this,'o2')">
+        <input class="otp-inp" maxlength="1" id="o4" inputmode="numeric"
+          oninput="otpInput(this,'o5')" onkeydown="otpKey(event,this,'o3')">
+        <input class="otp-inp" maxlength="1" id="o5" inputmode="numeric"
+          oninput="otpInput(this,'o6')" onkeydown="otpKey(event,this,'o4')">
+        <input class="otp-inp" maxlength="1" id="o6" inputmode="numeric"
+          oninput="otpInput(this,null)" onkeydown="otpKey(event,this,'o5')">
+      </div>
+
+      <div class="otp-hint">
+        Nhập mã gồm <strong>6 chữ số</strong> — dùng <strong>123456</strong> để demo
+      </div>
+
+      <!-- ERROR -->
+      <div class="error-msg" id="error-msg">Mã không đúng. Vui lòng kiểm tra lại.</div>
+
+      <!-- RESEND -->
+      <div class="resend-row">
+        <span>Chưa nhận được?</span>
+        <span class="resend-timer" id="timer-display">09:47</span>
+        <button class="resend-btn" id="resend-btn" onclick="resend()">Gửi lại</button>
+      </div>
+
+      <!-- VERIFY BUTTON -->
+      <button class="verify-btn" id="verify-btn" onclick="verify()" disabled>
+        <span id="verify-text">Xác nhận</span>
+      </button>
+
+      <div class="card-footer">
+        Email sai?
+        <a onclick="changeEmail()">Thay đổi email</a>
+        <span class="divider">·</span>
+        <a href="dashboard.html">Bỏ qua</a>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS STATE ── -->
+    <div class="state" id="s-success">
+      <div class="success-check">✅</div>
+      <div class="success-title">Email đã xác nhận!</div>
+      <div class="success-desc">
+        Tài khoản của bạn đã được kích hoạt. Hãy hoàn thành thêm vài bước để cá nhân hoá lộ trình học.
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:.25rem">Chuyển hướng tự động sau 3 giây...</div>
+      <div class="redirect-bar-wrap"><div class="redirect-bar"></div></div>
+      <a href="onboarding.html">
+        <button class="continue-btn">Tiếp tục cài đặt →</button>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── OTP LOGIC ──
+const IDS = ['o1','o2','o3','o4','o5','o6'];
+const CORRECT = '123456';
+let timerSec = 587; // 9:47
+let timerInterval;
+
+function otpInput(el, nextId) {
+  el.value = el.value.replace(/\D/g,'').slice(-1);
+  if (el.value) el.classList.add('filled');
+  else el.classList.remove('filled');
+  if (el.value && nextId) document.getElementById(nextId).focus();
+  updateVerifyBtn();
+  clearErrors();
+}
+
+function otpKey(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) {
+    const prev = document.getElementById(prevId);
+    prev.value = '';
+    prev.classList.remove('filled');
+    prev.focus();
+    updateVerifyBtn();
+  }
+  // Paste support
+  if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    navigator.clipboard.readText().then(text => {
+      const digits = text.replace(/\D/g,'').slice(0,6);
+      IDS.forEach((id,i) => {
+        const inp = document.getElementById(id);
+        inp.value = digits[i] || '';
+        inp.classList.toggle('filled', !!digits[i]);
+      });
+      if (digits.length > 0) document.getElementById(IDS[Math.min(digits.length,5)]).focus();
+      updateVerifyBtn();
+    });
+  }
+}
+
+function getOTPValue() {
+  return IDS.map(id => document.getElementById(id).value).join('');
+}
+
+function updateVerifyBtn() {
+  const btn = document.getElementById('verify-btn');
+  const full = getOTPValue().length === 6;
+  btn.disabled = !full;
+}
+
+function clearErrors() {
+  document.getElementById('error-msg').classList.remove('show');
+  IDS.forEach(id => document.getElementById(id).classList.remove('error'));
+}
+
+function verify() {
+  const val = getOTPValue();
+  const btn = document.getElementById('verify-btn');
+  if (val.length < 6) return;
+
+  // Loading state
+  btn.classList.add('loading');
+  document.getElementById('verify-text').textContent = '...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    if (val === CORRECT) {
+      // SUCCESS
+      IDS.forEach(id => document.getElementById(id).classList.add('success-inp'));
+      btn.classList.add('success');
+      document.getElementById('verify-text').textContent = '✓ Đã xác nhận';
+      setTimeout(() => showSuccess(), 600);
+    } else {
+      // ERROR
+      IDS.forEach(id => document.getElementById(id).classList.add('error'));
+      document.getElementById('error-msg').classList.add('show');
+      document.getElementById('verify-text').textContent = 'Xác nhận';
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      // Clear after shake
+      setTimeout(() => {
+        IDS.forEach(id => { document.getElementById(id).classList.remove('error'); document.getElementById(id).value=''; document.getElementById(id).classList.remove('filled'); });
+        document.getElementById('o1').focus();
+        updateVerifyBtn();
+      }, 600);
+    }
+  }, 1000);
+}
+
+function showSuccess() {
+  document.getElementById('s-form').classList.remove('active');
+  document.getElementById('s-success').classList.add('active');
+  clearInterval(timerInterval);
+  setTimeout(() => { window.location.href = 'onboarding.html'; }, 3500);
+}
+
+// ── TIMER ──
+function updateTimer() {
+  if (timerSec <= 0) {
+    clearInterval(timerInterval);
+    document.getElementById('timer-display').style.display = 'none';
+    document.getElementById('resend-btn').classList.add('show');
+    return;
+  }
+  const m = Math.floor(timerSec / 60);
+  const s = timerSec % 60;
+  document.getElementById('timer-display').textContent = m + ':' + String(s).padStart(2,'0');
+  timerSec--;
+}
+updateTimer();
+timerInterval = setInterval(updateTimer, 1000);
+
+function resend() {
+  timerSec = 600;
+  document.getElementById('resend-btn').classList.remove('show');
+  document.getElementById('timer-display').style.display = '';
+  clearInterval(timerInterval);
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
+  IDS.forEach(id => { document.getElementById(id).value=''; document.getElementById(id).classList.remove('filled'); });
+  document.getElementById('o1').focus();
+  updateVerifyBtn();
+  clearErrors();
+}
+
+function changeEmail() {
+  const newEmail = prompt('Nhập địa chỉ email mới:');
+  if (newEmail && newEmail.includes('@')) {
+    document.getElementById('email-display').textContent = newEmail;
+    resend();
+  }
+}
+
+// Focus first input on load
+document.getElementById('o1').focus();
+</script>
+</body>
+</html>

@@ -1,3 +1,5 @@
-export default function BillingPage() {
-  return <div>{/* BillingPage from @modules/billing will go here */}</div>
+import { BillingPage } from '@modules/billing'
+
+export default function Page() {
+  return <BillingPage />
 }

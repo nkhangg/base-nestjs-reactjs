@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Tiến độ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--b);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:8px;padding:1.25rem 1.1rem 1rem;border-bottom:1px solid var(--b)}
+.sb-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark span{color:#fff;font-family:'DM Mono',monospace;font-size:12px}
+.sb-name{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.sb-nav{padding:.75rem .6rem;flex:1}
+.sb-section{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);padding:.5rem .55rem;margin-top:.5rem}
+.sb-item{display:flex;align-items:center;gap:9px;padding:.55rem .6rem;border-radius:var(--r);cursor:pointer;transition:all .15s;color:var(--ink3);font-size:13px;font-weight:400;margin-bottom:1px;text-decoration:none}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--ink);color:#fff}
+.sb-icon{font-size:15px;opacity:.7;flex-shrink:0}
+.sb-item.active .sb-icon{opacity:1}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:600;background:var(--red);color:#fff;padding:1px 6px;border-radius:999px}
+.sb-badge.amber{background:var(--amber)}
+.sb-footer{padding:.75rem .6rem 1rem;border-top:1px solid var(--b)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:.5rem;border-radius:var(--r2);cursor:pointer;transition:all .15s}
+.sb-user:hover{background:var(--surface)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:500;color:var(--ink)}
+.sb-ulevel{font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+.main{flex:1;overflow-y:auto;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;border-bottom:1px solid var(--b);background:rgba(250,250,248,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-streak{display:flex;align-items:center;gap:5px;background:var(--amber-l);color:var(--amber);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.tb-btn{width:32px;height:32px;border-radius:var(--r);background:var(--surface);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;text-decoration:none}
+.tb-btn:hover{background:var(--surface2)}
+.content{padding:1.75rem 2rem 3rem}
+
+.btn{font-family:'DM Sans',sans-serif;font-weight:500;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-size:14px;border-radius:var(--r2);padding:10px 20px}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#2a2a30}
+.btn-accent{background:var(--red);color:#fff}
+.btn-accent:hover{background:#d02940}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:var(--r)}
+.btn-ghost{background:transparent;color:var(--ink3);padding:6px 12px;border:none}
+.btn-ghost:hover{color:var(--ink);background:var(--surface)}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.75rem}
+.ph-title{font-size:22px;font-weight:600;letter-spacing:-.4px}
+.ph-sub{font-size:13px;color:var(--ink3);margin-top:3px}
+.range-toggle{display:flex;gap:3px}
+.range-btn{padding:5px 12px;border-radius:var(--r);border:1.5px solid var(--b2);font-size:12px;font-weight:500;color:var(--ink3);background:#fff;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.range-btn:hover{color:var(--ink);border-color:var(--ink4)}
+.range-btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.stat-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.1rem 1.25rem;position:relative;overflow:hidden}
+.sc-bar{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0}
+.sc-val{font-size:26px;font-weight:600;letter-spacing:-.5px;line-height:1;margin-bottom:4px}
+.sc-label{font-size:12px;color:var(--ink3);margin-bottom:.3rem}
+.sc-change{font-size:11px;font-weight:500;display:flex;align-items:center;gap:3px}
+.sc-change.up{color:var(--teal)}
+.sc-change.neu{color:var(--ink3)}
+
+/* ── CHARTS GRID ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.chart-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.25rem}
+.cc-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.cc-sub{font-size:11px;color:var(--ink3);margin-bottom:1.1rem}
+
+/* Bar chart */
+.bar-chart{height:120px;display:flex;align-items:flex-end;gap:3px;overflow:hidden}
+.bc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.bc-bar-bg{flex:1;width:100%;background:var(--surface2);border-radius:3px 3px 0 0;position:relative;overflow:hidden}
+.bc-bar-fill{position:absolute;bottom:0;left:0;right:0;border-radius:3px 3px 0 0;transition:height .6s cubic-bezier(.4,0,.2,1)}
+.bc-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink4)}
+
+/* SRS distribution */
+.srs-rows{display:flex;flex-direction:column;gap:.5rem}
+.srs-row{display:flex;align-items:center;gap:10px}
+.srs-name{width:64px;font-size:11px;color:var(--ink3);text-align:right;flex-shrink:0}
+.srs-bar-wrap{flex:1;height:20px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.srs-bar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.srs-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);width:30px;flex-shrink:0}
+
+/* ── SKILL RINGS ── */
+.skills-section{margin-bottom:1.5rem}
+.section-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:.85rem}
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.skill-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.1rem;text-align:center}
+.skill-ring{width:72px;height:72px;margin:0 auto .7rem;position:relative}
+.skill-ring svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-size:15px;font-weight:600;line-height:1}
+.skill-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.skill-sub{font-size:10px;color:var(--ink3)}
+.skill-trend{font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:2px;margin-top:.3rem}
+
+/* ── HEATMAP ── */
+.heatmap-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.25rem;margin-bottom:1.5rem}
+.hm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.85rem}
+.hm-legend{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink4)}
+.hm-swatch{width:12px;height:12px;border-radius:2px}
+.hm-grid-wrap{overflow-x:auto}
+.hm-grid{display:flex;gap:3px;width:max-content}
+.hm-col{display:flex;flex-direction:column;gap:3px}
+.hm-cell{width:13px;height:13px;border-radius:2px;background:var(--surface2)}
+.hm-cell.l1{background:#c5e8e0}
+.hm-cell.l2{background:#5cb8a3}
+.hm-cell.l3{background:var(--teal)}
+.hm-cell.l4{background:#096b55}
+.hm-months{display:flex;gap:0;margin-top:5px;width:max-content}
+.hm-month-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink4);min-width:52px;flex-shrink:0}
+
+/* ── WEAK WORDS TABLE ── */
+.weak-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);overflow:hidden}
+.weak-head{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--b)}
+.weak-title{font-size:13px;font-weight:600}
+.weak-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.wt-header{display:grid;grid-template-columns:1fr 90px 80px 80px;gap:8px;padding:.65rem 1.25rem;background:var(--surface);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4)}
+.wt-row{display:grid;grid-template-columns:1fr 90px 80px 80px;gap:8px;padding:.85rem 1.25rem;border-top:1px solid var(--b);align-items:center}
+.wt-row:hover{background:var(--surface)}
+.wt-word{display:flex;align-items:center;gap:8px}
+.wt-jp{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--ink)}
+.wt-vn{font-size:12px;color:var(--ink3)}
+.wt-bar-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.wt-bar-fill{height:100%;border-radius:3px}
+.wt-mono{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><span>日</span></div>
+    <span class="sb-name">Nihongo</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Học tập</div>
+    <a class="sb-item" href="dashboard.html"><span class="sb-icon">⊞</span>Tổng quan</a>
+    <a class="sb-item" href="flashcard.html"><span class="sb-icon">🃏</span>Flashcard<span class="sb-badge">12</span></a>
+    <a class="sb-item" href="grammar.html"><span class="sb-icon">📝</span>Ngữ pháp</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">📖</span>Đọc hiểu</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">🤖</span>AI Sensei</a>
+    <div class="sb-section">Kiểm tra</div>
+    <a class="sb-item" href="mock_test.html"><span class="sb-icon">🏆</span>Mock Test JLPT<span class="sb-badge amber">Mới</span></a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">📔</span>Nhật ký viết</a>
+    <div class="sb-section">Tài khoản</div>
+    <a class="sb-item active" href="progress.html"><span class="sb-icon">📊</span>Tiến độ</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">🗺️</span>Lộ trình</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">👥</span>Cộng đồng</a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">MT</div>
+      <div>
+        <div class="sb-uname">Minh Tuấn</div>
+        <div class="sb-ulevel">N3 · 21 ngày streak</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div style="font-size:14px;font-weight:600;letter-spacing:-.1px">Tiến độ học tập</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:1px">Cập nhật lần cuối: hôm nay, 08:45</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-streak">🔥 21 ngày</div>
+      <a class="tb-btn" href="dashboard.html" title="Tổng quan">⊞</a>
+      <div class="tb-btn">⚙</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="ph-title">Tiến độ học tập</div>
+        <div class="ph-sub">Tháng 4, 2025 · Đang học N3</div>
+      </div>
+      <div class="range-toggle">
+        <button class="range-btn" onclick="rangeClick(this)">7 ngày</button>
+        <button class="range-btn on" onclick="rangeClick(this)">30 ngày</button>
+        <button class="range-btn" onclick="rangeClick(this)">3 tháng</button>
+        <button class="range-btn" onclick="rangeClick(this)">Tất cả</button>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="sc-bar" style="background:var(--teal)"></div>
+        <div class="sc-val" style="color:var(--teal)">421</div>
+        <div class="sc-label">Từ đã thuộc</div>
+        <div class="sc-change up">↑ +48 tháng này</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-bar" style="background:var(--amber)"></div>
+        <div class="sc-val">🔥 21</div>
+        <div class="sc-label">Streak ngày liên tiếp</div>
+        <div class="sc-change up" style="color:var(--amber)">⭐ Kỷ lục cá nhân!</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-bar" style="background:var(--ink)"></div>
+        <div class="sc-val">87%</div>
+        <div class="sc-label">Tỉ lệ nhớ trung bình</div>
+        <div class="sc-change up">↑ +4% so tháng trước</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-bar" style="background:var(--ink3)"></div>
+        <div class="sc-val" style="color:var(--ink3)">24h</div>
+        <div class="sc-label">Tổng giờ học tháng này</div>
+        <div class="sc-change up">↑ +6h so tháng trước</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+      <!-- Daily bar chart -->
+      <div class="chart-card">
+        <div class="cc-title">Thẻ ôn tập theo ngày</div>
+        <div class="cc-sub">30 ngày gần nhất</div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+      <!-- SRS distribution -->
+      <div class="chart-card">
+        <div class="cc-title">Phân bổ thẻ SRS</div>
+        <div class="cc-sub">Phân bổ 630 thẻ hiện tại</div>
+        <div class="srs-rows">
+          <div class="srs-row"><div class="srs-name">Mới</div><div class="srs-bar-wrap"><div class="srs-bar-fill" style="width:8%;background:var(--red)"></div></div><div class="srs-count">48</div></div>
+          <div class="srs-row"><div class="srs-name">Học</div><div class="srs-bar-wrap"><div class="srs-bar-fill" style="width:11%;background:var(--amber)"></div></div><div class="srs-count">72</div></div>
+          <div class="srs-row"><div class="srs-name">Trẻ</div><div class="srs-bar-wrap"><div class="srs-bar-fill" style="width:20%;background:#6DB8E0"></div></div><div class="srs-count">128</div></div>
+          <div class="srs-row"><div class="srs-name">Trưởng thành</div><div class="srs-bar-wrap"><div class="srs-bar-fill" style="width:27%;background:var(--teal)"></div></div><div class="srs-count">173</div></div>
+          <div class="srs-row"><div class="srs-name">Đã thuộc</div><div class="srs-bar-wrap"><div class="srs-bar-fill" style="width:33%;background:#096b55"></div></div><div class="srs-count">209</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL RINGS -->
+    <div class="skills-section">
+      <div class="section-title">Kỹ năng theo module</div>
+      <div class="skill-grid">
+        <div class="skill-card">
+          <div class="skill-ring">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surface2)" stroke-width="7"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--red)" stroke-width="7" stroke-dasharray="188" stroke-dashoffset="68" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-center"><div class="ring-pct" style="color:var(--red)">64%</div></div>
+          </div>
+          <div class="skill-name">Từ vựng</div>
+          <div class="skill-sub">421 / 658 từ N4</div>
+          <div class="skill-trend" style="color:var(--teal)">↑ +48 tháng này</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-ring">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surface2)" stroke-width="7"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--amber)" stroke-width="7" stroke-dasharray="188" stroke-dashoffset="97" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-center"><div class="ring-pct" style="color:var(--amber)">48%</div></div>
+          </div>
+          <div class="skill-name">Ngữ pháp</div>
+          <div class="skill-sub">34 / 72 mẫu câu</div>
+          <div class="skill-trend" style="color:var(--teal)">↑ +8 tháng này</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-ring">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surface2)" stroke-width="7"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--teal)" stroke-width="7" stroke-dasharray="188" stroke-dashoffset="34" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-center"><div class="ring-pct" style="color:var(--teal)">82%</div></div>
+          </div>
+          <div class="skill-name">Hiragana</div>
+          <div class="skill-sub">41 / 50 ký tự</div>
+          <div class="skill-trend" style="color:var(--teal)">↑ Gần thành thạo</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-ring">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--surface2)" stroke-width="7"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--ink)" stroke-width="7" stroke-dasharray="188" stroke-dashoffset="113" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-center"><div class="ring-pct">40%</div></div>
+          </div>
+          <div class="skill-name">Kanji</div>
+          <div class="skill-sub">132 / 330 kanji</div>
+          <div class="skill-trend" style="color:var(--ink3)">→ Ổn định</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="heatmap-card">
+      <div class="hm-header">
+        <div>
+          <div class="cc-title">Heatmap học tập</div>
+          <div class="cc-sub" style="margin-bottom:0">12 tháng · 24 ngày học trong tháng này</div>
+        </div>
+        <div class="hm-legend">
+          <span>Ít</span>
+          <div class="hm-swatch" style="background:var(--surface2)"></div>
+          <div class="hm-swatch" style="background:#c5e8e0"></div>
+          <div class="hm-swatch" style="background:#5cb8a3"></div>
+          <div class="hm-swatch" style="background:var(--teal)"></div>
+          <div class="hm-swatch" style="background:#096b55"></div>
+          <span>Nhiều</span>
+        </div>
+      </div>
+      <div class="hm-grid-wrap">
+        <div class="hm-grid" id="heatmap"></div>
+        <div class="hm-months" id="hm-months"></div>
+      </div>
+    </div>
+
+    <!-- WEAK WORDS -->
+    <div class="weak-card">
+      <div class="weak-head">
+        <div>
+          <div class="weak-title">Từ cần ôn lại nhiều nhất</div>
+          <div class="weak-sub">Tỉ lệ nhớ thấp — ưu tiên luyện tập</div>
+        </div>
+        <button class="btn btn-accent btn-sm">Ôn tập ngay</button>
+      </div>
+      <div class="wt-header">
+        <div>Từ vựng</div>
+        <div>Tỉ lệ nhớ</div>
+        <div>Đã ôn</div>
+        <div>Hành động</div>
+      </div>
+      <div class="wt-row">
+        <div class="wt-word"><div class="wt-jp">懐かしい</div><div class="wt-vn">hoài niệm · N2</div></div>
+        <div><div class="wt-bar-wrap"><div class="wt-bar-fill" style="width:28%;background:var(--red)"></div></div><div style="font-size:10px;color:var(--red);margin-top:2px;font-family:'DM Mono',monospace">28%</div></div>
+        <div class="wt-mono">8 lần</div>
+        <div><button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 10px">Ôn</button></div>
+      </div>
+      <div class="wt-row">
+        <div class="wt-word"><div class="wt-jp">渋滞</div><div class="wt-vn">kẹt xe · N3</div></div>
+        <div><div class="wt-bar-wrap"><div class="wt-bar-fill" style="width:35%;background:var(--red)"></div></div><div style="font-size:10px;color:var(--red);margin-top:2px;font-family:'DM Mono',monospace">35%</div></div>
+        <div class="wt-mono">5 lần</div>
+        <div><button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 10px">Ôn</button></div>
+      </div>
+      <div class="wt-row">
+        <div class="wt-word"><div class="wt-jp">羨ましい</div><div class="wt-vn">thèm muốn · N3</div></div>
+        <div><div class="wt-bar-wrap"><div class="wt-bar-fill" style="width:41%;background:var(--amber)"></div></div><div style="font-size:10px;color:var(--amber);margin-top:2px;font-family:'DM Mono',monospace">41%</div></div>
+        <div class="wt-mono">6 lần</div>
+        <div><button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 10px">Ôn</button></div>
+      </div>
+      <div class="wt-row">
+        <div class="wt-word"><div class="wt-jp">諦める</div><div class="wt-vn">từ bỏ · N3</div></div>
+        <div><div class="wt-bar-wrap"><div class="wt-bar-fill" style="width:45%;background:var(--amber)"></div></div><div style="font-size:10px;color:var(--amber);margin-top:2px;font-family:'DM Mono',monospace">45%</div></div>
+        <div class="wt-mono">4 lần</div>
+        <div><button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 10px">Ôn</button></div>
+      </div>
+      <div class="wt-row">
+        <div class="wt-word"><div class="wt-jp">遠慮する</div><div class="wt-vn">e ngại, khách sáo · N3</div></div>
+        <div><div class="wt-bar-wrap"><div class="wt-bar-fill" style="width:49%;background:var(--amber)"></div></div><div style="font-size:10px;color:var(--amber);margin-top:2px;font-family:'DM Mono',monospace">49%</div></div>
+        <div class="wt-mono">3 lần</div>
+        <div><button class="btn btn-accent btn-sm" style="font-size:11px;padding:4px 10px">Ôn</button></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function rangeClick(el) {
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// Generate bar chart
+(function buildBarChart() {
+  const data = [12,8,15,22,18,0,25,14,19,11,20,17,0,23,16,21,13,18,22,0,15,19,24,17,20,14,18,23,21,16];
+  const max = Math.max(...data);
+  const chart = document.getElementById('bar-chart');
+  const days = ['T2','T3','T4','T5','T6','T7','CN'];
+  data.forEach((v, i) => {
+    const col = document.createElement('div');
+    col.className = 'bc-col';
+    const bg = document.createElement('div');
+    bg.className = 'bc-bar-bg';
+    const fill = document.createElement('div');
+    fill.className = 'bc-bar-fill';
+    fill.style.height = (v/max*100) + '%';
+    fill.style.background = v === 0 ? 'var(--surface2)' : v > 20 ? 'var(--teal)' : v > 15 ? 'var(--ink)' : 'var(--ink3)';
+    bg.appendChild(fill);
+    const lbl = document.createElement('div');
+    lbl.className = 'bc-label';
+    lbl.textContent = i < 7 ? days[i%7] : '';
+    col.appendChild(bg);
+    if (i % 4 === 0) col.appendChild(lbl);
+    chart.appendChild(col);
+  });
+})();
+
+// Generate heatmap
+(function buildHeatmap() {
+  const levels = [0,0,1,2,1,0,3,2,3,4,2,1,0,2,3,3,2,4,3,0,1,2,3,2,3,4,3,2,1,0,2,3,4,3,2,1,3,2,0,3,4,3,2,3,1,2,3,4,3,2];
+  const grid = document.getElementById('heatmap');
+  const months = ['T11','T12','T1','T2','T3','T4'];
+  const cols = 52;
+  for (let c = 0; c < cols; c++) {
+    const col = document.createElement('div');
+    col.className = 'hm-col';
+    for (let r = 0; r < 7; r++) {
+      const cell = document.createElement('div');
+      const lvl = levels[(c*7+r) % levels.length];
+      cell.className = 'hm-cell' + (lvl > 0 ? ' l'+lvl : '');
+      col.appendChild(cell);
+    }
+    grid.appendChild(col);
+  }
+  const mRow = document.getElementById('hm-months');
+  months.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'hm-month-lbl';
+    el.textContent = m;
+    mRow.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>

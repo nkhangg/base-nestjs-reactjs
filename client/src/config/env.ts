@@ -12,4 +12,6 @@ export const ENV = {
 
   TOKEN_KEY: process.env.NEXT_PUBLIC_TOKEN_KEY ?? 'access_token',
   REFRESH_TOKEN_KEY: process.env.NEXT_PUBLIC_REFRESH_TOKEN_KEY ?? 'refresh_token',
+
+  GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
 } as const

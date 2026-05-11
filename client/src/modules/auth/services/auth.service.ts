@@ -2,6 +2,7 @@ import { apiClient } from '@lib/api-client'
 import type {
   CurrentUser,
   LoginDto,
+  OAuthLoginDto,
   RegisterDto,
   ChangePasswordDto,
   ForgotPasswordDto,
@@ -12,6 +13,10 @@ import type {
 export const authService = {
   async login(dto: LoginDto): Promise<void> {
     await apiClient.post('/auth/login', { ...dto, type: 'user' }, { withCredentials: true })
+  },
+
+  async oauthLogin(dto: OAuthLoginDto): Promise<void> {
+    await apiClient.post('/auth/oauth/login', dto, { withCredentials: true })
   },
 
   async register(dto: RegisterDto): Promise<void> {

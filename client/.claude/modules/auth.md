@@ -17,7 +17,8 @@ src/modules/auth/
 │   ├── PasswordStrengthBar.tsx   # Thanh strength indicator (score 0-4)
 │   └── GoogleIcon.tsx            # Google SVG logo
 ├── hooks/
-│   └── useAuth.ts               # useCurrentUser, useLogin, useRegister, useLogout, ...
+│   ├── useAuth.ts               # useCurrentUser, useLogin, useRegister, useLogout, ...
+│   └── useGoogleLogin.ts        # Load GIS SDK + popup flow → POST /auth/oauth/login
 ├── services/
 │   └── auth.service.ts          # API calls: login, register, logout, getMe, ...
 ├── types/
@@ -36,8 +37,9 @@ import {
   ResetPasswordForm, PasswordStrengthBar,
   useCurrentUser, useLogin, useRegister, useLogout,
   useChangePassword, useForgotPassword, useResetPassword,
+  useGoogleLogin,
 } from '@modules/auth'
-import type { CurrentUser, LoginDto, RegisterDto } from '@modules/auth'
+import type { CurrentUser, LoginDto, OAuthLoginDto, RegisterDto } from '@modules/auth'
 ```
 
 ## Routes
@@ -61,13 +63,14 @@ import type { CurrentUser, LoginDto, RegisterDto } from '@modules/auth'
 - `defaultTab` prop: `'login'` (default) | `'register'`
 - Tab state managed locally — tab switcher hidden khi `showForgot === true`
 - Forgot password: inline state (không navigate) — `ForgotPasswordInline` render thay `LoginForm`
-- Google OAuth: `<a href="/auth/google">` — redirect, không qua apiClient
+- Google OAuth: `useGoogleLogin()` load script `accounts.google.com/gsi/client`, gọi `initTokenClient` lấy `access_token`, rồi POST `/auth/oauth/login` với `{ provider:'google', accessToken, type:'user' }`. Cần env `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (khớp với BE `GOOGLE_CLIENT_ID`).
 
 ## API Endpoints
 
 | Hook | Method | Endpoint |
 |---|---|---|
 | `useLogin` | POST | `/auth/login` |
+| `useGoogleLogin` | POST | `/auth/oauth/login` (sau khi GIS popup trả access_token) |
 | `useRegister` | POST | `/auth/register` |
 | `useLogout` | POST | `/auth/logout` |
 | `useCurrentUser` | GET | `/auth/me` |

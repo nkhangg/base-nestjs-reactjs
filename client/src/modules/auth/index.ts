@@ -15,4 +15,5 @@ export {
   useForgotPassword,
   useResetPassword,
 } from './hooks/useAuth'
-export type { CurrentUser, LoginDto, RegisterDto } from './types'
+export { useGoogleLogin } from './hooks/useGoogleLogin'
+export type { CurrentUser, LoginDto, OAuthLoginDto, RegisterDto } from './types'

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Gói đăng ký</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --purple:#5B45C7;--purple-l:#EDE8FE;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--b);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:8px;padding:1.25rem 1.1rem 1rem;border-bottom:1px solid var(--b)}
+.sb-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark span{color:#fff;font-family:'DM Mono',monospace;font-size:12px}
+.sb-name{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.sb-nav{padding:.75rem .6rem;flex:1}
+.sb-section{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);padding:.5rem .55rem;margin-top:.5rem}
+.sb-item{display:flex;align-items:center;gap:9px;padding:.55rem .6rem;border-radius:var(--r);cursor:pointer;transition:all .15s;color:var(--ink3);font-size:13px;font-weight:400;margin-bottom:1px;text-decoration:none}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--ink);color:#fff}
+.sb-icon{font-size:15px;opacity:.7;flex-shrink:0}
+.sb-item.active .sb-icon{opacity:1}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:600;background:var(--red);color:#fff;padding:1px 6px;border-radius:999px}
+.sb-badge.amber{background:var(--amber)}
+.sb-footer{padding:.75rem .6rem 1rem;border-top:1px solid var(--b)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:.5rem;border-radius:var(--r2);cursor:pointer;transition:all .15s}
+.sb-user:hover{background:var(--surface)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:500;color:var(--ink)}
+.sb-ulevel{font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace}
+.main{flex:1;overflow-y:auto;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;border-bottom:1px solid var(--b);background:rgba(250,250,248,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-streak{display:flex;align-items:center;gap:5px;background:var(--amber-l);color:var(--amber);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.tb-btn{width:32px;height:32px;border-radius:var(--r);background:var(--surface);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;text-decoration:none}
+.tb-btn:hover{background:var(--surface2)}
+.content{padding:1.75rem 2rem 3rem}
+.btn{font-family:'DM Sans',sans-serif;font-weight:500;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-size:14px;border-radius:var(--r2);padding:9px 18px}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#2a2a30}
+.btn-secondary{background:transparent;color:var(--ink);border:1.5px solid var(--b2)}
+.btn-secondary:hover{background:var(--surface)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:var(--r)}
+.btn-danger{background:transparent;color:var(--red);border:1.5px solid rgba(232,51,74,.25)}
+.btn-danger:hover{background:var(--red-l)}
+
+/* ── CURRENT PLAN BANNER ── */
+.current-plan-banner{background:var(--ink);border-radius:var(--r3);padding:1.5rem 1.75rem;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.cpb-deco{position:absolute;right:160px;top:50%;transform:translateY(-50%);font-size:80px;color:rgba(255,255,255,.03);font-family:'DM Mono',monospace;pointer-events:none}
+.cpb-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.3rem}
+.cpb-plan{font-size:22px;font-weight:600;color:#fff;letter-spacing:-.4px;margin-bottom:.3rem;display:flex;align-items:center;gap:8px}
+.cpb-plan-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.cpb-desc{font-size:13px;color:rgba(255,255,255,.45)}
+.cpb-meta{text-align:right}
+.cpb-renewal{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:.5rem}
+.cpb-amount{font-size:28px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.cpb-period{font-size:13px;color:rgba(255,255,255,.35)}
+
+/* ── USAGE STATS ── */
+.usage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.usage-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.1rem 1.25rem}
+.uc-label{font-size:11px;color:var(--ink3);margin-bottom:.5rem}
+.uc-val{font-size:18px;font-weight:600;letter-spacing:-.3px;color:var(--ink);margin-bottom:.4rem}
+.uc-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.uc-fill{height:100%;border-radius:3px;background:var(--ink)}
+.uc-sub{font-size:10px;color:var(--ink4);margin-top:.35rem}
+
+/* ── UPGRADE PLANS ── */
+.upgrade-section{margin-bottom:1.5rem}
+.section-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.85rem}
+.billing-toggle-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem}
+.bt{display:inline-flex;background:var(--surface);border-radius:999px;padding:3px;gap:2px}
+.bt-opt{padding:5px 16px;border-radius:999px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--ink3);border:none;background:transparent;font-family:'DM Sans',sans-serif}
+.bt-opt.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(13,13,15,.1)}
+.save-chip{background:var(--teal-l);color:var(--teal);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+
+.plans-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.25rem;position:relative;transition:all .2s}
+.plan-card:hover{border-color:var(--b2);box-shadow:0 4px 16px rgba(13,13,15,.06)}
+.plan-card.highlighted{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.plan-card.current-card{background:var(--surface);border-style:dashed}
+.pc-current-tag{position:absolute;top:-11px;left:1.25rem;background:var(--ink3);color:#fff;font-size:10px;font-weight:600;padding:2px 10px;border-radius:999px;letter-spacing:.04em}
+.pc-popular-tag{position:absolute;top:-11px;right:1.25rem;background:var(--ink);color:#fff;font-size:10px;font-weight:600;padding:2px 10px;border-radius:999px}
+.pc-name{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.4rem}
+.pc-price{display:flex;align-items:flex-end;gap:3px;margin-bottom:.25rem}
+.pc-amount{font-size:28px;font-weight:600;letter-spacing:-.8px;line-height:1;color:var(--ink)}
+.pc-period{font-size:12px;color:var(--ink4);margin-bottom:3px}
+.pc-note{font-size:11px;color:var(--ink4);margin-bottom:1rem;min-height:15px}
+.pc-features{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.1rem}
+.pcf-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2)}
+.pcf-check{width:14px;height:14px;border-radius:50%;background:var(--teal-l);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.pcf-no{background:var(--surface);color:var(--ink4)}
+
+/* ── BILLING HISTORY ── */
+.billing-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);overflow:hidden;margin-bottom:1.5rem}
+.bc-head{padding:.9rem 1.25rem;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.bc-title{font-size:13px;font-weight:600}
+.invoice-row{display:grid;grid-template-columns:1fr 100px 90px 80px;gap:8px;padding:.75rem 1.25rem;border-bottom:1px solid var(--b);align-items:center;font-size:13px}
+.invoice-row:hover{background:var(--surface)}
+.invoice-row:last-child{border-bottom:none}
+.ir-desc{color:var(--ink2)}
+.ir-date{color:var(--ink3);font-size:12px}
+.ir-amount{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);text-align:right}
+.ir-status{text-align:right}
+.status-paid{font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--teal-l);color:var(--teal)}
+.status-failed{background:var(--red-l);color:var(--red)}
+
+/* ── PAYMENT METHOD ── */
+.pm-card{background:#fff;border:1px solid var(--b);border-radius:var(--r2);padding:1.25rem;margin-bottom:1.5rem}
+.pm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.pm-title{font-size:13px;font-weight:600}
+.pm-method{display:flex;align-items:center;gap:12px;padding:.85rem 1rem;border:1.5px solid var(--b2);border-radius:var(--r2);margin-bottom:.75rem}
+.pm-icon{width:40px;height:28px;border-radius:5px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'DM Mono',monospace;letter-spacing:.5px;flex-shrink:0}
+.pm-info{flex:1}
+.pm-name{font-size:13px;font-weight:500;color:var(--ink)}
+.pm-exp{font-size:11px;color:var(--ink3)}
+.pm-default{font-size:10px;font-weight:600;background:var(--teal-l);color:var(--teal);padding:2px 7px;border-radius:999px}
+
+/* ── CANCEL ── */
+.cancel-section{border:1px solid rgba(232,51,74,.2);border-radius:var(--r2);padding:1.25rem;display:flex;justify-content:space-between;align-items:center;background:#fff}
+.cs-info{}
+.cs-title{font-size:13px;font-weight:500;color:var(--ink)}
+.cs-desc{font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* Overlay */
+.overlay{position:fixed;inset:0;background:rgba(13,13,15,.5);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:var(--r3);padding:2rem;max-width:420px;width:90%;transform:translateY(10px);transition:transform .2s}
+.overlay.show .modal{transform:translateY(0)}
+.modal-title{font-size:18px;font-weight:600;letter-spacing:-.3px;margin-bottom:.4rem}
+.modal-sub{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:1.75rem}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:#fff;padding:.85rem 1.25rem;border-radius:var(--r2);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(13,13,15,.2);transform:translateY(8px);opacity:0;transition:all .25s;pointer-events:none;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><span>日</span></div>
+    <span class="sb-name">Nihongo</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Học tập</div>
+    <a class="sb-item" href="dashboard.html"><span class="sb-icon">⊞</span>Tổng quan</a>
+    <a class="sb-item" href="flashcard.html"><span class="sb-icon">🃏</span>Flashcard<span class="sb-badge">12</span></a>
+    <a class="sb-item" href="grammar.html"><span class="sb-icon">📝</span>Ngữ pháp</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">📖</span>Đọc hiểu</a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">🤖</span>AI Sensei</a>
+    <div class="sb-section">Kiểm tra</div>
+    <a class="sb-item" href="mock_test.html"><span class="sb-icon">🏆</span>Mock Test JLPT<span class="sb-badge amber">Mới</span></a>
+    <a class="sb-item" style="opacity:.45;pointer-events:none"><span class="sb-icon">📔</span>Nhật ký viết</a>
+    <div class="sb-section">Tài khoản</div>
+    <a class="sb-item" href="progress.html"><span class="sb-icon">📊</span>Tiến độ</a>
+    <a class="sb-item" href="profile.html"><span class="sb-icon">👤</span>Hồ sơ</a>
+    <a class="sb-item" href="settings.html"><span class="sb-icon">⚙️</span>Cài đặt</a>
+    <a class="sb-item active" href="billing.html"><span class="sb-icon">💳</span>Nâng cấp Pro</a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">MT</div>
+      <div><div class="sb-uname">Minh Tuấn</div><div class="sb-ulevel">N3 · 21 ngày streak</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div style="font-size:14px;font-weight:600">Gói đăng ký</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:1px">Quản lý gói và thanh toán</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-streak">🔥 21 ngày</div>
+      <a class="tb-btn" href="dashboard.html">⊞</a>
+      <a class="tb-btn" href="settings.html">⚙</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- CURRENT PLAN BANNER -->
+    <div class="current-plan-banner">
+      <div class="cpb-deco">Free</div>
+      <div>
+        <div class="cpb-label">Gói hiện tại</div>
+        <div class="cpb-plan">Free <span class="cpb-plan-badge">Đang dùng</span></div>
+        <div class="cpb-desc">20 flashcard/ngày · 1 Mock Test/tháng · Ngữ pháp N5–N4</div>
+      </div>
+      <div class="cpb-meta">
+        <div class="cpb-renewal" style="color:rgba(255,255,255,.5);font-size:13px">Nâng cấp để mở khoá</div>
+        <div style="display:flex;align-items:flex-end;gap:4px;justify-content:flex-end;margin-top:.3rem">
+          <span class="cpb-amount">199.000</span>
+          <span class="cpb-period">₫/tháng</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">hoặc 119.000₫/tháng (hàng năm)</div>
+      </div>
+    </div>
+
+    <!-- USAGE STATS (Free limits) -->
+    <div class="usage-grid">
+      <div class="usage-card">
+        <div class="uc-label">Flashcard hôm nay</div>
+        <div class="uc-val">12 / 20</div>
+        <div class="uc-bar"><div class="uc-fill" style="width:60%;background:var(--amber)"></div></div>
+        <div class="uc-sub">Còn 8 thẻ trong ngày · <a href="billing.html" style="color:var(--teal);text-decoration:none;font-weight:500">Nâng cấp →</a></div>
+      </div>
+      <div class="usage-card">
+        <div class="uc-label">Mock Test tháng này</div>
+        <div class="uc-val">1 / 1</div>
+        <div class="uc-bar"><div class="uc-fill" style="width:100%;background:var(--red)"></div></div>
+        <div class="uc-sub">Đã hết lượt · Reset 01/05</div>
+      </div>
+      <div class="usage-card">
+        <div class="uc-label">Ngữ pháp đã truy cập</div>
+        <div class="uc-val">N5 + N4</div>
+        <div class="uc-bar"><div class="uc-fill" style="width:40%"></div></div>
+        <div class="uc-sub">N3–N1 cần gói Pro</div>
+      </div>
+    </div>
+
+    <!-- UPGRADE PLANS -->
+    <div class="upgrade-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
+        <div class="section-label">Chọn gói</div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <div class="bt">
+            <button class="bt-opt on" onclick="setBilling('monthly',this)">Hàng tháng</button>
+            <button class="bt-opt" onclick="setBilling('annual',this)">Hàng năm</button>
+          </div>
+          <span class="save-chip" id="save-chip" style="display:none">Tiết kiệm 40%</span>
+        </div>
+      </div>
+
+      <div class="plans-row">
+        <!-- FREE — current -->
+        <div class="plan-card current-card">
+          <div class="pc-current-tag">Gói hiện tại</div>
+          <div class="pc-name">Free</div>
+          <div class="pc-price"><span class="pc-amount">0</span><span class="pc-period">₫/tháng</span></div>
+          <div class="pc-note">&nbsp;</div>
+          <div class="pc-features">
+            <div class="pcf-item"><div class="pcf-check">✓</div>20 flashcard/ngày</div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>Ngữ pháp N5–N4</div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>1 Mock Test/tháng</div>
+            <div class="pcf-item"><div class="pcf-check pcf-no">✗</div><span style="color:var(--ink4)">SRS không giới hạn</span></div>
+            <div class="pcf-item"><div class="pcf-check pcf-no">✗</div><span style="color:var(--ink4)">AI Sensei</span></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;cursor:default;opacity:.5" disabled>Đang dùng</button>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-card highlighted">
+          <div class="pc-popular-tag">Phổ biến nhất</div>
+          <div class="pc-name">Pro</div>
+          <div class="pc-price">
+            <span class="pc-amount" id="pro-amount">199.000</span>
+            <span class="pc-period">₫/tháng</span>
+          </div>
+          <div class="pc-note" id="pro-note">Thanh toán hàng tháng</div>
+          <div class="pc-features">
+            <div class="pcf-item"><div class="pcf-check">✓</div>Flashcard <strong>không giới hạn</strong></div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>Ngữ pháp N5 → N1 đầy đủ</div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>Mock Test không giới hạn</div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>AI Sensei hội thoại</div>
+            <div class="pcf-item"><div class="pcf-check">✓</div>Nhật ký viết + AI sửa lỗi</div>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;background:var(--ink)" onclick="showUpgradeModal()">Nâng cấp lên Pro →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT METHOD -->
+    <div class="pm-card">
+      <div class="pm-head">
+        <div class="pm-title">Phương thức thanh toán</div>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('💳 Tính năng thêm thẻ sắp ra mắt')">+ Thêm phương thức</button>
+      </div>
+      <div class="pm-method">
+        <div class="pm-icon">VISA</div>
+        <div class="pm-info">
+          <div class="pm-name">Visa •••• •••• •••• 4242</div>
+          <div class="pm-exp">Hết hạn 12/2026</div>
+        </div>
+        <span class="pm-default">Mặc định</span>
+      </div>
+      <div class="pm-method" style="opacity:.5">
+        <div class="pm-icon" style="background:#003087;font-size:8px;letter-spacing:0">MoMo</div>
+        <div class="pm-info">
+          <div class="pm-name">MoMo · 0912 *** ***</div>
+          <div class="pm-exp">Đã liên kết</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BILLING HISTORY -->
+    <div class="billing-card">
+      <div class="bc-head">
+        <div class="bc-title">Lịch sử thanh toán</div>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('📥 Đang tải xuống lịch sử...')">Xuất CSV</button>
+      </div>
+      <div class="invoice-row" style="background:var(--surface);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4)">
+        <div>Mô tả</div><div>Ngày</div><div style="text-align:right">Số tiền</div><div style="text-align:right">Trạng thái</div>
+      </div>
+      <div class="invoice-row">
+        <div class="ir-desc">Nihongo Pro — Tháng 4/2025</div>
+        <div class="ir-date">01/04/2025</div>
+        <div class="ir-amount">199.000₫</div>
+        <div class="ir-status"><span class="status-paid">Thành công</span></div>
+      </div>
+      <div class="invoice-row">
+        <div class="ir-desc">Nihongo Pro — Tháng 3/2025</div>
+        <div class="ir-date">01/03/2025</div>
+        <div class="ir-amount">199.000₫</div>
+        <div class="ir-status"><span class="status-paid">Thành công</span></div>
+      </div>
+      <div class="invoice-row">
+        <div class="ir-desc">Nihongo Pro — Tháng 2/2025</div>
+        <div class="ir-date">01/02/2025</div>
+        <div class="ir-amount">199.000₫</div>
+        <div class="ir-status"><span class="status-paid">Thành công</span></div>
+      </div>
+      <div class="invoice-row">
+        <div class="ir-desc">Nihongo Pro — Tháng 1/2025</div>
+        <div class="ir-date">01/01/2025</div>
+        <div class="ir-amount">199.000₫</div>
+        <div class="ir-status"><span class="status-failed">Thất bại</span></div>
+      </div>
+    </div>
+
+    <!-- CANCEL -->
+    <div class="cancel-section">
+      <div class="cs-info">
+        <div class="cs-title">Huỷ đăng ký</div>
+        <div class="cs-desc">Hiện bạn đang dùng gói Free. Không có gói nào để huỷ.</div>
+      </div>
+      <button class="btn btn-danger btn-sm" disabled style="opacity:.4;cursor:default">Huỷ đăng ký</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="overlay" id="upgrade-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">Nâng cấp lên Pro ✨</div>
+    <div class="modal-sub">Bạn sẽ được lập tức truy cập toàn bộ tính năng Pro. Thanh toán 199.000₫/tháng, huỷ bất cứ lúc nào.</div>
+
+    <div style="background:var(--surface);border-radius:var(--r2);padding:1rem;margin-bottom:1.25rem">
+      <div style="font-size:12px;font-weight:600;margin-bottom:.6rem">Tóm tắt đơn hàng</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:.35rem">
+        <span style="color:var(--ink3)">Nihongo Pro — Hàng tháng</span>
+        <span style="font-family:'DM Mono',monospace">199.000₫</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--teal)">
+        <span>Dùng thử 7 ngày miễn phí</span>
+        <span style="font-family:'DM Mono',monospace">−199.000₫</span>
+      </div>
+      <div style="height:1px;background:var(--b2);margin:.6rem 0"></div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600">
+        <span>Hôm nay thanh toán</span>
+        <span style="font-family:'DM Mono',monospace;color:var(--teal)">0₫</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink4);margin-top:.3rem">Sẽ tự động gia hạn 199.000₫/tháng từ 23/05/2025</div>
+    </div>
+
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:1.25rem">Thanh toán qua: <strong style="color:var(--ink)">Visa •••• 4242</strong> · <a href="#" style="color:var(--teal);text-decoration:none">Đổi thẻ</a></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal()">Huỷ</button>
+      <button class="btn btn-primary btn-sm" onclick="completeUpgrade()">Xác nhận nâng cấp →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+function setBilling(type, btn) {
+  document.querySelectorAll('.bt-opt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const saveChip = document.getElementById('save-chip');
+  if (type === 'annual') {
+    document.getElementById('pro-amount').textContent = '119.000';
+    document.getElementById('pro-note').textContent = 'Thanh toán hàng năm (1.428.000₫)';
+    saveChip.style.display = 'inline-block';
+  } else {
+    document.getElementById('pro-amount').textContent = '199.000';
+    document.getElementById('pro-note').textContent = 'Thanh toán hàng tháng';
+    saveChip.style.display = 'none';
+  }
+}
+
+function showUpgradeModal() {
+  document.getElementById('upgrade-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('upgrade-modal').classList.remove('show');
+}
+
+function completeUpgrade() {
+  closeModal();
+  showToast('🎉 Nâng cấp thành công! Chào mừng bạn lên Pro');
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 2500);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

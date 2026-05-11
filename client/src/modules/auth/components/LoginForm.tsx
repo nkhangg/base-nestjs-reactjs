@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '@shared/utils'
 import { useLogin } from '../hooks/useAuth'
+import { useGoogleLogin } from '../hooks/useGoogleLogin'
 import { GoogleIcon } from './GoogleIcon'
 
 const schema = z.object({
@@ -23,6 +24,7 @@ interface Props {
 
 export function LoginForm({ onForgotPassword, onSwitchToRegister }: Props) {
   const { login } = useLogin()
+  const { login: googleLogin, isReady: googleReady, isLoading: googleLoading } = useGoogleLogin()
   const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -51,13 +53,15 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: Props) {
       </div>
 
       {/* Google OAuth */}
-      <a
-        href="/auth/google"
-        className="mb-5 flex h-11 w-full items-center justify-center gap-2.5 rounded-2xl border-[1.5px] border-[rgba(13,13,15,0.14)] bg-white text-sm font-medium text-[#3A3A40] transition-colors hover:bg-[#F2F2EF] hover:border-[#ADADB8]"
+      <button
+        type="button"
+        onClick={googleLogin}
+        disabled={!googleReady || googleLoading}
+        className="mb-5 flex h-11 w-full items-center justify-center gap-2.5 rounded-2xl border-[1.5px] border-[rgba(13,13,15,0.14)] bg-white text-sm font-medium text-[#3A3A40] transition-colors hover:bg-[#F2F2EF] hover:border-[#ADADB8] disabled:cursor-not-allowed disabled:opacity-60"
       >
         <GoogleIcon className="h-[18px] w-[18px] flex-shrink-0" />
-        Tiếp tục với Google
-      </a>
+        {googleLoading ? 'Đang kết nối Google...' : 'Tiếp tục với Google'}
+      </button>
 
       {/* Divider */}
       <div className="mb-5 flex items-center gap-3">

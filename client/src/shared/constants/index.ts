@@ -37,6 +37,9 @@ export const QUERY_KEYS = {
   BILLING: {
     PLANS: ['billing', 'plans'] as const,
     SUBSCRIPTION: ['billing', 'subscription'] as const,
+    USAGE: ['billing', 'usage'] as const,
+    PAYMENT_METHODS: ['billing', 'payment-methods'] as const,
+    INVOICES: ['billing', 'invoices'] as const,
   },
   NOTIFICATIONS: {
     LIST: ['notifications', 'list'] as const,

@@ -71,3 +71,12 @@ modules/user/
 ## Domain Events Published
 - `user.created` — sau khi tạo user thành công
 - `user.deactivated` — sau khi deactivate user
+
+## Bật Google OAuth login
+OAuth scaffolding (controller, use-case, connector, Prisma `OAuthAccount`) đã sẵn sàng — xem `core-auth.md`.
+Để bật provider Google cho `type='user'`:
+1. Google Cloud Console → APIs & Services → Credentials → tạo OAuth 2.0 Client ID (Web application).
+   - Authorized JavaScript origins: domain FE (dev + prod).
+2. Đặt `GOOGLE_CLIENT_ID` trong `.env` của BE (xem `.env.example`). Production thiếu env này sẽ từ chối login.
+3. `GoogleOAuthProvider` verify `aud` qua `https://oauth2.googleapis.com/tokeninfo` để chặn token replay từ app khác, và reject `email_verified=false`.
+4. FE lấy `access_token` (Google Identity Services) → POST `/auth/oauth/login` body `{ provider:'google', accessToken, type:'user', deviceName? }`. Lần đầu tự tạo user + assign role `member`, lần sau link qua `OAuthAccount(provider, providerId)`.

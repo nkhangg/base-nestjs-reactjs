@@ -4,6 +4,13 @@ export interface LoginDto {
   deviceName?: string
 }
 
+export interface OAuthLoginDto {
+  provider: 'google'
+  accessToken: string
+  type: 'user'
+  deviceName?: string
+}
+
 export interface RegisterDto {
   email: string
   password: string

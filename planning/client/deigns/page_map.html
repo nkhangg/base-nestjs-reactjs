@@ -1,0 +1,553 @@
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap");
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  :root {
+    --ink: #0d0d0f;
+    --ink2: #3a3a40;
+    --ink3: #7a7a85;
+    --ink4: #adadb8;
+    --paper: #fafaf8;
+    --surface: #f2f2ef;
+    --surface2: #e8e8e4;
+    --red: #e8334a;
+    --red-l: #fff0f2;
+    --teal: #0f8a72;
+    --teal-l: #e8f7f4;
+    --amber: #c47d0e;
+    --amber-l: #fef6e4;
+    --purple: #5b45c7;
+    --purple-l: #ede8fe;
+    --b: rgba(13, 13, 15, 0.08);
+    --b2: rgba(13, 13, 15, 0.14);
+    --r: 8px;
+    --r2: 14px;
+    --r3: 20px;
+  }
+  body {
+    font-family: "DM Sans", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 1.5rem 0 2rem;
+  }
+
+  .group {
+    margin-bottom: 2rem;
+  }
+  .group-hd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--b);
+  }
+  .group-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .group-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .group-count {
+    margin-left: auto;
+    font-size: 11px;
+    font-family: "DM Mono", monospace;
+    color: var(--ink4);
+  }
+
+  .page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 8px;
+  }
+  .page-card {
+    background: #fff;
+    border: 1px solid var(--b);
+    border-radius: var(--r2);
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.15s;
+    cursor: default;
+  }
+  .page-card:hover {
+    border-color: var(--b2);
+    box-shadow: 0 4px 12px rgba(13, 13, 15, 0.05);
+  }
+  .page-card.done {
+    border-left: 3px solid var(--teal);
+  }
+  .page-card.next {
+    border-left: 3px solid var(--ink);
+  }
+  .page-card.todo {
+    border-left: 3px solid var(--surface2);
+  }
+  .page-card.b2b {
+    border-left: 3px solid var(--purple);
+  }
+
+  .pc-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .pc-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .pc-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .pc-desc {
+    font-size: 11px;
+    color: var(--ink3);
+    line-height: 1.5;
+  }
+  .pc-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-top: 5px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid var(--b);
+    border-radius: var(--r2);
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink3);
+  }
+  .leg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+</style>
+
+<div class="legend">
+  <div class="leg-item">
+    <div class="leg-dot" style="background: var(--teal)"></div>
+    Đã thiết kế (4)
+  </div>
+  <div class="leg-item">
+    <div class="leg-dot" style="background: var(--ink)"></div>
+    Nên làm tiếp (ưu tiên cao)
+  </div>
+  <div class="leg-item">
+    <div class="leg-dot" style="background: var(--surface2)"></div>
+    Cần làm (phase 2)
+  </div>
+  <div class="leg-item">
+    <div class="leg-dot" style="background: var(--purple)"></div>
+    B2B / Giáo viên
+  </div>
+</div>
+
+<!-- PUBLIC -->
+<div class="group">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--ink3)"></div>
+    <span class="group-label">Public — Chưa đăng nhập</span>
+    <span class="group-count">4 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card done">
+      <span class="pc-icon">🏠</span>
+      <div class="pc-body">
+        <div class="pc-name">Landing page</div>
+        <div class="pc-desc">Hero, features, levels, testimonials, CTA</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">💰</span>
+      <div class="pc-body">
+        <div class="pc-name">Pricing page</div>
+        <div class="pc-desc">
+          Free vs Pro vs Team — bảng so sánh tính năng, FAQ
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🔐</span>
+      <div class="pc-body">
+        <div class="pc-name">Đăng ký / Đăng nhập</div>
+        <div class="pc-desc">Auth flow, Google OAuth, forgot password</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">📣</span>
+      <div class="pc-body">
+        <div class="pc-name">Blog / Resources</div>
+        <div class="pc-desc">Bài viết học tiếng Nhật, tips, SEO traffic</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="group">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--amber)"></div>
+    <span class="group-label">Onboarding flow</span>
+    <span class="group-count">2 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card done">
+      <span class="pc-icon">🎯</span>
+      <div class="pc-body">
+        <div class="pc-name">Onboarding quiz</div>
+        <div class="pc-desc">
+          Mục tiêu → trình độ → quiz → thời gian → lộ trình
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card next">
+      <span class="pc-icon">✉️</span>
+      <div class="pc-body">
+        <div class="pc-name">Email verification</div>
+        <div class="pc-desc">Xác nhận email sau đăng ký, resend OTP</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CORE LEARNING -->
+<div class="group">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--red)"></div>
+    <span class="group-label">Core learning — Học tập chính</span>
+    <span class="group-count">8 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card done">
+      <span class="pc-icon">⊞</span>
+      <div class="pc-body">
+        <div class="pc-name">Dashboard</div>
+        <div class="pc-desc">Tổng quan, heatmap, module list, stats</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card next">
+      <span class="pc-icon">🃏</span>
+      <div class="pc-body">
+        <div class="pc-name">Flashcard session</div>
+        <div class="pc-desc">
+          SRS 2 chiều, gõ tiếng Nhật, recognition mode, kết quả
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card next">
+      <span class="pc-icon">📝</span>
+      <div class="pc-body">
+        <div class="pc-name">Ngữ pháp</div>
+        <div class="pc-desc">Danh sách mẫu câu, bài học chi tiết, bài tập</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card next">
+      <span class="pc-icon">🏆</span>
+      <div class="pc-body">
+        <div class="pc-name">Mock Test JLPT</div>
+        <div class="pc-desc">Chọn cấp độ → thi → kết quả & phân tích</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">📖</span>
+      <div class="pc-body">
+        <div class="pc-name">Đọc hiểu</div>
+        <div class="pc-desc">
+          Bài đọc + từ điển nhúng, furigana toggle, ghi chú
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🤖</span>
+      <div class="pc-body">
+        <div class="pc-name">AI Sensei — Hội thoại</div>
+        <div class="pc-desc">Chat với AI, chọn kịch bản, sửa lỗi inline</div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">📔</span>
+      <div class="pc-body">
+        <div class="pc-name">Nhật ký viết</div>
+        <div class="pc-desc">
+          Editor tiếng Nhật, AI sửa lỗi, lịch sử bài viết
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🔍</span>
+      <div class="pc-body">
+        <div class="pc-name">Từ điển thông minh</div>
+        <div class="pc-desc">Tra đa chiều, ví dụ câu thực, thêm vào deck</div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="group">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--teal)"></div>
+    <span class="group-label">Analytics & Progress</span>
+    <span class="group-count">3 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card next">
+      <span class="pc-icon">📊</span>
+      <div class="pc-body">
+        <div class="pc-name">Tiến độ chi tiết</div>
+        <div class="pc-desc">
+          Biểu đồ từng kỹ năng, retention rate, vocabulary growth
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🗺️</span>
+      <div class="pc-body">
+        <div class="pc-name">Lộ trình học tập</div>
+        <div class="pc-desc">
+          Timeline N5→N1, milestone, dự báo ngày đạt mục tiêu
+        </div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🎮</span>
+      <div class="pc-body">
+        <div class="pc-name">Leaderboard</div>
+        <div class="pc-desc">Xếp hạng tuần, bạn bè, cùng cấp độ</div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT -->
+<div class="group">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--ink4)"></div>
+    <span class="group-label">Account & Settings</span>
+    <span class="group-count">4 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card todo">
+      <span class="pc-icon">👤</span>
+      <div class="pc-body">
+        <div class="pc-name">Profile</div>
+        <div class="pc-desc">Thông tin cá nhân, avatar, stats công khai</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">⚙️</span>
+      <div class="pc-body">
+        <div class="pc-name">Cài đặt</div>
+        <div class="pc-desc">Thông báo, lộ trình, giao diện, ngôn ngữ UI</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">💳</span>
+      <div class="pc-body">
+        <div class="pc-name">Billing / Nâng cấp</div>
+        <div class="pc-desc">Chọn gói, thanh toán, quản lý subscription</div>
+        <span
+          class="pc-tag"
+          style="background: var(--teal-l); color: var(--teal)"
+          >✓ Hoàn thành</span
+        >
+      </div>
+    </div>
+    <div class="page-card todo">
+      <span class="pc-icon">🏅</span>
+      <div class="pc-body">
+        <div class="pc-name">Thành tích & Badges</div>
+        <div class="pc-desc">Milestone đạt được, streak records, danh hiệu</div>
+        <span
+          class="pc-tag"
+          style="background: var(--surface); color: var(--ink4)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- B2B -->
+<div class="group" style="margin-bottom: 0">
+  <div class="group-hd">
+    <div class="group-dot" style="background: var(--purple)"></div>
+    <span class="group-label">B2B — Giáo viên / Trung tâm</span>
+    <span class="group-count">4 pages</span>
+  </div>
+  <div class="page-grid">
+    <div class="page-card b2b">
+      <span class="pc-icon">🗺️</span>
+      <div class="pc-body">
+        <div class="pc-name">Teacher Dashboard</div>
+        <div class="pc-desc">Quản lý lớp, theo dõi học viên, báo cáo nhóm</div>
+        <span
+          class="pc-tag"
+          style="background: var(--purple-l); color: var(--purple)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card b2b">
+      <span class="pc-icon">📋</span>
+      <div class="pc-body">
+        <div class="pc-name">Tạo giáo án</div>
+        <div class="pc-desc">Soạn syllabus, giao bài tập, deadline</div>
+        <span
+          class="pc-tag"
+          style="background: var(--purple-l); color: var(--purple)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card b2b">
+      <span class="pc-icon">👥</span>
+      <div class="pc-body">
+        <div class="pc-name">Quản lý học viên</div>
+        <div class="pc-desc">Danh sách lớp, tiến độ từng người, nhắn tin</div>
+        <span
+          class="pc-tag"
+          style="background: var(--purple-l); color: var(--purple)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+    <div class="page-card b2b">
+      <span class="pc-icon">📈</span>
+      <div class="pc-body">
+        <div class="pc-name">Báo cáo lớp học</div>
+        <div class="pc-desc">Analytics toàn lớp, điểm yếu nhóm, xuất PDF</div>
+        <span
+          class="pc-tag"
+          style="background: var(--purple-l); color: var(--purple)"
+          >Phase 2</span
+        >
+      </div>
+    </div>
+  </div>
+</div>
