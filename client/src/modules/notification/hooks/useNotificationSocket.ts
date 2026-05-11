@@ -12,7 +12,7 @@ export function useNotificationSocket() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    const socketUrl = ENV.API_BASE_URL.replace(/\/$/, '')
+    const socketUrl = ENV.API_BASE_URL.replace(/\/$/, '').replace(/\/api$/, '')
     const socket = io(`${socketUrl}/notifications`, {
       withCredentials: true,
       transports: ['polling', 'websocket'],

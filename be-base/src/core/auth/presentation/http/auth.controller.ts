@@ -46,6 +46,8 @@ import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
 import { OAuthLoginUseCase } from '../../application/use-cases/oauth-login.use-case';
+import { RegisterDto } from './dtos/register.dto';
+import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { AuthorizationService, Subject } from '../../../authorization';
 import { GetProfileUseCase } from '../../application/use-cases/get-profile.use-case';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
@@ -84,6 +86,7 @@ export class AuthController {
     private readonly getProfileUseCase: GetProfileUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
     private readonly oauthLoginUseCase: OAuthLoginUseCase,
+    private readonly registerUseCase: RegisterUseCase,
     @Inject(SESSION_REPOSITORY) private readonly sessionRepo: SessionRepository,
     @Optional() private readonly authorizationService: AuthorizationService,
   ) {}
@@ -158,6 +161,41 @@ export class AuthController {
     res.cookie('session_id', sessionId, COOKIE_SESSION_ID);
 
     return { message: 'Login successful' };
+  }
+
+  @Public()
+  @Throttle({ default: { ttl: 60_000, limit: 5 } })
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Đăng ký tài khoản user mới + auto-login' })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({ status: 201, description: 'Tạo tài khoản thành công' })
+  @ApiResponse({ status: 409, description: 'Email đã được sử dụng' })
+  async register(
+    @Body() dto: RegisterDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.registerUseCase.execute({
+      email: dto.email,
+      password: dto.password,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      deviceName:
+        dto.deviceName ?? (req.headers['x-device-name'] as string) ?? 'Unknown',
+      ipAddress: req.ip ?? '',
+      userAgent: req.headers['user-agent'] ?? '',
+    });
+
+    if (!result.ok) throw result.error;
+
+    const { accessToken, refreshToken, sessionId } = result.value;
+
+    res.cookie('access_token', accessToken, COOKIE_ACCESS);
+    res.cookie('refresh_token', refreshToken, COOKIE_REFRESH);
+    res.cookie('session_id', sessionId, COOKIE_SESSION_ID);
+
+    return { message: 'Register successful' };
   }
 
   @Post('logout')

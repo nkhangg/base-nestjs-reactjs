@@ -7,6 +7,7 @@ import { authService } from '../services/auth.service'
 import type { ChangePasswordDto, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from '../types'
 import { ROUTES } from '@config/routes'
 import { QUERY_KEYS } from '@shared/constants'
+import { storage } from '@lib/storage'
 
 export function useCurrentUser() {
   const { data, isLoading } = useQuery({
@@ -48,13 +49,18 @@ export function useLogout() {
   const queryClient = useQueryClient()
   const router = useRouter()
 
-  const logout = async () => {
-    await authService.logout()
-    queryClient.clear()
-    router.push(ROUTES.LOGIN)
-  }
+  const mutation = useMutation({
+    mutationFn: () => authService.logout(),
+    onSettled: () => {
+      storage.clear()
+      queryClient.clear()
+      router.push(ROUTES.LOGIN)
+    },
+    onSuccess: () => toast.success('Đã đăng xuất'),
+    onError: () => toast.error('Đăng xuất thất bại, phiên đã được xoá cục bộ'),
+  })
 
-  return { logout }
+  return { logout: () => mutation.mutate(), isLoggingOut: mutation.isPending }
 }
 
 export function useChangePassword() {

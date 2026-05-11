@@ -19,7 +19,8 @@ core/auth/
 │   ├── login.use-case.ts
 │   ├── logout.use-case.ts
 │   ├── refresh-token.use-case.ts
-│   └── oauth-login.use-case.ts          # OAuth login — tìm/tạo user, phát session
+│   ├── oauth-login.use-case.ts          # OAuth login — tìm/tạo user, phát session
+│   └── register.use-case.ts             # Self-register user — gọi CreateUserUseCase + tạo session
 ├── infrastructure/
 │   ├── jwt-token.service.ts
 │   ├── jwt.middleware.ts             # Decode JWT → req.user (mọi request)
@@ -40,21 +41,23 @@ core/auth/
 |---|---|---|
 | POST | `/auth/login` | Đăng nhập email/password → set HTTP-only cookie |
 | POST | `/auth/oauth/login` | Đăng nhập OAuth (Google, Discord, ...) → set cookie |
+| POST | `/auth/register` | User tự đăng ký (email/password) + auto-login → set cookie. Public, throttle 5/phút, hardcode `type='user'` |
 | POST | `/auth/logout` | Xóa cookie, invalidate session |
 | POST | `/auth/refresh` | Refresh access token dùng refresh cookie |
 
 ## Patterns
 
 ### AuthModule.forRoot()
-AuthModule nhận config động và danh sách `CREDENTIAL_VALIDATORS` (multi-provider):
+AuthModule nhận config động + danh sách module export validator + danh sách validator class để aggregate vào `CREDENTIAL_VALIDATORS`:
 ```ts
 AuthModule.forRoot({
   jwt: { secret, accessExpiry: '15m', refreshExpiry: '30d' },
-  imports: [AdminModule, UserModule],  // modules cung cấp validators
+  imports: [AdminModule, UserModule],
+  credentialValidators: [AdminCredentialValidator, UserCredentialValidator],
 })
 ```
 
-### ICredentialValidator (multi-provider)
+### ICredentialValidator
 Mỗi entity type (admin, user, merchant) implement `ICredentialValidator`:
 ```ts
 export interface ICredentialValidator {
@@ -64,6 +67,13 @@ export interface ICredentialValidator {
 // Inject:
 @Inject(CREDENTIAL_VALIDATORS) private readonly validators: ICredentialValidator[]
 ```
+
+**Đăng ký validator cho 1 entity type mới (vd. `merchant`):**
+1. Tạo `MerchantCredentialValidator implements ICredentialValidator` trong module domain (`modules/merchant/application/validators/`).
+2. Trong `merchant.module.ts`: thêm class vào `providers` và `exports` như bình thường — **KHÔNG dùng `multi: true`** với token `CREDENTIAL_VALIDATORS` (NestJS không aggregate multi providers cross-module).
+3. Trong `app.module.ts`: thêm class vào `AuthModule.forRoot({ credentialValidators: [..., MerchantCredentialValidator] })` và thêm module vào `imports`.
+
+`AuthModule.forRoot()` sẽ build `CREDENTIAL_VALIDATORS` qua `useFactory` từ danh sách class này.
 
 ### OAuth flow (IOAuthIdentityProvider + IOAuthUserConnector)
 OAuth login dùng 2 extension points độc lập:

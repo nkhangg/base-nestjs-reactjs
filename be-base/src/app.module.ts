@@ -8,8 +8,10 @@ import { EventsModule } from './core/events';
 import { HealthModule } from './core/health/health.module';
 import { IntegrationModule } from './core/integration/integration.module';
 import { AdminModule } from './modules/admin';
+import { AdminCredentialValidator } from './modules/admin/application/validators/admin-credential.validator';
 import { AuditModule } from './modules/audit';
 import { UserModule } from './modules/user/user.module';
+import { UserCredentialValidator } from './modules/user/application/validators/user-credential.validator';
 import { MerchantModule } from './modules/merchant/merchant.module';
 import { ConfigModule } from './modules/config/config.module';
 import { MediaModule } from './modules/media/media.module';
@@ -62,6 +64,7 @@ import { SeedModule } from './shared/infrastructure/seeders/seed.module';
         refreshTokenTtlDays: 30,
       },
       imports: [AdminModule, UserModule],
+      credentialValidators: [AdminCredentialValidator, UserCredentialValidator],
     }),
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

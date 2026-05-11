@@ -21,6 +21,8 @@ export interface CreateUserInput {
   email: string;
   password: string;
   role?: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 export type CreateUserResult = Result<{ userId: string }, string>;
@@ -44,6 +46,8 @@ export class CreateUserUseCase {
       email: input.email,
       passwordHash,
       role: roleName,
+      firstName: input.firstName,
+      lastName: input.lastName,
     });
 
     await this.userRepo.save(user);

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -15,6 +16,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@shared/utils'
 import { ROUTES } from '@config/routes'
+import { useLogout } from '@modules/auth'
+import { ConfirmDialog } from '@shared/components/ui'
 
 const navItems = [
   { href: ROUTES.DASHBOARD, label: 'Tổng quan', icon: LayoutDashboard },
@@ -32,6 +35,8 @@ const bottomItems = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { logout, isLoggingOut } = useLogout()
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -77,7 +82,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               {item.label}
             </Link>
           ))}
-          <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <button
+            type="button"
+            onClick={() => setLogoutConfirmOpen(true)}
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
             <LogOut className="h-4 w-4 shrink-0" />
             Đăng xuất
           </button>
@@ -86,6 +95,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto">{children}</main>
+
+      <ConfirmDialog
+        open={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        onConfirm={() => {
+          setLogoutConfirmOpen(false)
+          logout()
+        }}
+        title="Đăng xuất"
+        description="Bạn có chắc muốn đăng xuất khỏi tài khoản này?"
+        confirmLabel="Đăng xuất"
+        cancelLabel="Huỷ"
+        variant="danger"
+        loading={isLoggingOut}
+      />
     </div>
   )
 }

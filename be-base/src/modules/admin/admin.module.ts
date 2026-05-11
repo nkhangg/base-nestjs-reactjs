@@ -27,7 +27,6 @@ import { AdminSessionController } from './presentation/admin/admin-session.contr
 import { RoleManagementController } from './presentation/roles/role-management.controller';
 import { AdminManagementFeature } from './presentation/admin/admin-management.feature';
 import { RoleManagementFeature } from './presentation/roles/role-management.feature';
-import { CREDENTIAL_VALIDATORS } from '../../core/auth/domain/services/credential-validator.interface';
 import { PASSWORD_UPDATERS } from '../../core/auth/domain/services/password-updater.interface';
 import { AdminPasswordUpdater } from './infrastructure/admin-password-updater';
 import { PROFILE_PROVIDERS } from '../../core/auth/domain/services/profile-provider.interface';
@@ -70,11 +69,7 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
       provide: ADMIN_REPOSITORY,
       useClass: PrismaAdminRepository,
     } as ClassProvider,
-    {
-      provide: CREDENTIAL_VALIDATORS,
-      useClass: AdminCredentialValidator,
-      multi: true,
-    } as ClassProvider,
+    AdminCredentialValidator,
     {
       provide: PASSWORD_UPDATERS,
       useClass: AdminPasswordUpdater,
@@ -118,7 +113,7 @@ const ADMIN_ROLES: SeedRoleDefinition[] = [
     AdminSeeder,
   ],
   exports: [
-    CREDENTIAL_VALIDATORS,
+    AdminCredentialValidator,
     PASSWORD_UPDATERS,
     PROFILE_PROVIDERS,
     CreateAdminUseCase,

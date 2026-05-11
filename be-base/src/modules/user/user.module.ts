@@ -22,6 +22,7 @@ import { PROFILE_PROVIDERS } from '../../core/auth/domain/services/profile-provi
 import { UserProfileProvider } from './infrastructure/user-profile-provider';
 import { OAUTH_USER_CONNECTORS } from '../../core/auth/domain/services/oauth-user-connector.interface';
 import { UserOAuthConnector } from './application/use-cases/user-oauth-connector.service';
+import { UserCredentialValidator } from './application/validators/user-credential.validator';
 import {
   AuthorizationService,
   type SeedRoleDefinition,
@@ -82,6 +83,7 @@ const USER_ROLES: SeedRoleDefinition[] = [
       multi: true,
     } as ClassProvider,
     UserOAuthConnector,
+    UserCredentialValidator,
     CreateUserUseCase,
     GetUserUseCase,
     ListUsersUseCase,
@@ -95,6 +97,7 @@ const USER_ROLES: SeedRoleDefinition[] = [
     PASSWORD_UPDATERS,
     PROFILE_PROVIDERS,
     OAUTH_USER_CONNECTORS,
+    UserCredentialValidator,
     CreateUserUseCase,
   ],
 })
