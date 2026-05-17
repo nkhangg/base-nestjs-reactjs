@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Thành Tích & Badges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --purple:#5B45C7;--purple-l:#EDE8FE;
+  --blue:#1565C0;--blue-l:#E8F4FF;
+  --gold:#D4A017;--gold-l:#FDF5DC;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--b);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:8px;padding:1.25rem 1.1rem 1rem;border-bottom:1px solid var(--b)}
+.sb-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark span{color:#fff;font-family:'DM Mono',monospace;font-size:12px}
+.sb-name{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.sb-nav{padding:.75rem .6rem;flex:1}
+.sb-section{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);padding:.5rem .55rem;margin-top:.5rem}
+.sb-item{display:flex;align-items:center;gap:9px;padding:.55rem .6rem;border-radius:var(--r);cursor:pointer;transition:all .15s;color:var(--ink3);font-size:13px;font-weight:400;margin-bottom:1px;text-decoration:none}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--ink);color:#fff}
+.sb-icon{font-size:15px;opacity:.7;flex-shrink:0}
+.sb-item.active .sb-icon{opacity:1}
+.sb-footer{padding:.75rem .6rem 1rem;border-top:1px solid var(--b)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:.5rem;border-radius:var(--r2)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:500;color:var(--ink)}
+.sb-ulevel{font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;border-bottom:1px solid var(--b);background:rgba(250,250,248,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+.tb-title{font-size:14px;font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-streak{display:flex;align-items:center;gap:5px;background:var(--amber-l);color:var(--amber);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.tb-btn{width:32px;height:32px;border-radius:var(--r);background:var(--surface);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s}
+.tb-btn:hover{background:var(--surface2)}
+.content{padding:1.75rem 2rem 3rem}
+
+/* ── BUTTONS ── */
+.btn{font-family:'DM Sans',sans-serif;font-weight:500;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-size:14px;border-radius:var(--r2);padding:10px 20px}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-secondary{background:transparent;color:var(--ink);border:1.5px solid var(--b2)}
+.btn-secondary:hover{background:var(--surface)}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:var(--r)}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:var(--r)}
+
+/* ── HERO STATS BAR ── */
+.hero-bar{background:linear-gradient(135deg,#0D0D0F 0%,#2a2a40 100%);border-radius:var(--r3);padding:1.5rem 2rem;margin-bottom:1.75rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.hero-bar::before{content:'🏅';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:72px;opacity:.08}
+.hero-stat{display:flex;flex-direction:column;gap:3px}
+.hs-val{font-size:28px;font-weight:600;letter-spacing:-.5px;color:#fff;line-height:1}
+.hs-lbl{font-size:11px;color:rgba(255,255,255,.45);font-weight:400}
+.hero-divider{width:1px;height:36px;background:rgba(255,255,255,.1);flex-shrink:0}
+.hero-level{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+.hl-badge{padding:.4rem 1rem;background:rgba(255,255,255,.1);border-radius:999px;font-size:13px;font-weight:600;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.hl-bar-wrap{display:flex;align-items:center;gap:.6rem}
+.hl-bar{width:120px;height:5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.hl-fill{height:100%;background:linear-gradient(90deg,var(--teal),#4ecca3);border-radius:3px;width:62%}
+.hl-txt{font-size:10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;white-space:nowrap}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--b);margin-bottom:1.5rem}
+.tab{padding:.65rem 1.1rem;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--ink3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.tab-count{font-size:10px;background:var(--surface2);color:var(--ink4);padding:1px 6px;border-radius:999px;margin-left:5px;font-family:'DM Mono',monospace}
+.tab.active .tab-count{background:var(--ink);color:#fff}
+
+/* ── CATEGORY ROW ── */
+.cat-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;margin-top:1.75rem}
+.cat-row:first-of-type{margin-top:0}
+.cat-hd{display:flex;align-items:center;gap:.6rem}
+.cat-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.cat-name{font-size:13px;font-weight:600;color:var(--ink)}
+.cat-prog{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.cat-bar-wrap{display:flex;align-items:center;gap:.5rem}
+.cat-bar{width:80px;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.cat-fill{height:100%;border-radius:2px}
+
+/* ── BADGE GRID ── */
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:.5rem}
+
+.badge-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);padding:1.1rem .9rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.badge-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,13,15,.08);border-color:var(--b2)}
+.badge-card.locked{opacity:.55;filter:grayscale(.6)}
+.badge-card.locked:hover{transform:none;box-shadow:none}
+.badge-card.new-unlock{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-l)}
+
+/* Rarity borders */
+.badge-card.rare{border-color:rgba(91,69,199,.3);background:linear-gradient(180deg,#fff 60%,var(--purple-l))}
+.badge-card.epic{border-color:rgba(212,160,23,.4);background:linear-gradient(180deg,#fff 60%,var(--gold-l))}
+.badge-card.legend{border-color:rgba(232,51,74,.3);background:linear-gradient(180deg,#fff 60%,var(--red-l))}
+
+.bc-icon{font-size:32px;line-height:1;position:relative}
+.bc-glow{position:absolute;inset:-4px;border-radius:50%;z-index:-1}
+.badge-card.epic .bc-glow{box-shadow:0 0 12px 4px rgba(212,160,23,.3)}
+.badge-card.legend .bc-glow{box-shadow:0 0 12px 4px rgba(232,51,74,.25)}
+
+.bc-name{font-size:12px;font-weight:600;color:var(--ink);line-height:1.3}
+.bc-desc{font-size:10px;color:var(--ink3);line-height:1.4}
+.bc-rarity{font-size:9px;font-weight:600;padding:2px 7px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+.rarity-common{background:var(--surface2);color:var(--ink4)}
+.rarity-rare{background:var(--purple-l);color:var(--purple)}
+.rarity-epic{background:var(--gold-l);color:var(--gold)}
+.rarity-legend{background:var(--red-l);color:var(--red)}
+
+.bc-progress{width:100%;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-top:2px}
+.bc-prog-fill{height:100%;border-radius:2px;background:var(--teal)}
+
+.bc-date{font-size:9px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* New unlock shimmer */
+.badge-card.new-unlock::after{content:'NEW';position:absolute;top:8px;right:-14px;background:var(--gold);color:#fff;font-size:8px;font-weight:700;padding:2px 18px;transform:rotate(35deg);letter-spacing:.08em}
+
+/* Lock icon overlay */
+.lock-overlay{position:absolute;top:8px;right:8px;font-size:12px;opacity:.4}
+
+/* ── STREAK RECORDS ── */
+.streak-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.5rem}
+.sc-flame{font-size:40px;flex-shrink:0}
+.sc-body{flex:1}
+.sc-current{font-size:32px;font-weight:600;letter-spacing:-.5px;color:var(--amber);line-height:1}
+.sc-current-lbl{font-size:11px;color:var(--ink3);margin-bottom:.5rem}
+.sc-records{display:flex;gap:1.5rem}
+.sc-rec{display:flex;flex-direction:column;gap:2px}
+.sc-rec-val{font-size:16px;font-weight:600;color:var(--ink)}
+.sc-rec-lbl{font-size:10px;color:var(--ink4)}
+.sc-calendar{display:flex;gap:4px;flex-wrap:wrap;max-width:240px}
+.sc-day{width:20px;height:20px;border-radius:4px;background:var(--surface2)}
+.sc-day.done{background:var(--amber)}
+.sc-day.today{background:var(--amber);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--amber)}
+.sc-day.miss{background:var(--red-l);border:1px solid var(--red-m)}
+
+/* ── MILESTONE TIMELINE ── */
+.milestone-list{display:flex;flex-direction:column;gap:0}
+.milestone-item{display:flex;align-items:flex-start;gap:1rem;position:relative;padding-bottom:1.25rem}
+.milestone-item:last-child{padding-bottom:0}
+.milestone-item:last-child .mi-line{display:none}
+.mi-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:32px}
+.mi-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;z-index:1}
+.mi-dot.done{background:var(--teal);color:#fff}
+.mi-dot.current{background:var(--ink);color:#fff;box-shadow:0 0 0 4px var(--surface2)}
+.mi-dot.locked{background:#fff;border:2px solid var(--surface2);color:var(--ink4)}
+.mi-line{width:2px;flex:1;background:var(--surface2);margin-top:0;min-height:28px}
+.mi-line.done{background:var(--teal)}
+.mi-body{flex:1;padding-top:4px}
+.mi-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.mi-desc{font-size:11px;color:var(--ink3);line-height:1.5}
+.mi-date{font-size:10px;font-family:'DM Mono',monospace;color:var(--ink4);margin-top:3px}
+.mi-xp{font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--amber-l);color:var(--amber);margin-left:auto;flex-shrink:0;align-self:flex-start;margin-top:4px}
+
+/* ── SHARE MODAL (demo) ── */
+.share-card{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:var(--r3);padding:1.5rem;display:flex;align-items:center;gap:1.25rem;margin-top:1.75rem}
+.share-badge{font-size:48px}
+.share-body{flex:1}
+.share-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:.3rem}
+.share-sub{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.85rem}
+.share-actions{display:flex;gap:8px}
+.share-btn{padding:7px 14px;border-radius:var(--r2);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px}
+.share-btn.copy{background:rgba(255,255,255,.12);color:#fff}
+.share-btn.copy:hover{background:rgba(255,255,255,.2)}
+.share-btn.twitter{background:#1d9bf0;color:#fff}
+.share-btn.twitter:hover{background:#1a8cd8}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><span>日</span></div>
+    <span class="sb-name">Nihongo</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Học tập</div>
+    <a class="sb-item" href="#"><span class="sb-icon">⊞</span> Dashboard</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🃏</span> Flashcard</a>
+    <a class="sb-item" href="#"><span class="sb-icon">📝</span> Ngữ pháp</a>
+    <a class="sb-item" href="#"><span class="sb-icon">📖</span> Đọc hiểu</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🏆</span> Mock Test</a>
+    <div class="sb-section">Công cụ</div>
+    <a class="sb-item" href="#"><span class="sb-icon">🔍</span> Từ điển</a>
+    <a class="sb-item" href="#"><span class="sb-icon">📊</span> Tiến độ</a>
+    <a class="sb-item active" href="#"><span class="sb-icon">🏅</span> Thành tích</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🎮</span> Leaderboard</a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">太</div>
+      <div>
+        <div class="sb-uname">Tài Nguyễn</div>
+        <div class="sb-ulevel">N3 · 847 XP</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title">🏅 Thành Tích & Badges</div>
+    <div class="tb-right">
+      <div class="tb-streak">🔥 14 ngày</div>
+      <div class="tb-btn">🔔</div>
+      <div class="tb-btn">⚙️</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HERO STATS -->
+    <div class="hero-bar">
+      <div class="hero-stat">
+        <div class="hs-val">24</div>
+        <div class="hs-lbl">Badges đạt được</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hs-val" style="color:var(--amber)">14</div>
+        <div class="hs-lbl">Streak hiện tại</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hs-val" style="color:#a78bfa">3</div>
+        <div class="hs-lbl">Badges hiếm</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hs-val" style="color:#4ecca3">847</div>
+        <div class="hs-lbl">Tổng XP</div>
+      </div>
+      <div class="hero-level">
+        <div class="hl-badge">Cấp 12 · Học viên N3</div>
+        <div class="hl-bar-wrap">
+          <div class="hl-bar"><div class="hl-fill"></div></div>
+          <div class="hl-txt">620 / 1000 XP → Cấp 13</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active">Tất cả <span class="tab-count">24/58</span></div>
+      <div class="tab">🔥 Streak <span class="tab-count">4/8</span></div>
+      <div class="tab">📚 Từ vựng <span class="tab-count">7/14</span></div>
+      <div class="tab">📝 Ngữ pháp <span class="tab-count">5/12</span></div>
+      <div class="tab">🏆 Kiểm tra <span class="tab-count">5/10</span></div>
+      <div class="tab">📖 Đọc hiểu <span class="tab-count">3/8</span></div>
+      <div class="tab">⭐ Mốc quan trọng <span class="tab-count">0/6</span></div>
+    </div>
+
+    <!-- STREAK CARD -->
+    <div class="streak-card" style="margin-bottom:1.75rem">
+      <div class="sc-flame">🔥</div>
+      <div class="sc-body">
+        <div class="sc-current">14</div>
+        <div class="sc-current-lbl">ngày streak hiện tại</div>
+        <div class="sc-records">
+          <div class="sc-rec"><div class="sc-rec-val">🏆 47</div><div class="sc-rec-lbl">Kỷ lục cá nhân</div></div>
+          <div class="sc-rec"><div class="sc-rec-val">📅 127</div><div class="sc-rec-lbl">Tổng ngày học</div></div>
+          <div class="sc-rec"><div class="sc-rec-val">⚡ 3</div><div class="sc-rec-lbl">Lần đóng băng</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--ink4);margin-bottom:.5rem;text-align:center">30 ngày gần đây</div>
+        <div class="sc-calendar">
+          <div class="sc-day done"></div><div class="sc-day done"></div><div class="sc-day done"></div>
+          <div class="sc-day miss"></div><div class="sc-day done"></div><div class="sc-day done"></div>
+          <div class="sc-day done"></div><div class="sc-day done"></div><div class="sc-day done"></div>
+          <div class="sc-day done"></div><div class="sc-day done"></div><div class="sc-day done"></div>
+          <div class="sc-day done"></div><div class="sc-day done"></div><div class="sc-day done"></div>
+          <div class="sc-day done"></div><div class="sc-day done"></div><div class="sc-day today"></div>
+          <div class="sc-day"></div><div class="sc-day"></div><div class="sc-day"></div>
+          <div class="sc-day"></div><div class="sc-day"></div><div class="sc-day"></div>
+          <div class="sc-day"></div><div class="sc-day"></div><div class="sc-day"></div>
+          <div class="sc-day"></div><div class="sc-day"></div><div class="sc-day"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY: STREAK -->
+    <div class="cat-row">
+      <div class="cat-hd">
+        <div class="cat-icon" style="background:var(--amber-l)">🔥</div>
+        <div class="cat-name">Streak — Kiên trì học tập</div>
+        <span class="cat-prog">4 / 8</span>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-bar"><div class="cat-fill" style="width:50%;background:var(--amber)"></div></div>
+        <span style="font-size:11px;color:var(--ink4)">50%</span>
+      </div>
+    </div>
+    <div class="badge-grid">
+      <div class="badge-card">
+        <div class="bc-icon">🔥</div>
+        <div class="bc-name">First Flame</div>
+        <div class="bc-desc">Học 3 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-common">Common</div>
+        <div class="bc-date">✓ 15/03/2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">🔥🔥</div>
+        <div class="bc-name">Steady Fire</div>
+        <div class="bc-desc">Học 7 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-common">Common</div>
+        <div class="bc-date">✓ 20/03/2026</div>
+      </div>
+      <div class="badge-card new-unlock">
+        <div class="bc-icon">🌋</div>
+        <div class="bc-name">Volcano</div>
+        <div class="bc-desc">Học 14 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-rare">Rare</div>
+        <div class="bc-date">✓ Hôm nay!</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">⚡</div>
+        <div class="bc-name">Lightning</div>
+        <div class="bc-desc">Học 30 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-rare">Rare</div>
+        <div class="bc-progress"><div class="bc-prog-fill" style="width:47%"></div></div>
+        <div class="bc-date" style="color:var(--teal)">14/30 ngày</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="bc-icon" style="filter:grayscale(1)">🌊</div>
+        <div class="bc-name">Tsunami</div>
+        <div class="bc-desc">Học 60 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-epic">Epic</div>
+        <div class="bc-date">0/60 ngày</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="bc-icon" style="filter:grayscale(1)">☀️</div>
+        <div class="bc-name">Eternal Sun</div>
+        <div class="bc-desc">Học 100 ngày liên tiếp</div>
+        <div class="bc-rarity rarity-epic">Epic</div>
+        <div class="bc-date">0/100 ngày</div>
+      </div>
+    </div>
+
+    <!-- CATEGORY: VOCABULARY -->
+    <div class="cat-row">
+      <div class="cat-hd">
+        <div class="cat-icon" style="background:var(--teal-l)">📚</div>
+        <div class="cat-name">Từ vựng — Tích lũy kiến thức</div>
+        <span class="cat-prog">7 / 14</span>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-bar"><div class="cat-fill" style="width:50%;background:var(--teal)"></div></div>
+        <span style="font-size:11px;color:var(--ink4)">50%</span>
+      </div>
+    </div>
+    <div class="badge-grid">
+      <div class="badge-card">
+        <div class="bc-icon">🌱</div>
+        <div class="bc-name">First Words</div>
+        <div class="bc-desc">Học 50 từ đầu tiên</div>
+        <div class="bc-rarity rarity-common">Common</div>
+        <div class="bc-date">✓ 01/02/2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">🌿</div>
+        <div class="bc-name">Word Sprout</div>
+        <div class="bc-desc">Học 200 từ vựng</div>
+        <div class="bc-rarity rarity-common">Common</div>
+        <div class="bc-date">✓ 14/02/2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">🌳</div>
+        <div class="bc-name">Word Tree</div>
+        <div class="bc-desc">Học 500 từ vựng</div>
+        <div class="bc-rarity rarity-rare">Rare</div>
+        <div class="bc-date">✓ 28/02/2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">🗺️</div>
+        <div class="bc-name">N5 Complete</div>
+        <div class="bc-desc">Hoàn thành toàn bộ N5</div>
+        <div class="bc-rarity rarity-rare">Rare</div>
+        <div class="bc-date">✓ 05/03/2026</div>
+      </div>
+      <div class="badge-card">
+        <div class="bc-icon">📘</div>
+        <div class="bc-name">N4 Starter</div>
+        <div class="bc-desc">Học 300 từ N4</div>
+        <div class="bc-rarity rarity-rare">Rare</div>
+        <div class="bc-progress"><div class="bc-prog-fill" style="width:73%"></div></div>
+        <div class="bc-date" style="color:var(--teal)">218/300 từ</div>
+      </div>
+      <div class="badge-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="bc-icon" style="filter:grayscale(1)">🏯</div>
+        <div class="bc-name">N4 Master</div>
+        <div class="bc-desc">Hoàn thành toàn bộ N4</div>
+        <div class="bc-rarity rarity-epic">Epic</div>
+        <div class="bc-date">0/600 từ</div>
+      </div>
+    </div>
+
+    <!-- CATEGORY: MILESTONES -->
+    <div class="cat-row">
+      <div class="cat-hd">
+        <div class="cat-icon" style="background:var(--purple-l)">⭐</div>
+        <div class="cat-name">Mốc quan trọng</div>
+        <span class="cat-prog">2 / 6</span>
+      </div>
+    </div>
+    <div style="background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);padding:1.25rem 1.5rem;margin-bottom:.5rem">
+      <div class="milestone-list">
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot done">✓</div>
+            <div class="mi-line done"></div>
+          </div>
+          <div class="mi-body">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="mi-title">🌱 Bắt đầu hành trình</div>
+              <div class="mi-xp">+50 XP</div>
+            </div>
+            <div class="mi-desc">Hoàn thành onboarding và quiz trình độ đầu vào</div>
+            <div class="mi-date">✓ 28/01/2026</div>
+          </div>
+        </div>
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot done">✓</div>
+            <div class="mi-line done"></div>
+          </div>
+          <div class="mi-body">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="mi-title">📚 Chinh phục N5</div>
+              <div class="mi-xp">+200 XP</div>
+            </div>
+            <div class="mi-desc">Hoàn thành toàn bộ từ vựng & ngữ pháp N5, đạt 80% Mock Test N5</div>
+            <div class="mi-date">✓ 05/03/2026</div>
+          </div>
+        </div>
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot current">●</div>
+            <div class="mi-line"></div>
+          </div>
+          <div class="mi-body">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="mi-title">🏯 Chinh phục N4</div>
+              <div class="mi-xp">+400 XP</div>
+            </div>
+            <div class="mi-desc">Hoàn thành toàn bộ từ vựng & ngữ pháp N4, đạt 75% Mock Test N4</div>
+            <div style="margin-top:.5rem">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:.3rem"><span>Tiến độ</span><span style="font-family:'DM Mono',monospace">64%</span></div>
+              <div style="height:5px;background:var(--surface2);border-radius:3px;overflow:hidden"><div style="width:64%;height:100%;background:var(--ink);border-radius:3px"></div></div>
+            </div>
+            <div class="mi-date" style="color:var(--ink3);margin-top:.4rem">Dự kiến: 28/06/2026</div>
+          </div>
+        </div>
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot locked">○</div>
+            <div class="mi-line"></div>
+          </div>
+          <div class="mi-body">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="mi-title" style="color:var(--ink3)">🗼 Chinh phục N3</div>
+              <div class="mi-xp" style="background:var(--surface2);color:var(--ink4)">+600 XP</div>
+            </div>
+            <div class="mi-desc">Hoàn thành toàn bộ từ vựng & ngữ pháp N3</div>
+            <div class="mi-date">Dự kiến: 01/2027</div>
+          </div>
+        </div>
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot locked">○</div>
+            <div class="mi-line"></div>
+          </div>
+          <div class="mi-body">
+            <div class="mi-title" style="color:var(--ink3)">🗻 Chinh phục N2</div>
+            <div class="mi-date">Dự kiến: 08/2027</div>
+          </div>
+        </div>
+        <div class="milestone-item">
+          <div class="mi-left">
+            <div class="mi-dot locked">○</div>
+          </div>
+          <div class="mi-body">
+            <div class="mi-title" style="color:var(--ink3)">👑 Đỉnh cao N1</div>
+            <div class="mi-date">Dự kiến: 06/2028</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHARE CARD -->
+    <div class="share-card">
+      <div class="share-badge">🌋</div>
+      <div class="share-body">
+        <div class="share-title">Bạn vừa đạt badge "Volcano"!</div>
+        <div class="share-sub">14 ngày streak liên tiếp — Chia sẻ thành tích với bạn bè nào?</div>
+        <div class="share-actions">
+          <button class="share-btn copy">📋 Copy ảnh</button>
+          <button class="share-btn twitter">𝕏 Đăng Twitter</button>
+          <button class="share-btn copy">💬 Facebook</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

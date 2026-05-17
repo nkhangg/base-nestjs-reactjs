@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --purple:#5B45C7;--purple-l:#EDE8FE;
+  --blue:#1565C0;--blue-l:#E8F4FF;
+  --gold:#D4A017;--gold-l:#FDF5DC;
+  --silver:#7A7A85;--silver-l:#F2F2EF;
+  --bronze:#9C6027;--bronze-l:#F8EFE6;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--b);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:8px;padding:1.25rem 1.1rem 1rem;border-bottom:1px solid var(--b)}
+.sb-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mark span{color:#fff;font-family:'DM Mono',monospace;font-size:12px}
+.sb-name{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.sb-nav{padding:.75rem .6rem;flex:1}
+.sb-section{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);padding:.5rem .55rem;margin-top:.5rem}
+.sb-item{display:flex;align-items:center;gap:9px;padding:.55rem .6rem;border-radius:var(--r);cursor:pointer;transition:all .15s;color:var(--ink3);font-size:13px;font-weight:400;margin-bottom:1px;text-decoration:none}
+.sb-item:hover{background:var(--surface);color:var(--ink)}
+.sb-item.active{background:var(--ink);color:#fff}
+.sb-icon{font-size:15px;opacity:.7;flex-shrink:0}
+.sb-item.active .sb-icon{opacity:1}
+.sb-footer{padding:.75rem .6rem 1rem;border-top:1px solid var(--b)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:.5rem;border-radius:var(--r2)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:500;color:var(--ink)}
+.sb-ulevel{font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.85rem 2rem;border-bottom:1px solid var(--b);background:rgba(250,250,248,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+.tb-title{font-size:14px;font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-streak{display:flex;align-items:center;gap:5px;background:var(--amber-l);color:var(--amber);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.tb-btn{width:32px;height:32px;border-radius:var(--r);background:var(--surface);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.content{padding:1.75rem 2rem 3rem}
+
+.btn{font-family:'DM Sans',sans-serif;font-weight:500;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-size:14px;border-radius:var(--r2);padding:10px 20px}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:var(--r)}
+
+/* ── LAYOUT ── */
+.page-grid{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-group{display:flex;background:var(--surface);border-radius:var(--r2);padding:3px;gap:2px}
+.fg-btn{padding:6px 14px;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--ink3);border:none;background:none;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.fg-btn.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(13,13,15,.1)}
+.filter-time{display:flex;align-items:center;gap:.5rem;margin-left:auto;font-size:12px;color:var(--ink3)}
+.countdown{font-family:'DM Mono',monospace;color:var(--amber);font-weight:600;font-size:13px}
+
+/* ── PODIUM ── */
+.podium-wrap{margin-bottom:1.75rem}
+.podium-stage{display:flex;align-items:flex-end;justify-content:center;gap:.75rem;margin-bottom:.5rem}
+
+.podium-item{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+
+.pi-avatar-wrap{position:relative;margin-bottom:.5rem}
+.pi-avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'DM Mono',monospace;border:3px solid transparent;transition:all .2s}
+.pi-avatar:hover{transform:scale(1.05)}
+.pi-1st .pi-avatar{width:68px;height:68px;font-size:20px;border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-l)}
+.pi-2nd .pi-avatar{width:56px;height:56px;font-size:16px;border-color:var(--silver);box-shadow:0 0 0 3px var(--silver-l)}
+.pi-3rd .pi-avatar{width:52px;height:52px;font-size:15px;border-color:var(--bronze);box-shadow:0 0 0 3px var(--bronze-l)}
+
+.pi-crown{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:20px;line-height:1}
+.pi-rank-badge{position:absolute;bottom:-4px;right:-4px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid #fff}
+.pi-rank-badge.r1{background:var(--gold);color:#fff}
+.pi-rank-badge.r2{background:var(--silver);color:#fff}
+.pi-rank-badge.r3{background:var(--bronze);color:#fff}
+
+.pi-name{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px;text-align:center;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi-xp{font-size:11px;font-family:'DM Mono',monospace;font-weight:600;text-align:center}
+.pi-xp.g{color:var(--gold)}
+.pi-xp.s{color:var(--silver)}
+.pi-xp.b{color:var(--bronze)}
+
+.podium-block{border-radius:12px 12px 0 0;width:90px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.05em}
+.podium-1{height:72px;background:linear-gradient(180deg,#D4A017,#B8870A)}
+.podium-2{height:52px;background:linear-gradient(180deg,#9A9A9A,#7A7A7A)}
+.podium-3{height:40px;background:linear-gradient(180deg,#B07540,#9C6027)}
+
+/* ── LEADERBOARD TABLE ── */
+.lb-table{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);overflow:hidden}
+.lb-table-head{display:grid;grid-template-columns:44px 1fr 80px 80px 60px;padding:.6rem 1rem;background:var(--surface);border-bottom:1px solid var(--b);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4)}
+.lb-row{display:grid;grid-template-columns:44px 1fr 80px 80px 60px;padding:.75rem 1rem;border-bottom:1px solid var(--b);align-items:center;cursor:pointer;transition:all .15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--surface)}
+.lb-row.me{background:linear-gradient(90deg,var(--teal-l),#fff);border-left:3px solid var(--teal)}
+.lb-row.me:hover{background:linear-gradient(90deg,#d0f0e8,#f5fdfb)}
+
+/* Rank cell */
+.rank-cell{display:flex;align-items:center;justify-content:center}
+.rank-num{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--ink3)}
+.rank-num.gold{color:var(--gold)}
+.rank-num.silver{color:var(--silver)}
+.rank-num.bronze{color:var(--bronze)}
+.rank-up{font-size:10px;color:var(--teal)}
+.rank-down{font-size:10px;color:var(--red)}
+.rank-same{font-size:10px;color:var(--ink4)}
+
+/* User cell */
+.user-cell{display:flex;align-items:center;gap:.65rem;min-width:0}
+.uc-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;font-family:'DM Mono',monospace}
+.uc-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uc-name.me-name{color:var(--teal)}
+.uc-badges{display:flex;gap:3px;margin-top:1px}
+.uc-badge{font-size:11px}
+.uc-level{font-size:10px;padding:2px 7px;border-radius:999px;font-weight:500;white-space:nowrap}
+
+/* Stats cells */
+.stat-cell{text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--ink)}
+.stat-sub{font-size:10px;color:var(--ink4);font-weight:400;margin-top:1px}
+.stat-cell.xp-cell{color:var(--amber)}
+
+/* Sparkline */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:22px;justify-content:flex-end}
+.sp-bar{width:5px;border-radius:2px 2px 0 0;background:var(--surface2);transition:all .15s}
+.sp-bar.high{background:var(--teal)}
+.sp-bar.mid{background:var(--amber)}
+.lb-row.me .sp-bar.high{background:var(--teal)}
+
+/* ── RIGHT PANEL ── */
+.right-panel{display:flex;flex-direction:column;gap:1rem;position:sticky;top:5rem}
+
+/* My rank card */
+.my-rank-card{background:#fff;border:2px solid var(--teal);border-radius:var(--r3);padding:1.25rem;overflow:hidden;position:relative}
+.my-rank-card::before{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:var(--teal-l);z-index:0}
+.mrc-rank-big{font-size:52px;font-weight:700;letter-spacing:-2px;color:var(--teal);line-height:1;font-family:'DM Mono',monospace;position:relative;z-index:1}
+.mrc-label{font-size:11px;color:var(--ink3);margin-bottom:1rem;position:relative;z-index:1}
+.mrc-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.mrc-stat{background:var(--surface);border-radius:var(--r);padding:.5rem .65rem;text-align:center}
+.mrc-val{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--ink)}
+.mrc-lbl{font-size:10px;color:var(--ink4);margin-top:1px}
+
+/* Next rank card */
+.next-rank-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);padding:1rem 1.1rem}
+.nrc-title{font-size:12px;font-weight:600;margin-bottom:.75rem;color:var(--ink)}
+.nrc-user{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
+.nrc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:var(--amber-l);color:var(--amber);font-family:'DM Mono',monospace}
+.nrc-info{flex:1}
+.nrc-name{font-size:12px;font-weight:600;margin-bottom:2px}
+.nrc-xp{font-size:11px;color:var(--ink3)}
+.nrc-gap{font-size:22px;font-weight:600;color:var(--amber);font-family:'DM Mono',monospace;margin-bottom:2px}
+.nrc-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:.4rem}
+.nrc-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--amber))}
+.nrc-sub{font-size:10px;color:var(--ink3)}
+
+/* Friends list -->
+.friends-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);overflow:hidden}
+.fc-head{padding:.85rem 1.1rem;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.fc-title{font-size:13px;font-weight:600}
+.fc-add{font-size:11px;color:var(--teal);cursor:pointer;font-weight:500}
+.friend-item{display:flex;align-items:center;gap:.65rem;padding:.6rem 1.1rem;border-bottom:1px solid var(--b);cursor:pointer;transition:all .15s}
+.friend-item:last-child{border-bottom:none}
+.friend-item:hover{background:var(--surface)}
+.fi-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'DM Mono',monospace}
+.fi-name{font-size:12px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi-xp{font-size:11px;font-family:'DM Mono',monospace;color:var(--amber);font-weight:600}
+.fi-rank-change{font-size:10px}
+.fi-streak{font-size:10px;color:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><span>日</span></div>
+    <span class="sb-name">Nihongo</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Học tập</div>
+    <a class="sb-item" href="#"><span class="sb-icon">⊞</span> Dashboard</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🃏</span> Flashcard</a>
+    <a class="sb-item" href="#"><span class="sb-icon">📝</span> Ngữ pháp</a>
+    <a class="sb-item" href="#"><span class="sb-icon">📖</span> Đọc hiểu</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🏆</span> Mock Test</a>
+    <div class="sb-section">Phân tích</div>
+    <a class="sb-item" href="#"><span class="sb-icon">📊</span> Tiến độ chi tiết</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🗺️</span> Lộ trình học tập</a>
+    <a class="sb-item active" href="#"><span class="sb-icon">🎮</span> Leaderboard</a>
+    <a class="sb-item" href="#"><span class="sb-icon">🏅</span> Thành tích</a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">太</div>
+      <div>
+        <div class="sb-uname">Tài Nguyễn</div>
+        <div class="sb-ulevel">N3 · 847 XP</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title">🎮 Leaderboard</div>
+    <div class="tb-right">
+      <div class="tb-streak">🔥 14 ngày</div>
+      <div class="tb-btn">🔔</div>
+      <div class="tb-btn">⚙️</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <button class="fg-btn on">🌍 Toàn cầu</button>
+        <button class="fg-btn">👥 Bạn bè</button>
+        <button class="fg-btn">🎓 Cùng cấp N4</button>
+      </div>
+      <div class="filter-group">
+        <button class="fg-btn on">Tuần này</button>
+        <button class="fg-btn">Tháng này</button>
+        <button class="fg-btn">Mọi thời gian</button>
+      </div>
+      <div class="filter-time">
+        Reset sau: <span class="countdown">02:14:38</span>
+      </div>
+    </div>
+
+    <div class="page-grid">
+      <!-- LEFT: PODIUM + TABLE -->
+      <div>
+
+        <!-- PODIUM -->
+        <div class="podium-wrap">
+          <div class="podium-stage">
+
+            <!-- 2nd -->
+            <div class="podium-item pi-2nd">
+              <div class="pi-avatar-wrap">
+                <div class="pi-avatar" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0);color:#fff">田</div>
+                <div class="pi-rank-badge r2">2</div>
+              </div>
+              <div class="pi-name">Tanaka Yuki</div>
+              <div class="pi-xp s">2.840 XP</div>
+              <div class="podium-block podium-2">🥈</div>
+            </div>
+
+            <!-- 1st -->
+            <div class="podium-item pi-1st" style="margin-bottom:0">
+              <div class="pi-avatar-wrap">
+                <div class="pi-crown">👑</div>
+                <div class="pi-avatar" style="background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff">山</div>
+                <div class="pi-rank-badge r1">1</div>
+              </div>
+              <div class="pi-name">Yamamoto Hana</div>
+              <div class="pi-xp g">3.210 XP</div>
+              <div class="podium-block podium-1">🥇</div>
+            </div>
+
+            <!-- 3rd -->
+            <div class="podium-item pi-3rd">
+              <div class="pi-avatar-wrap">
+                <div class="pi-avatar" style="background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff">朴</div>
+                <div class="pi-rank-badge r3">3</div>
+              </div>
+              <div class="pi-name">Park Soo-Jin</div>
+              <div class="pi-xp b">2.620 XP</div>
+              <div class="podium-block podium-3">🥉</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="lb-table">
+          <div class="lb-table-head">
+            <div style="text-align:center">#</div>
+            <div>Người dùng</div>
+            <div style="text-align:right">XP tuần</div>
+            <div style="text-align:right">Streak</div>
+            <div style="text-align:right">7 ngày</div>
+          </div>
+
+          <!-- Rank 1 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num gold">1</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--gold-l);color:var(--gold)">山</div>
+              <div>
+                <div class="uc-name">Yamamoto Hana</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--red-l);color:var(--red)">N2</span>
+                  <span class="uc-badge" title="Streak 30+ ngày">🔥</span>
+                  <span class="uc-badge" title="N5 Complete">🗺️</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">3.210<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">47 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar" style="height:8px"></div>
+                <div class="sp-bar high" style="height:14px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar mid" style="height:11px"></div>
+                <div class="sp-bar high" style="height:20px"></div>
+                <div class="sp-bar high" style="height:16px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rank 2 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num silver">2</span><span class="rank-same"> —</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--silver-l);color:var(--silver)">田</div>
+              <div>
+                <div class="uc-name">Tanaka Yuki</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--amber-l);color:var(--amber)">N3</span>
+                  <span class="uc-badge">⚡</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">2.840<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">23 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar high" style="height:16px"></div>
+                <div class="sp-bar mid" style="height:10px"></div>
+                <div class="sp-bar high" style="height:19px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+                <div class="sp-bar" style="height:6px"></div>
+                <div class="sp-bar high" style="height:15px"></div>
+                <div class="sp-bar mid" style="height:12px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rank 3 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num bronze">3</span><span class="rank-up"> ↑2</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--bronze-l);color:var(--bronze)">朴</div>
+              <div>
+                <div class="uc-name">Park Soo-Jin</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--n4-l);color:var(--blue)">N4</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">2.620<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">8 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar" style="height:4px"></div>
+                <div class="sp-bar" style="height:6px"></div>
+                <div class="sp-bar mid" style="height:12px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+                <div class="sp-bar high" style="height:20px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rank 4 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num">4</span><span class="rank-down"> ↓1</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--purple-l);color:var(--purple)">李</div>
+              <div>
+                <div class="uc-name">Li Mei</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--amber-l);color:var(--amber)">N3</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">2.410<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">31 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar high" style="height:20px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar mid" style="height:10px"></div>
+                <div class="sp-bar" style="height:5px"></div>
+                <div class="sp-bar" style="height:7px"></div>
+                <div class="sp-bar mid" style="height:11px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rank 5 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num">5</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--red-l);color:var(--red)">キ</div>
+              <div>
+                <div class="uc-name">Kenji Watanabe</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--n4-l);color:var(--blue)">N4</span>
+                  <span class="uc-badge">🎯</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">2.190<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">12 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar mid" style="height:12px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar mid" style="height:14px"></div>
+                <div class="sp-bar high" style="height:20px"></div>
+                <div class="sp-bar high" style="height:16px"></div>
+                <div class="sp-bar mid" style="height:13px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ... separator -->
+          <div style="padding:.5rem 1rem;background:var(--surface);display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:11px;color:var(--ink4)">
+            <div style="flex:1;height:1px;background:var(--b)"></div>
+            <span>vị trí 6 – 11 đã lược bỏ</span>
+            <div style="flex:1;height:1px;background:var(--b)"></div>
+          </div>
+
+          <!-- ME — Rank 12 -->
+          <div class="lb-row me">
+            <div class="rank-cell"><span class="rank-num" style="color:var(--teal)">12</span><span class="rank-up"> ↑3</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--teal-l);color:var(--teal);border:2px solid var(--teal)">太</div>
+              <div>
+                <div class="uc-name me-name">Tài Nguyễn <span style="font-size:10px;background:var(--teal);color:#fff;padding:1px 6px;border-radius:999px;margin-left:3px">Bạn</span></div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--n4-l);color:var(--blue)">N4</span>
+                  <span class="uc-badge">🔥</span>
+                  <span class="uc-badge">🌋</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell" style="color:var(--teal)">847<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">14 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar" style="height:6px"></div>
+                <div class="sp-bar high" style="height:14px"></div>
+                <div class="sp-bar mid" style="height:10px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar high" style="height:20px"></div>
+                <div class="sp-bar high" style="height:22px"></div>
+                <div class="sp-bar" style="height:0px;background:none"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rank 13 -->
+          <div class="lb-row">
+            <div class="rank-cell"><span class="rank-num">13</span></div>
+            <div class="user-cell">
+              <div class="uc-avatar" style="background:var(--amber-l);color:var(--amber)">An</div>
+              <div>
+                <div class="uc-name">Nguyễn Minh An</div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+                  <span class="uc-level" style="background:var(--n4-l);color:var(--blue)">N4</span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-cell xp-cell">820<div class="stat-sub">XP</div></div>
+            <div class="stat-cell">5 🔥<div class="stat-sub">ngày</div></div>
+            <div class="stat-cell">
+              <div class="sparkline">
+                <div class="sp-bar mid" style="height:10px"></div>
+                <div class="sp-bar" style="height:6px"></div>
+                <div class="sp-bar high" style="height:16px"></div>
+                <div class="sp-bar mid" style="height:12px"></div>
+                <div class="sp-bar high" style="height:18px"></div>
+                <div class="sp-bar high" style="height:14px"></div>
+                <div class="sp-bar mid" style="height:10px"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+
+        <!-- My rank card -->
+        <div class="my-rank-card">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.4rem">Hạng của bạn</div>
+          <div class="mrc-rank-big">#12</div>
+          <div class="mrc-label">↑ Tăng 3 bậc so với tuần trước</div>
+          <div class="mrc-stats">
+            <div class="mrc-stat">
+              <div class="mrc-val" style="color:var(--amber)">847</div>
+              <div class="mrc-lbl">XP tuần này</div>
+            </div>
+            <div class="mrc-stat">
+              <div class="mrc-val" style="color:var(--teal)">14</div>
+              <div class="mrc-lbl">Streak ngày</div>
+            </div>
+            <div class="mrc-stat">
+              <div class="mrc-val">Top 15%</div>
+              <div class="mrc-lbl">Toàn cầu N4</div>
+            </div>
+            <div class="mrc-stat">
+              <div class="mrc-val" style="color:var(--purple)">3/8</div>
+              <div class="mrc-lbl">Bạn bè vượt</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next rank -->
+        <div class="next-rank-card">
+          <div class="nrc-title">🎯 Vượt qua người tiếp theo</div>
+          <div class="nrc-user">
+            <div class="nrc-avatar">An</div>
+            <div class="nrc-info">
+              <div class="nrc-name">Nguyễn Minh An</div>
+              <div class="nrc-xp">820 XP · Hạng #13 → 12</div>
+            </div>
+          </div>
+          <div class="nrc-gap">+27 XP</div>
+          <div class="nrc-bar"><div class="nrc-fill" style="width:97%"></div></div>
+          <div class="nrc-sub">Học thêm ~27 XP (~1 buổi flash) để lên hạng</div>
+        </div>
+
+        <!-- Friends leaderboard -->
+        <div class="friends-card">
+          <div class="fc-head">
+            <div class="fc-title">👥 Bạn bè (8)</div>
+            <div class="fc-add">+ Mời bạn</div>
+          </div>
+          <div class="friend-item">
+            <div style="font-size:13px;font-weight:700;color:var(--gold);min-width:16px;font-family:'DM Mono',monospace">1</div>
+            <div class="fi-avatar" style="background:var(--purple-l);color:var(--purple)">Th</div>
+            <div style="flex:1;min-width:0">
+              <div class="fi-name">Thành Hưng</div>
+              <div class="fi-streak">🔥 21 ngày</div>
+            </div>
+            <div class="fi-xp">1.240</div>
+          </div>
+          <div class="friend-item">
+            <div style="font-size:13px;font-weight:700;color:var(--silver);min-width:16px;font-family:'DM Mono',monospace">2</div>
+            <div class="fi-avatar" style="background:var(--red-l);color:var(--red)">Ly</div>
+            <div style="flex:1;min-width:0">
+              <div class="fi-name">Ngọc Ly</div>
+              <div class="fi-streak">🔥 9 ngày</div>
+            </div>
+            <div class="fi-xp">980</div>
+          </div>
+          <div class="friend-item" style="background:var(--teal-l)">
+            <div style="font-size:13px;font-weight:700;color:var(--bronze);min-width:16px;font-family:'DM Mono',monospace">3</div>
+            <div class="fi-avatar" style="background:var(--teal-l);color:var(--teal);border:2px solid var(--teal)">太</div>
+            <div style="flex:1;min-width:0">
+              <div class="fi-name" style="color:var(--teal)">Tài Nguyễn <span style="font-size:9px;background:var(--teal);color:#fff;padding:1px 5px;border-radius:999px">Bạn</span></div>
+              <div class="fi-streak">🔥 14 ngày</div>
+            </div>
+            <div class="fi-xp" style="color:var(--teal)">847</div>
+          </div>
+          <div class="friend-item">
+            <div style="font-size:13px;font-weight:600;color:var(--ink4);min-width:16px;font-family:'DM Mono',monospace">4</div>
+            <div class="fi-avatar" style="background:var(--blue-l);color:var(--blue)">Mi</div>
+            <div style="flex:1;min-width:0">
+              <div class="fi-name">Minh Quân</div>
+              <div class="fi-streak">🔥 3 ngày</div>
+            </div>
+            <div class="fi-xp">640</div>
+          </div>
+          <div class="friend-item">
+            <div style="font-size:13px;font-weight:600;color:var(--ink4);min-width:16px;font-family:'DM Mono',monospace">5</div>
+            <div class="fi-avatar" style="background:var(--amber-l);color:var(--amber)">Hu</div>
+            <div style="flex:1;min-width:0">
+              <div class="fi-name">Huy Phúc</div>
+              <div style="font-size:10px;color:var(--ink4)">Chưa học tuần này</div>
+            </div>
+            <div class="fi-xp" style="color:var(--ink4)">0</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

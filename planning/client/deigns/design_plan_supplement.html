@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nihongo — Design Plan: Bổ Sung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0F;--ink2:#3A3A40;--ink3:#7A7A85;--ink4:#ADADB8;
+  --paper:#FAFAF8;--surface:#F2F2EF;--surface2:#E8E8E4;
+  --red:#E8334A;--red-l:#FFF0F2;
+  --teal:#0F8A72;--teal-l:#E8F7F4;
+  --amber:#C47D0E;--amber-l:#FEF6E4;
+  --purple:#5B45C7;--purple-l:#EDE8FE;
+  --blue:#1565C0;--blue-l:#E8F4FF;
+  --b:rgba(13,13,15,.07);--b2:rgba(13,13,15,.13);
+  --r:8px;--r2:14px;--r3:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);padding:2rem 0 4rem;font-size:14px;max-width:1100px;margin:0 auto}
+
+/* ── HEADER ── */
+.doc-header{padding:0 2rem 1.5rem;border-bottom:2px solid var(--b2);margin-bottom:2rem}
+.doc-title{font-size:26px;font-weight:600;letter-spacing:-.5px;margin-bottom:.35rem}
+.doc-meta{display:flex;align-items:center;gap:1rem;font-size:12px;color:var(--ink3);flex-wrap:wrap}
+.doc-meta-item{display:flex;align-items:center;gap:.3rem}
+.doc-version{font-family:'DM Mono',monospace;font-size:11px;background:var(--surface2);padding:2px 8px;border-radius:999px}
+
+/* ── SUMMARY STATS ── */
+.summary-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:0 2rem;margin-bottom:2rem}
+.sum-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r2);padding:.85rem 1rem}
+.sum-val{font-size:24px;font-weight:600;letter-spacing:-.5px;font-family:'DM Mono',monospace;line-height:1}
+.sum-lbl{font-size:10px;color:var(--ink3);margin-top:3px}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:1rem;flex-wrap:wrap;margin:0 2rem 2rem;padding:.75rem 1rem;background:#fff;border:1px solid var(--b);border-radius:var(--r2)}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink3)}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── PHASE BLOCK ── */
+.phase{padding:0 2rem;margin-bottom:2.5rem}
+.phase-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--b)}
+.phase-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+.phase-title{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.phase-sub{font-size:12px;color:var(--ink3);margin-left:auto}
+
+/* ── FEATURE CARD ── */
+.feature-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);margin-bottom:1rem;overflow:hidden}
+.feature-card.p0{border-left:4px solid var(--red)}
+.feature-card.p1{border-left:4px solid var(--amber)}
+.feature-card.p2{border-left:4px solid var(--blue)}
+.feature-card.p3{border-left:4px solid var(--purple)}
+.feature-card.done{border-left:4px solid var(--teal);opacity:.6}
+
+.fc-head{padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:.85rem;cursor:pointer}
+.fc-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.fc-info{flex:1;min-width:0}
+.fc-title{font-size:14px;font-weight:600;letter-spacing:-.1px;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.fc-desc{font-size:12px;color:var(--ink3);line-height:1.55}
+.fc-badges{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-top:.35rem}
+.fc-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:999px}
+.badge-p0{background:var(--red-l);color:var(--red)}
+.badge-p1{background:var(--amber-l);color:var(--amber)}
+.badge-p2{background:var(--blue-l);color:var(--blue)}
+.badge-p3{background:var(--purple-l);color:var(--purple)}
+.badge-done{background:var(--teal-l);color:var(--teal)}
+.badge-jlpt{background:var(--ink);color:#fff}
+.badge-ux{background:var(--surface2);color:var(--ink3)}
+.badge-diff{background:linear-gradient(90deg,var(--purple-l),var(--blue-l));color:var(--purple)}
+.fc-meta{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;flex-shrink:0}
+.complexity-bar{display:flex;gap:3px;align-items:center}
+.cb-dot{width:8px;height:8px;border-radius:50%;background:var(--surface2)}
+.cb-dot.fill{background:var(--ink)}
+.complexity-lbl{font-size:10px;color:var(--ink4);margin-left:3px}
+.fc-pages-count{font-size:10px;font-family:'DM Mono',monospace;color:var(--ink4)}
+
+/* ── PAGE SPEC INSIDE FEATURE ── */
+.fc-body{border-top:1px solid var(--b);padding:1rem 1.25rem}
+.page-spec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.65rem;margin-bottom:.75rem}
+
+.page-spec{background:var(--surface);border-radius:var(--r2);padding:.8rem;border:1.5px solid var(--b)}
+.page-spec.key{background:var(--paper);border-color:var(--b2)}
+.ps-title{font-size:12px;font-weight:600;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.ps-tag{font-size:9px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--ink);color:#fff}
+.ps-tag.modal{background:var(--amber-l);color:var(--amber)}
+.ps-tag.component{background:var(--purple-l);color:var(--purple)}
+.ps-components{font-size:11px;color:var(--ink3);line-height:1.8}
+.ps-components li{padding-left:.75rem;position:relative}
+.ps-components li::before{content:'›';position:absolute;left:0;color:var(--ink4)}
+
+/* Design notes */
+.design-notes{background:var(--amber-l);border-radius:var(--r);padding:.65rem .85rem;margin-top:.5rem;border-left:3px solid var(--amber)}
+.dn-label{font-size:10px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+.dn-text{font-size:11px;color:var(--ink2);line-height:1.6}
+
+/* Dependency tag */
+.dep-row{display:flex;align-items:center;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+.dep-label{font-size:10px;color:var(--ink4)}
+.dep-tag{font-size:10px;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--ink3);border:1px solid var(--b2)}
+
+/* ── TIMELINE VIEW ── */
+.timeline-wrap{padding:0 2rem;margin-bottom:2rem}
+.timeline-title{font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+.timeline-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border:1.5px solid var(--b);border-radius:var(--r3);overflow:hidden;background:#fff}
+.tg-col{border-right:1px solid var(--b)}
+.tg-col:last-child{border-right:none}
+.tg-head{padding:.65rem .85rem;border-bottom:1px solid var(--b);background:var(--surface);font-size:11px;font-weight:600;display:flex;align-items:center;gap:.5rem}
+.tg-body{padding:.65rem .85rem;display:flex;flex-direction:column;gap:.4rem}
+.tg-item{padding:.45rem .6rem;border-radius:var(--r);font-size:11px;font-weight:500;display:flex;align-items:center;gap:.4rem;cursor:default}
+.tg-item.p0{background:var(--red-l);color:var(--red)}
+.tg-item.p1{background:var(--amber-l);color:var(--amber)}
+.tg-item.p2{background:var(--blue-l);color:var(--blue)}
+.tg-item.p3{background:var(--purple-l);color:var(--purple)}
+
+/* ── SECTION LABEL ── */
+.section-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);padding:0 2rem;margin-bottom:.75rem;margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-title">🗂️ Design Plan — Bổ sung tính năng thiếu</div>
+  <div class="doc-meta">
+    <span class="doc-version">v1.0 · 17/05/2026</span>
+    <span class="doc-meta-item">📄 Nihongo Learning App</span>
+    <span class="doc-meta-item">👤 Client frontend</span>
+    <span class="doc-meta-item" style="color:var(--red)">⚠️ Chưa thiết kế: 9 tính năng · 22 trang</span>
+  </div>
+</div>
+
+<!-- SUMMARY STATS -->
+<div class="summary-bar">
+  <div class="sum-card">
+    <div class="sum-val" style="color:var(--red)">2</div>
+    <div class="sum-lbl">P0 — Critical gap</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-val" style="color:var(--amber)">3</div>
+    <div class="sum-lbl">P1 — UX thiếu sót</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-val" style="color:var(--blue)">2</div>
+    <div class="sum-lbl">P2 — Differentiating</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-val" style="color:var(--purple)">2</div>
+    <div class="sum-lbl">P3 — Nice to have</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-val">22</div>
+    <div class="sum-lbl">Tổng trang cần design</div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div> P0 Critical — Thiếu gây mất user</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div> P1 High — UX bị broken</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> P2 Medium — Tính năng nổi bật</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div> P3 Low — Nice to have</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--teal)"></div> Done — Đã có design</div>
+</div>
+
+<!-- ═══════════════════════════════ TIMELINE VIEW ═══════════════════════════════ -->
+<div class="timeline-wrap">
+  <div class="timeline-title">Sprint overview — Thứ tự thiết kế đề xuất</div>
+  <div class="timeline-grid">
+    <div class="tg-col">
+      <div class="tg-head"><span style="color:var(--red)">🔴</span> Sprint 1 — P0</div>
+      <div class="tg-body">
+        <div class="tg-item p0">👂 Listening list</div>
+        <div class="tg-item p0">👂 Listening session</div>
+        <div class="tg-item p0">👂 Listening result</div>
+        <div class="tg-item p0">字 Kanji browser</div>
+        <div class="tg-item p0">字 Kanji detail</div>
+        <div class="tg-item p0">字 Kanji writing</div>
+        <div class="tg-item p0">字 Kanji quiz</div>
+      </div>
+    </div>
+    <div class="tg-col">
+      <div class="tg-head"><span style="color:var(--amber)">🟡</span> Sprint 2 — P1</div>
+      <div class="tg-body">
+        <div class="tg-item p1">あ Kana chart</div>
+        <div class="tg-item p1">あ Kana practice</div>
+        <div class="tg-item p1">あ Kana quiz</div>
+        <div class="tg-item p1">📋 Daily summary</div>
+        <div class="tg-item p1">🔔 Notification center</div>
+        <div class="tg-item p1">⏰ Smart reminder</div>
+      </div>
+    </div>
+    <div class="tg-col">
+      <div class="tg-head"><span style="color:var(--blue)">🔵</span> Sprint 3 — P2</div>
+      <div class="tg-body">
+        <div class="tg-item p2">🎬 Video library</div>
+        <div class="tg-item p2">🎬 Video player</div>
+        <div class="tg-item p2">🗣️ Pitch list</div>
+        <div class="tg-item p2">🗣️ Pitch practice</div>
+      </div>
+    </div>
+    <div class="tg-col">
+      <div class="tg-head"><span style="color:var(--purple)">🟣</span> Sprint 4 — P3</div>
+      <div class="tg-body">
+        <div class="tg-item p3">✍️ Sentence manager</div>
+        <div class="tg-item p3">✍️ Add sentence modal</div>
+        <div class="tg-item p3">🤝 Buddy matching</div>
+        <div class="tg-item p3">🤝 Partner chat</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ P0 ═══════════════════════════════ -->
+<div class="section-label">🔴 Priority 0 — Critical: JLPT không thể thiếu</div>
+
+<div class="phase">
+
+  <!-- LISTENING -->
+  <div class="feature-card p0">
+    <div class="fc-head">
+      <div class="fc-icon">👂</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Nghe Hiểu (Listening)
+          <span class="fc-badge badge-p0">P0 Critical</span>
+          <span class="fc-badge badge-jlpt">JLPT 聴解</span>
+        </div>
+        <div class="fc-desc">25–30% điểm JLPT đến từ phần Listening. Đây là gap lớn nhất — người dùng thi thật sẽ rời app nếu thiếu.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">3 trang mới</span>
+          <span class="fc-badge" style="background:var(--red-l);color:var(--red)">Blocker cho thi JLPT</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot fill"></div>
+          <span class="complexity-lbl">Cao</span>
+        </div>
+        <div class="fc-pages-count">3 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">📋 Danh sách bài nghe <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Filter: JLPT level, dạng bài (hội thoại / độc thoại / tin tức)</li>
+            <li>Card bài nghe: thumbnail, tiêu đề, độ khó, thời lượng, % hoàn thành</li>
+            <li>Filter "Bài của tôi" vs "Bài được gợi ý"</li>
+            <li>Progress bar tổng thể: đã nghe X/Y bài N4</li>
+            <li>Tag: Mới · Đã nghe · Đang làm dở</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">🎧 Phiên nghe <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Audio player: play/pause, tốc độ (0.75× / 1× / 1.25×), seek bar</li>
+            <li>Transcript panel: hiện/ẩn toggle, highlight theo thời gian</li>
+            <li>Click từ trong transcript → popup từ điển nhúng</li>
+            <li>Khu vực câu hỏi (xuất hiện sau khi nghe xong đoạn)</li>
+            <li>Nút "Nghe lại đoạn này" (replay segment)</li>
+            <li>Ghi chú nhanh (sticky note)</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">📊 Kết quả phiên nghe <span class="ps-tag modal">Modal / Page</span></div>
+          <ul class="ps-components">
+            <li>Điểm số, số câu đúng/sai</li>
+            <li>Phân tích từng câu: đáp án đúng + giải thích</li>
+            <li>Danh sách từ khó gặp trong bài, nút + deck</li>
+            <li>Gợi ý bài tiếp theo cùng cấp</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Layout phiên nghe nên chia 2 panel: trái = player + transcript, phải = câu hỏi. Transcript nên dùng cùng hệ thống furigana như trang Đọc hiểu để UI đồng nhất. Tốc độ phát âm là differentiating feature quan trọng — phải nổi bật trên UI.</div>
+      </div>
+      <div class="dep-row">
+        <span class="dep-label">Phụ thuộc:</span>
+        <span class="dep-tag">📖 Đọc hiểu (word popup pattern)</span>
+        <span class="dep-tag">🔍 Từ điển (embedded dict)</span>
+        <span class="dep-tag">🃏 Flashcard (+ deck flow)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KANJI -->
+  <div class="feature-card p0">
+    <div class="fc-head">
+      <div class="fc-icon">字</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Kanji Module
+          <span class="fc-badge badge-p0">P0 Critical</span>
+          <span class="fc-badge badge-jlpt">JLPT 漢字</span>
+        </div>
+        <div class="fc-desc">N3 trở lên yêu cầu 650+ kanji. Từ điển có lookup kanji nhưng không có luyện tập viết, nhận biết, hay drill riêng. Cần module độc lập hoàn chỉnh.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">4 trang mới</span>
+          <span class="fc-badge" style="background:var(--red-l);color:var(--red)">Blocker cho N3+</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot fill"></div>
+          <span class="complexity-lbl">Cao</span>
+        </div>
+        <div class="fc-pages-count">4 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">📋 Kanji Browser <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Filter: JLPT level, bộ (radical), số nét, âm on/kun</li>
+            <li>Kanji grid: character lớn, reading, meaning, status (học rồi/chưa)</li>
+            <li>View switch: Grid / List / By radical</li>
+            <li>Search: tìm theo chữ, romaji, tiếng Việt</li>
+            <li>Stats bar: đã học X/Y kanji N4</li>
+            <li>Sort: theo tần suất xuất hiện, theo độ khó</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">🔍 Kanji Detail <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Character size lớn (80–100px) + stroke order animation</li>
+            <li>On-yomi / Kun-yomi readings với ví dụ từng cách đọc</li>
+            <li>Số nét, bộ thủ (radical), JLPT level</li>
+            <li>Từ ghép phổ biến (compounds) — dạng card nhỏ</li>
+            <li>Ví dụ câu thực tế với kanji được highlight</li>
+            <li>Kanji liên quan cùng bộ thủ</li>
+            <li>Nút + deck, nút luyện viết</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">✏️ Luyện viết Kanji <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Canvas tương tác: người dùng vẽ nét bằng chuột/touch</li>
+            <li>Hướng dẫn từng nét: highlight nét hiện tại màu đỏ</li>
+            <li>So sánh kết quả: overlay bài viết user vs chuẩn</li>
+            <li>Chế độ: Có gợi ý / Không gợi ý / Chỉ xem thứ tự nét</li>
+            <li>Ô luyện chữ theo ô kẻ (格子 style)</li>
+            <li>Nút skip, nút xem lại animation</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">🎯 Kanji Quiz <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>3 mode: Nhận biết (kanji → nghĩa), Đọc (kanji → reading), Viết (nghĩa → kanji)</li>
+            <li>Multiple choice + typing input</li>
+            <li>Hiển thị mnemonic gợi nhớ (tùy chọn)</li>
+            <li>Progress bar phiên, XP counter</li>
+            <li>Màn hình kết quả + từ cần ôn lại</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Canvas viết kanji là component kỹ thuật cao nhất trong toàn app — cần design cẩn thận UX cho cả mouse (desktop) và touch (mobile). Stroke order animation nên dùng SVG path animation. Kanji Detail page tái sử dụng được component từ trang Từ điển thông minh.</div>
+      </div>
+      <div class="dep-row">
+        <span class="dep-label">Phụ thuộc:</span>
+        <span class="dep-tag">🔍 Từ điển (kanji card component)</span>
+        <span class="dep-tag">🃏 Flashcard (quiz session pattern)</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════ P1 ═══════════════════════════════ -->
+<div class="section-label">🟡 Priority 1 — High: UX bị broken nếu thiếu</div>
+
+<div class="phase">
+
+  <!-- HIRAGANA / KATAKANA -->
+  <div class="feature-card p1">
+    <div class="fc-head">
+      <div class="fc-icon">あ</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Hiragana / Katakana Onboarding
+          <span class="fc-badge badge-p1">P1 High</span>
+        </div>
+        <div class="fc-desc">Người học từ zero không có chỗ nào để bắt đầu học bảng chữ cái. Đây là rào cản gia nhập app với người mới hoàn toàn.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">3 trang mới</span>
+          <span class="fc-badge" style="background:var(--amber-l);color:var(--amber)">Rào cản gia nhập</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Vừa</span>
+        </div>
+        <div class="fc-pages-count">3 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">📊 Bảng chữ cái (Kana Chart) <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Tab Hiragana / Katakana / Cả hai</li>
+            <li>Bảng 46 ký tự cơ bản dạng grid (5×10)</li>
+            <li>Hover/click ký tự: nghe phát âm + xem cách viết</li>
+            <li>Highlight nhóm: nguyên âm / phụ âm / đặc biệt</li>
+            <li>Toggle: hiện/ẩn romaji</li>
+            <li>Status mỗi ký tự: đã học / chưa (màu nền)</li>
+            <li>Nút "Bắt đầu luyện tập nhóm này"</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">✏️ Luyện viết Kana <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Canvas vẽ tay tương tự Kanji writing nhưng đơn giản hơn</li>
+            <li>Hướng dẫn nét theo thứ tự (1–3 nét)</li>
+            <li>Ô luyện theo kiểu notebook Nhật (4 ô nhỏ)</li>
+            <li>Audio phát âm khi hoàn thành</li>
+            <li>Chế độ nhanh: chỉ nhận biết, không cần viết</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">🎯 Kana Quiz <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Mode: Nhận biết (kana → romaji) / Gõ (nghe → gõ kana)</li>
+            <li>Speed drill mode: flash cards tốc độ cao</li>
+            <li>Màn hình kết quả + ký tự hay nhầm</li>
+            <li>Tiến độ: đã thành thạo X/46 ký tự</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Kana Chart nên được link từ onboarding flow — nếu quiz đầu vào phát hiện người dùng không biết kana, tự động gợi ý học Kana trước. UI nên nhẹ nhàng, không áp lực — target audience là người hoàn toàn mới.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY SUMMARY -->
+  <div class="feature-card p1">
+    <div class="fc-head">
+      <div class="fc-icon">📋</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Daily Review Summary
+          <span class="fc-badge badge-p1">P1 High</span>
+        </div>
+        <div class="fc-desc">Hiện tại sau mỗi buổi học không có màn hình tổng kết — người dùng không biết mình vừa đạt được gì. Đây là loop quan trọng nhất để tạo habit.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">1 trang + 1 modal</span>
+          <span class="fc-badge" style="background:var(--amber-l);color:var(--amber)">Habit loop</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Thấp</span>
+        </div>
+        <div class="fc-pages-count">1 page + 1 modal</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">🎉 End-of-Session Summary <span class="ps-tag modal">Modal</span></div>
+          <ul class="ps-components">
+            <li>Animation XP earned (số đếm từ 0 lên)</li>
+            <li>Stats: số từ học mới, số từ ôn, thời gian, accuracy</li>
+            <li>Streak counter (tăng nếu đây là lần đầu trong ngày)</li>
+            <li>Badge mới đạt được (nếu có) — confetti animation</li>
+            <li>Từ hay nhầm nhất trong phiên</li>
+            <li>CTA: "Học tiếp" / "Xem từ vừa học" / "Về Dashboard"</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">📊 Daily Digest Page <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Tổng kết ngày: XP, thời gian, các module đã dùng</li>
+            <li>Heatmap tuần (7 ngày gần nhất)</li>
+            <li>Từ mới hôm nay — list có thể review lại</li>
+            <li>So sánh với hôm qua / trung bình tuần</li>
+            <li>Gợi ý ngày mai: "Ngày mai nên ôn 12 từ sắp quên"</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">End-of-session modal phải có animation — đây là "dopamine moment" quan trọng nhất trong app. Tham khảo Duolingo XP animation nhưng làm tinh tế hơn (không childish). Modal nên full-screen trên mobile.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION CENTER -->
+  <div class="feature-card p1">
+    <div class="fc-head">
+      <div class="fc-icon">🔔</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Notification Center + Smart Reminder
+          <span class="fc-badge badge-p1">P1 High</span>
+        </div>
+        <div class="fc-desc">Hiện có icon chuông trên topbar nhưng không có trang. Smart reminder ("còn 2h streak sẽ mất") là tính năng giữ người dùng quan trọng nhất.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">1 panel + settings enhancement</span>
+          <span class="fc-badge" style="background:var(--amber-l);color:var(--amber)">Retention</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Thấp</span>
+        </div>
+        <div class="fc-pages-count">1 dropdown + 1 settings section</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">🔔 Notification Dropdown <span class="ps-tag component">Component</span></div>
+          <ul class="ps-components">
+            <li>Dropdown từ icon chuông, chiều rộng 360px</li>
+            <li>Tabs: Tất cả / Chưa đọc / Hệ thống</li>
+            <li>Notification item: icon type, message, time ago, CTA button</li>
+            <li>Loại thông báo: Streak warning 🔥, Badge mới 🏅, Bài ôn tập 🃏, Gợi ý học 💡, Bạn bè vượt hạng 🎮</li>
+            <li>Mark all as read, clear all</li>
+            <li>Empty state khi không có thông báo</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">⚙️ Smart Reminder Settings <span class="ps-tag component">Settings section</span></div>
+          <ul class="ps-components">
+            <li>Reminder giờ học hàng ngày (time picker)</li>
+            <li>Streak protection alert: bật/tắt, chọn trước X tiếng</li>
+            <li>Review reminder: khi có từ sắp quên (SRS due)</li>
+            <li>Weekly progress report: ngày nhận, email hay push</li>
+            <li>Toggle từng loại riêng biệt</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Streak warning notification cần màu đỏ/cam nổi bật, không được bị ignore. Smart reminder nên hiện inline banner trên Dashboard chứ không chỉ qua push notification — nhiều user tắt push.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════ P2 ═══════════════════════════════ -->
+<div class="section-label">🔵 Priority 2 — Medium: Differentiating features</div>
+
+<div class="phase">
+
+  <!-- VIDEO -->
+  <div class="feature-card p2">
+    <div class="fc-head">
+      <div class="fc-icon">🎬</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Video + Interactive Subtitles
+          <span class="fc-badge badge-p2">P2 Medium</span>
+          <span class="fc-badge badge-diff">Differentiating</span>
+        </div>
+        <div class="fc-desc">Học qua anime, drama, tin tức với subtitle tương tác — click vào từ để tra từ điển ngay trong video. Đây là tính năng mà Duolingo và Anki không có, giúp app standout.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">2 trang mới</span>
+          <span class="fc-badge" style="background:var(--blue-l);color:var(--blue)">High engagement</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot fill"></div>
+          <span class="complexity-lbl">Cao</span>
+        </div>
+        <div class="fc-pages-count">2 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">🎬 Video Library <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Filter: JLPT level, thể loại (anime / drama / news / vlog)</li>
+            <li>Video card: thumbnail, tiêu đề, duration, level badge, new vocab count</li>
+            <li>Featured section: "Phù hợp với trình độ N4 của bạn"</li>
+            <li>Recently watched, continue watching</li>
+            <li>Search theo tên, từ khóa vocab</li>
+            <li>Sort: mới nhất / phổ biến / theo level</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">▶️ Video Player với Interactive Subs <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Video player full chiều rộng, 16:9</li>
+            <li>Dual subtitle: tiếng Nhật (trên) + tiếng Việt (dưới), toggle từng cái</li>
+            <li>Click vào từ trong subtitle → popup từ điển nhúng (dừng video)</li>
+            <li>Highlight từ chưa biết màu đỏ / đã biết màu xanh trong subtitle</li>
+            <li>Side panel (có thể thu gọn): vocab list bài học này, ghi chú</li>
+            <li>Auto-pause mode: dừng sau mỗi câu, chờ người dùng bấm tiếp</li>
+            <li>Transcript scrollable đồng bộ theo thời gian video</li>
+            <li>Tốc độ: 0.5× / 0.75× / 1× / 1.25×</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Layout video player trên desktop: video chiếm 65% chiều rộng, bên phải là transcript/vocab panel. Mobile: video trên, transcript dưới dạng sheet có thể kéo lên. Word popup phải dừng video ngay khi click — đây là core interaction, không được lag.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PITCH ACCENT -->
+  <div class="feature-card p2">
+    <div class="fc-head">
+      <div class="fc-icon">🗣️</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Pitch Accent Trainer
+          <span class="fc-badge badge-p2">P2 Medium</span>
+          <span class="fc-badge badge-diff">Differentiating</span>
+        </div>
+        <div class="fc-desc">Tiếng Nhật có thanh điệu (pitch accent) mà không app nào dạy tốt. Đây là điểm yếu của Duolingo, WaniKani, Bunpro — cơ hội để differentiate mạnh.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">2 trang mới</span>
+          <span class="fc-badge" style="background:var(--blue-l);color:var(--blue)">Gap in market</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Vừa</span>
+        </div>
+        <div class="fc-pages-count">2 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">📚 Pitch Accent Overview <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Giải thích 4 pattern: 平板型 / 頭高型 / 中高型 / 尾高型</li>
+            <li>Visualize pitch graph: đường lên/xuống theo mora</li>
+            <li>Ví dụ từ với cùng chữ, khác pitch → khác nghĩa (hashi: 橋/箸/端)</li>
+            <li>Danh sách từ thường bị phát âm sai theo JLPT level</li>
+            <li>Mini player để nghe so sánh đúng/sai</li>
+          </ul>
+        </div>
+
+        <div class="page-spec key">
+          <div class="ps-title">🎯 Pitch Practice Session <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Nghe audio → chọn đúng pitch graph (visual multiple choice)</li>
+            <li>Xem pitch graph → phát âm theo (record & compare, optional)</li>
+            <li>Highlight từng mora khi audio phát</li>
+            <li>Màu sắc: mora cao = xanh, mora thấp = xám</li>
+            <li>Kết quả: % nhận biết đúng, từ cần ôn</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Pitch graph visual là component quan trọng nhất — cần design cẩn thận để người mới hiểu ngay. Dùng 2 màu đơn giản (cao/thấp), đường kết nối mora rõ ràng. Component này đã có phác thảo trong trang Từ điển, cần nâng lên thành interactive.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════ P3 ═══════════════════════════════ -->
+<div class="section-label">🟣 Priority 3 — Low: Nice to have</div>
+
+<div class="phase">
+
+  <!-- SENTENCE MINING -->
+  <div class="feature-card p3">
+    <div class="fc-head">
+      <div class="fc-icon">✍️</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Sentence Mining
+          <span class="fc-badge badge-p3">P3 Low</span>
+        </div>
+        <div class="fc-desc">Người dùng tự thêm câu từ nguồn bên ngoài vào flashcard. Cực phổ biến trong cộng đồng học Nhật nâng cao (Anki workflow). Tăng retention với power user.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">1 page + 1 modal</span>
+          <span class="fc-badge" style="background:var(--purple-l);color:var(--purple)">Power users</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Vừa</span>
+        </div>
+        <div class="fc-pages-count">1 page + 1 modal</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">📝 Sentence Manager <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Danh sách câu tự thêm: câu JP, nghĩa VN, nguồn, ngày thêm</li>
+            <li>Tag / nhóm câu theo chủ đề</li>
+            <li>Filter: chưa ôn / đã ôn / theo deck</li>
+            <li>Bulk actions: xóa, move to deck, export</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">➕ Add Sentence Modal <span class="ps-tag modal">Modal</span></div>
+          <ul class="ps-components">
+            <li>Nhập câu tiếng Nhật — auto parse ra từ, furigana</li>
+            <li>Highlight từ mục tiêu (từ muốn học qua câu đó)</li>
+            <li>Auto-lookup nghĩa từ target word từ dictionary</li>
+            <li>Ghi nguồn: anime, sách, tự viết...</li>
+            <li>Chọn deck để thêm vào</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDY BUDDY -->
+  <div class="feature-card p3">
+    <div class="fc-head">
+      <div class="fc-icon">🤝</div>
+      <div class="fc-info">
+        <div class="fc-title">
+          Study Buddy Matching
+          <span class="fc-badge badge-p3">P3 Low</span>
+        </div>
+        <div class="fc-desc">Ghép đôi người học cùng cấp để luyện hội thoại, motivate nhau. Tăng engagement dài hạn và social retention — nhưng cần số lượng user đủ lớn mới hiệu quả.</div>
+        <div class="fc-badges">
+          <span class="fc-badge badge-ux">2 trang mới</span>
+          <span class="fc-badge" style="background:var(--purple-l);color:var(--purple)">Social feature</span>
+          <span class="fc-badge" style="background:var(--surface2);color:var(--ink3)">Cần user scale</span>
+        </div>
+      </div>
+      <div class="fc-meta">
+        <div class="complexity-bar">
+          <div class="cb-dot fill"></div><div class="cb-dot fill"></div><div class="cb-dot"></div>
+          <span class="complexity-lbl">Vừa</span>
+        </div>
+        <div class="fc-pages-count">2 pages</div>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div class="page-spec-grid">
+
+        <div class="page-spec key">
+          <div class="ps-title">🔍 Buddy Matching <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>Filter: cùng cấp JLPT, timezone, mục tiêu, lịch học</li>
+            <li>Profile card: avatar, level, streak, giờ học, mục tiêu</li>
+            <li>Nút "Kết nối" gửi request</li>
+            <li>Pending / Matched status</li>
+          </ul>
+        </div>
+
+        <div class="page-spec">
+          <div class="ps-title">💬 Partner Profile + Chat <span class="ps-tag">Page</span></div>
+          <ul class="ps-components">
+            <li>So sánh tiến độ 2 người: biểu đồ XP song song</li>
+            <li>Shared vocab list: từ cả 2 đang học</li>
+            <li>Chat đơn giản + gửi flashcard challenge</li>
+            <li>Lịch học chung, nhắc nhở nhau</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="design-notes">
+        <div class="dn-label">💡 Lưu ý thiết kế</div>
+        <div class="dn-text">Chỉ build khi app có ít nhất 1.000 user active — matching cần pool đủ lớn để không cho kết quả trống. Có thể làm MVP đơn giản: chỉ show danh sách người học cùng level, không cần full matching algorithm.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER NOTE -->
+<div style="padding:1.25rem 2rem;background:#fff;border:1.5px solid var(--b);border-radius:var(--r3);margin:0 2rem;display:flex;align-items:flex-start;gap:.75rem">
+  <span style="font-size:20px;flex-shrink:0">📌</span>
+  <div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:.35rem">Ghi chú cho team design</div>
+    <div style="font-size:12px;color:var(--ink3);line-height:1.7">
+      Tất cả trang mới phải tuân theo <strong>nihongo_design_system.html</strong> — cùng font, màu, spacing, component patterns.<br>
+      Component tái sử dụng nhiều nhất: <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px">word-popup</code>, <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px">audio-player</code>, <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px">pitch-graph</code>, <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px">canvas-writer</code> — nên design component riêng trước, sau đó compose vào page.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
