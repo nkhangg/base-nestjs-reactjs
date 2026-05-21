@@ -6,8 +6,6 @@ import {
   QUEUE_NAMES,
   MAIL_JOBS,
   type SendPasswordResetJobData,
-  type SendContactNotificationJobData,
-  type SendContactReplyJobData,
 } from '../../queue/queue.constants';
 
 @Processor(QUEUE_NAMES.MAIL)
@@ -31,30 +29,6 @@ export class MailProcessor extends WorkerHost {
           resetLink: data.resetLink,
         });
         this.logger.log(`Password reset email sent to ${data.to}`);
-        break;
-      }
-      case MAIL_JOBS.SEND_CONTACT_NOTIFICATION: {
-        const data = job.data as SendContactNotificationJobData;
-        await this.mailerService.sendContactNotificationEmail({
-          to: data.to,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          subject: data.subject,
-        });
-        this.logger.log(`Contact notification email sent to ${data.to}`);
-        break;
-      }
-      case MAIL_JOBS.SEND_CONTACT_REPLY: {
-        const data = job.data as SendContactReplyJobData;
-        await this.mailerService.sendContactReplyEmail({
-          to: data.to,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          subject: data.subject,
-          replyMessage: data.replyMessage,
-        });
-        this.logger.log(`Contact reply email sent to ${data.to}`);
         break;
       }
       default:

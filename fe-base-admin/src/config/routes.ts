@@ -16,17 +16,8 @@ export const ROUTES = {
   BLOG: '/blog',
   BLOG_NEW: '/blog/new',
   BLOG_EDIT: '/blog/:id/edit',
-  DICTIONARY: '/dictionary',
-  ARTICLES: '/articles',
-  ARTICLES_NEW: '/articles/new',
-  ARTICLES_EDIT: '/articles/:id/edit',
-  QUESTIONS: '/questions',
-  PROGRESS: '/progress',
-  ORGANIZATIONS: '/organizations',
-  CONTACTS: '/contacts',
 } as const
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES]
 
 export const blogEditPath = (id: string) => `/blog/${id}/edit`
-export const articleEditPath = (id: string) => `/articles/${id}/edit`

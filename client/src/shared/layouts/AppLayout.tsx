@@ -5,13 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
-  BookOpen,
-  PenTool,
-  ClipboardList,
-  TrendingUp,
   User,
   Settings,
-  CreditCard,
   LogOut,
 } from 'lucide-react'
 import { cn } from '@shared/utils'
@@ -21,16 +16,11 @@ import { ConfirmDialog } from '@shared/components/ui'
 
 const navItems = [
   { href: ROUTES.DASHBOARD, label: 'Tổng quan', icon: LayoutDashboard },
-  { href: ROUTES.FLASHCARDS, label: 'Thẻ học', icon: BookOpen },
-  { href: ROUTES.GRAMMAR, label: 'Ngữ pháp', icon: PenTool },
-  { href: ROUTES.MOCK_TEST, label: 'Thi thử', icon: ClipboardList },
-  { href: ROUTES.PROGRESS, label: 'Tiến độ', icon: TrendingUp },
 ]
 
 const bottomItems = [
   { href: ROUTES.PROFILE, label: 'Hồ sơ', icon: User },
   { href: ROUTES.SETTINGS, label: 'Cài đặt', icon: Settings },
-  { href: ROUTES.BILLING, label: 'Gói dịch vụ', icon: CreditCard },
 ]
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -44,7 +34,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <aside className="hidden w-60 flex-col border-r border-border bg-background lg:flex">
         <div className="flex h-14 items-center border-b border-border px-4">
           <Link href={ROUTES.DASHBOARD} className="text-lg font-bold text-foreground">
-            日本語
+            App
           </Link>
         </div>
 

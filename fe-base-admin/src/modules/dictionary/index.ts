@@ -1,5 +1,0 @@
-export { DictionaryPage } from './components/DictionaryPage'
-export { DictionaryEntryModal } from './components/DictionaryEntryModal'
-export { MeaningsInput } from './components/MeaningsInput'
-export * from './types'
-export * from './hooks/useDictionary'

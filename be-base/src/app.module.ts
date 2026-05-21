@@ -17,17 +17,9 @@ import { ConfigModule } from './modules/config/config.module';
 import { MediaModule } from './modules/media/media.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { BlogModule } from './modules/blog/blog.module';
-import { DictionaryModule } from './modules/dictionary/dictionary.module';
-import { ArticleModule } from './modules/article/article.module';
-import { QuestionModule } from './modules/question/question.module';
-import { FlashcardModule } from './modules/flashcard/flashcard.module';
-import { ProgressModule } from './modules/progress/progress.module';
-import { OrganizationModule } from './modules/organization/organization.module';
-import { ContactsModule } from './modules/contacts/contacts.module';
 import { PrismaModule } from './shared/infrastructure/prisma/prisma.module';
 import { QueueModule } from './core/queue/queue.module';
 import { MailModule } from './core/mail/mail.module';
-import { SeedModule } from './shared/infrastructure/seeders/seed.module';
 
 @Module({
   imports: [
@@ -47,15 +39,7 @@ import { SeedModule } from './shared/infrastructure/seeders/seed.module';
     MediaModule,
     NotificationModule,
     BlogModule,
-    DictionaryModule,
-    ArticleModule,
-    QuestionModule,
-    FlashcardModule,
-    ProgressModule,
-    OrganizationModule,
-    ContactsModule,
     IntegrationModule,
-    SeedModule,
     AuthModule.forRoot({
       jwt: {
         accessTokenSecret:

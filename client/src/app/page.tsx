@@ -1,10 +1,5 @@
-import { PublicLayout } from '@shared/layouts'
-import { LandingPage } from '@modules/landing'
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return (
-    <PublicLayout>
-      <LandingPage />
-    </PublicLayout>
-  )
+  redirect('/dashboard')
 }

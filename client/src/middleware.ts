@@ -3,14 +3,8 @@ import type { NextRequest } from 'next/server'
 
 const PROTECTED_PREFIXES = [
   '/dashboard',
-  '/flashcards',
-  '/grammar',
-  '/mock-test',
-  '/progress',
   '/profile',
   '/settings',
-  '/billing',
-  '/onboarding',
 ]
 
 const AUTH_PREFIXES = [

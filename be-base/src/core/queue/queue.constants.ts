@@ -7,29 +7,11 @@ export const QUEUE_NAMES = {
 
 export const MAIL_JOBS = {
   SEND_PASSWORD_RESET: 'send-password-reset',
-  SEND_CONTACT_NOTIFICATION: 'send-contact-notification',
-  SEND_CONTACT_REPLY: 'send-contact-reply',
 } as const;
 
 export interface SendPasswordResetJobData {
   to: string;
   resetLink: string;
-}
-
-export interface SendContactNotificationJobData {
-  to: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  subject: string;
-}
-
-export interface SendContactReplyJobData {
-  to: string;
-  firstName: string;
-  lastName: string;
-  subject: string;
-  replyMessage: string;
 }
 
 // ---- Notification queue ----

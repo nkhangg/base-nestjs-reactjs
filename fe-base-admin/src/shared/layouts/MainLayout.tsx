@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Link, Outlet } from 'react-router-dom'
-import { LayoutDashboard, LogOut, ShieldCheck, Users, Key, UserCog, Settings, ScrollText, Image, Bell, FileText, BookOpen, BookText, HelpCircle, BarChart2, Building2, Mail } from 'lucide-react'
+import { LayoutDashboard, LogOut, ShieldCheck, Users, Key, UserCog, Settings, ScrollText, Image, Bell, FileText } from 'lucide-react'
 import { ErrorBoundary } from '@/shared/components/ui/error-boundary'
 import { ConfirmDialog } from '@shared/components/ui/confirm-dialog'
 import { ROUTES } from '@config/routes'
@@ -38,16 +38,6 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: 'Nội dung học',
-    items: [
-      { to: ROUTES.DICTIONARY, label: 'Từ điển', icon: BookOpen, requireRole: true, resource: 'dictionary-management' },
-      { to: ROUTES.ARTICLES, label: 'Bài đọc', icon: BookText, requireRole: true, resource: 'article-management' },
-      { to: ROUTES.QUESTIONS, label: 'Câu hỏi', icon: HelpCircle, requireRole: true, resource: 'question-management' },
-      { to: ROUTES.PROGRESS, label: 'Tiến độ', icon: BarChart2, requireRole: true, resource: 'progress-management' },
-      { to: ROUTES.ORGANIZATIONS, label: 'Tổ chức', icon: Building2, requireRole: true, resource: 'organization-management' },
-    ],
-  },
-  {
     label: 'System',
     items: [
       { to: ROUTES.CONFIGS, label: 'Configs', icon: Settings, requireRole: true, resource: 'config-management' },
@@ -55,7 +45,6 @@ const navGroups: NavGroup[] = [
       { to: ROUTES.NOTIFICATIONS, label: 'Notifications', icon: Bell, requireRole: true, resource: 'notification-management' },
       { to: ROUTES.AUDIT_LOGS, label: 'Audit Logs', icon: ScrollText, requireRole: true, resource: 'audit-logs' },
       { to: ROUTES.BLOG, label: 'Blog', icon: FileText, requireRole: true, resource: 'blog-management' },
-      { to: ROUTES.CONTACTS, label: 'Liên hệ', icon: Mail, requireRole: true, resource: 'contacts' },
     ],
   },
 ]

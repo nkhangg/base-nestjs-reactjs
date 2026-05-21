@@ -29,32 +29,11 @@ const NotificationPage = lazy(() =>
   import('@modules/notification/index').then((m) => ({ default: m.NotificationPage })),
 )
 const BlogPage = lazy(() => import('@modules/blog/index').then((m) => ({ default: m.BlogPage })))
-const DictionaryPage = lazy(() =>
-  import('@modules/dictionary/index').then((m) => ({ default: m.DictionaryPage })),
-)
-const ArticlePage = lazy(() =>
-  import('@modules/article/index').then((m) => ({ default: m.ArticlePage })),
-)
-const ArticleEditorPage = lazy(() =>
-  import('@modules/article/index').then((m) => ({ default: m.ArticleEditorPage })),
-)
-const QuestionPage = lazy(() =>
-  import('@modules/question/index').then((m) => ({ default: m.QuestionPage })),
-)
-const ProgressPage = lazy(() =>
-  import('@modules/progress/index').then((m) => ({ default: m.ProgressPage })),
-)
-const OrganizationPage = lazy(() =>
-  import('@modules/organization/index').then((m) => ({ default: m.OrganizationPage })),
-)
 const BlogPostEditorPage = lazy(() =>
   import('@modules/blog/index').then((m) => ({ default: m.BlogPostEditorPage })),
 )
 const ProfilePage = lazy(() =>
   import('@modules/profile/index').then((m) => ({ default: m.ProfilePage })),
-)
-const ContactsPage = lazy(() =>
-  import('@modules/contacts/index').then((m) => ({ default: m.ContactsPage })),
 )
 
 // ── Guards (provided by each module) ──────────────────────────────────────
@@ -109,19 +88,11 @@ export const router = createBrowserRouter([
           { path: ROUTES.MEDIA, element: withSuspense(<MediaPage />) },
           { path: ROUTES.NOTIFICATIONS, element: withSuspense(<NotificationPage />) },
           { path: ROUTES.BLOG, element: withSuspense(<BlogPage />) },
-          { path: ROUTES.DICTIONARY, element: withSuspense(<DictionaryPage />) },
-          { path: ROUTES.ARTICLES, element: withSuspense(<ArticlePage />) },
-          { path: ROUTES.QUESTIONS, element: withSuspense(<QuestionPage />) },
-          { path: ROUTES.PROGRESS, element: withSuspense(<ProgressPage />) },
-          { path: ROUTES.ORGANIZATIONS, element: withSuspense(<OrganizationPage />) },
-          { path: ROUTES.CONTACTS, element: withSuspense(<ContactsPage />) },
         ],
       },
       // Full-screen editor pages (no sidebar)
       { path: ROUTES.BLOG_NEW, element: withSuspense(<BlogPostEditorPage />) },
       { path: ROUTES.BLOG_EDIT, element: withSuspense(<BlogPostEditorPage />) },
-      { path: ROUTES.ARTICLES_NEW, element: withSuspense(<ArticleEditorPage />) },
-      { path: ROUTES.ARTICLES_EDIT, element: withSuspense(<ArticleEditorPage />) },
     ],
   },
 
