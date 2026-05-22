@@ -34,6 +34,7 @@ import {
 } from '../../../../shared/application/paginate';
 const MY_NOTIFICATIONS_CONFIG = {
   sortableColumns: ['createdAt'],
+  searchableColumns: ['title', 'body'],
   filterableColumns: { isRead: [FilterOperator.EQ] },
   defaultLimit: 20,
   maxLimit: 100,

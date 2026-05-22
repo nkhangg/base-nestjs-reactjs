@@ -11,29 +11,39 @@ export function useNotificationSocket() {
 
   useEffect(() => {
     const socketUrl = ENV.API_BASE_URL.replace(/\/$/, '').replace(/\/api$/, '')
-    const socket = io(`${socketUrl}/notifications`, {
-      withCredentials: true,
-      // Polling trước để initial handshake gửi cookie qua HTTP, sau đó upgrade WebSocket
-      transports: ['polling', 'websocket'],
-      reconnectionDelay: 3000,
-      reconnectionDelayMax: 15000,
-      reconnectionAttempts: 20,
-    })
+    let currentSocket: ReturnType<typeof io>
 
-    socket.on('connect', () => {
-      // Khi (re)connect thành công, sync lại count và list
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.UNREAD_COUNT })
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.LIST })
-    })
+    const connect = () => {
+      currentSocket?.disconnect()
+      const s = io(`${socketUrl}/notifications`, {
+        withCredentials: true,
+        // Polling trước để initial handshake gửi cookie qua HTTP, sau đó upgrade WebSocket
+        transports: ['polling', 'websocket'],
+        reconnectionDelay: 3000,
+        reconnectionDelayMax: 15000,
+        reconnectionAttempts: 20,
+      })
+      s.on('connect', () => {
+        void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.UNREAD_COUNT })
+        void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.LIST })
+      })
+      s.on('notification', (payload: SocketNotificationPayload) => {
+        void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.LIST })
+        void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.UNREAD_COUNT })
+        toast.info(payload.title, { description: payload.body })
+      })
+      currentSocket = s
+    }
 
-    socket.on('notification', (payload: SocketNotificationPayload) => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.LIST })
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATIONS.UNREAD_COUNT })
-      toast.info(payload.title, { description: payload.body })
-    })
+    connect()
+
+    // Khi axios interceptor refresh token thành công, re-handshake WS với cookie mới
+    const handleTokenRefresh = () => connect()
+    window.addEventListener('auth:token-refreshed', handleTokenRefresh)
 
     return () => {
-      socket.disconnect()
+      window.removeEventListener('auth:token-refreshed', handleTokenRefresh)
+      currentSocket?.disconnect()
     }
   }, [queryClient])
 }

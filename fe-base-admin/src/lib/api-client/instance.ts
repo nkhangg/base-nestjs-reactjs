@@ -34,7 +34,9 @@ apiClient.interceptors.response.use(
       // If the refresh token is still valid the retried request will succeed.
       // If not, the retry also returns 401 and we redirect to login.
       try {
-        return await apiClient(originalRequest)
+        const result = await apiClient(originalRequest)
+        window.dispatchEvent(new Event('auth:token-refreshed'))
+        return result
       } catch {
         window.location.href = '/login'
       }

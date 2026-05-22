@@ -38,9 +38,23 @@ export class PrismaNotificationRepository implements INotificationRepository {
     if (params.type) where.type = params.type;
     if (params.dateFrom || params.dateTo) {
       where.createdAt = {
-        ...(params.dateFrom ? { gte: new Date(params.dateFrom) } : {}),
+        ...(params.dateFrom
+          ? {
+              gte: new Date(
+                params.dateFrom.includes('T')
+                  ? params.dateFrom
+                  : `${params.dateFrom}T00:00:00.000Z`,
+              ),
+            }
+          : {}),
         ...(params.dateTo
-          ? { lte: new Date(params.dateTo + 'T23:59:59.999Z') }
+          ? {
+              lte: new Date(
+                params.dateTo.includes('T')
+                  ? params.dateTo
+                  : `${params.dateTo}T23:59:59.999Z`,
+              ),
+            }
           : {}),
       };
     }

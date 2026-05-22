@@ -52,15 +52,15 @@ export class NotificationTargetResolverService {
       if (target.kind === 'individual') {
         add(target.recipientId, target.recipientType);
       } else if (target.kind === 'all-users') {
-        const { data } = await this.userRepo.findAll({ pageSize: 1_000_000 });
+        const { data } = await this.userRepo.findAll({ pageSize: 1_000_000, isActive: true });
         data.forEach((u) => add(u.id.value, 'user'));
       } else if (target.kind === 'all-admins') {
-        const { data } = await this.adminRepo.findAll({ pageSize: 1_000_000 });
+        const { data } = await this.adminRepo.findAll({ pageSize: 1_000_000, isActive: true });
         data.forEach((a) => add(a.id.value, 'admin'));
       } else if (target.kind === 'broadcast') {
         const [users, admins] = await Promise.all([
-          this.userRepo.findAll({ pageSize: 1_000_000 }),
-          this.adminRepo.findAll({ pageSize: 1_000_000 }),
+          this.userRepo.findAll({ pageSize: 1_000_000, isActive: true }),
+          this.adminRepo.findAll({ pageSize: 1_000_000, isActive: true }),
         ]);
         users.data.forEach((u) => add(u.id.value, 'user'));
         admins.data.forEach((a) => add(a.id.value, 'admin'));

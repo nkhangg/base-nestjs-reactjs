@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { BadRequestException, Injectable, Inject } from '@nestjs/common';
 import {
   NOTIFICATION_REPOSITORY,
   type INotificationRepository,
@@ -49,6 +49,14 @@ export class SendNotificationUseCase {
   ) {}
 
   async execute(input: SendNotificationInput): Promise<SendNotificationOutput> {
+    const resolved = await this.targetResolver.resolve(input.targets);
+
+    if (resolved.length === 0) {
+      throw new BadRequestException(
+        'No valid recipients resolved from provided targets',
+      );
+    }
+
     const notification = Notification.create({
       title: input.title,
       body: input.body,
@@ -59,8 +67,6 @@ export class SendNotificationUseCase {
     });
 
     await this.notificationRepo.save(notification);
-
-    const resolved = await this.targetResolver.resolve(input.targets);
 
     const recipients = resolved.map((r) =>
       NotificationRecipient.create({

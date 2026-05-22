@@ -306,14 +306,18 @@ export class AuthController {
     if (!user.isAdmin || !this.authorizationService) return user;
 
     const subject = Subject.of(user.userId, 'admin');
-    const results = await Promise.all(
-      ADMIN_NAV_RESOURCES.map((r) =>
-        this.authorizationService.can(subject, r, 'read'),
+    const [results, canCreateNotif] = await Promise.all([
+      Promise.all(
+        ADMIN_NAV_RESOURCES.map((r) =>
+          this.authorizationService.can(subject, r, 'read'),
+        ),
       ),
-    );
-    const accessibleResources = ADMIN_NAV_RESOURCES.filter(
+      this.authorizationService.can(subject, 'notification-management', 'create'),
+    ]);
+    const accessibleResources: string[] = ADMIN_NAV_RESOURCES.filter(
       (_, i) => results[i],
     );
+    if (canCreateNotif) accessibleResources.push('notification-management:create');
 
     return { ...user, accessibleResources };
   }

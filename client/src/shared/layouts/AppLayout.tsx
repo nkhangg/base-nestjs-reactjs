@@ -12,6 +12,7 @@ import {
 import { cn } from '@shared/utils'
 import { ROUTES } from '@config/routes'
 import { useLogout } from '@modules/auth'
+import { NotificationBell } from '@modules/notification'
 import { ConfirmDialog } from '@shared/components/ui'
 
 const navItems = [
@@ -83,8 +84,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      {/* Main content area */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="flex h-14 shrink-0 items-center justify-end border-b border-border bg-background px-4">
+          <NotificationBell />
+        </header>
+        <main className="flex-1 overflow-y-auto">{children}</main>
+      </div>
 
       <ConfirmDialog
         open={logoutConfirmOpen}

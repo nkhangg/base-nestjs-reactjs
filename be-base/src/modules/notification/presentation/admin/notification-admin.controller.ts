@@ -16,7 +16,7 @@ import {
   ApiPropertyOptional,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import {
   FilterOperator,
@@ -52,8 +52,8 @@ import type { Notification } from '../../domain/entities/notification.entity';
 // ── DTOs ─────────────────────────────────────────────────────────────────────
 
 class SendNotificationDto {
-  @ApiProperty() @IsString() title!: string;
-  @ApiProperty() @IsString() body!: string;
+  @ApiProperty() @IsString() @IsNotEmpty() title!: string;
+  @ApiProperty() @IsString() @IsNotEmpty() body!: string;
   @ApiPropertyOptional({
     enum: ['system', 'info', 'warning', 'alert', 'success'],
   })
@@ -229,10 +229,15 @@ export class NotificationAdminController {
       senderEmail = admin?.email ?? null;
     }
 
+    const summary = {
+      adminCount: recipients.filter((r) => r.recipientType === 'admin').length,
+      userCount: recipients.filter((r) => r.recipientType === 'user').length,
+    };
+
     return {
       success: true,
       data: {
-        ...mapNotification(notification, senderEmail),
+        ...mapNotification(notification, senderEmail, summary),
         recipients: recipients.map(mapRecipient),
       },
     };

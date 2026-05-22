@@ -6,6 +6,7 @@ import { Badge } from '@shared/components/ui/badge'
 import { DataTable, useDataTable, type ColumnDef } from '@shared/components/ui/data-table'
 import { useSentNotifications } from '../hooks/useSentNotifications'
 import { SendNotificationModal } from './SendNotificationModal'
+import { useCurrentUser } from '@modules/auth'
 import type { NotificationType, SentNotification } from '../types'
 
 type SentRow = SentNotification & Record<string, unknown>
@@ -97,6 +98,8 @@ const columns: ColumnDef<SentRow>[] = [
 
 export function NotificationPage() {
   const [sendOpen, setSendOpen] = useState(false)
+  const { user } = useCurrentUser()
+  const canSend = user?.accessibleResources?.includes('notification-management:create') ?? false
 
   const table = useDataTable<SentRow>({
     tableId: 'notification-sent',
@@ -128,10 +131,12 @@ export function NotificationPage() {
             <p className="text-sm text-muted-foreground">Gửi và quản lý thông báo hệ thống</p>
           </div>
         </div>
-        <Button onClick={() => setSendOpen(true)}>
-          <Send className="mr-2 size-4" />
-          Gửi thông báo
-        </Button>
+        {canSend && (
+          <Button onClick={() => setSendOpen(true)}>
+            <Send className="mr-2 size-4" />
+            Gửi thông báo
+          </Button>
+        )}
       </div>
 
       <DataTable<SentRow>
